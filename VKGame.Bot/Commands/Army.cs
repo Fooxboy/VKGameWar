@@ -75,7 +75,8 @@ namespace VKGame.Bot.Commands
             int price = 40*count;
             if(resources.MoneyCard < price) return "❌ На Вашем банковском счету недостаточно средств.";
 
-
+            var builds = new Api.Builds(msg.PeerId);
+            if( (resources.Tanks + count) > (builds.Hangars * 5)) return "❌ Вы не можете создать больше, чем у Вас вмещается.";
             var thread = new Thread(new ParameterizedThreadStart(BackgroundProcess.Army.CreateTanks));
             thread.Start(new Models.DataCreateSoldiery() { UserId = msg.PeerId, Count = count});
             return $"✔ Вы успешно создаёте {count} новых танков.";
@@ -101,7 +102,8 @@ namespace VKGame.Bot.Commands
 
             int price = 5*count;
             if(resources.MoneyCard < price) return "❌ На Вашем банковском счету недостаточно средств.";
-
+            var builds = new Api.Builds(msg.PeerId);
+            if ((resources.Soldiery + count) > (builds.Apartments * 10)) return "❌ Вы не можете создать больше, чем у Вас вмещается.";
             var thread = new Thread(new ParameterizedThreadStart(BackgroundProcess.Army.CreateSoldiery));
             thread.Start(new Models.DataCreateSoldiery() { UserId = msg.PeerId, Count = count});
             return $"✔ Вы успешно обучаете {count} солдат.";

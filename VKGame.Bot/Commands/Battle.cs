@@ -11,7 +11,7 @@ namespace VKGame.Bot.Commands
         public string Caption => "Раздел предназначен для проведения боёв.";
         public TypeResponse Type => TypeResponse.Text;
 
-        public object  Execute(LongPollVK.Models.AddNewMsg msg) 
+        public object Execute(LongPollVK.Models.AddNewMsg msg) 
         {
             var messageArray = msg.Text.Split(' ');
             if (messageArray.Length == 1)
@@ -44,7 +44,7 @@ namespace VKGame.Bot.Commands
 
                 }
             }
-            return "Неизвестная подкоманда.";
+            return "❌ Неизвестная подкоманда.";
         }
 
         [Attributes.Trigger("атака")]
@@ -63,8 +63,19 @@ namespace VKGame.Bot.Commands
             }catch (FormatException) 
             {
                 return "❌ Вы указали неверное число.";
+            }catch(IndexOutOfRangeException) 
+            {
+                return "❌ Вы не указали число!";
             }
-            var type = messageArray[2].ToLower();
+
+            string type = "";
+            try {
+                type = messageArray[2].ToLower();
+            }catch(IndexOutOfRangeException) 
+            {
+                return "❌ Вы не указали тип войска.";
+            }
+             
             int countHP = 0;
             if(type == "солдат") 
             {
@@ -85,7 +96,10 @@ namespace VKGame.Bot.Commands
                 hpUser -= countHP;
                 if(hpUser < 0 || hpUser == 0) 
                 {
-                    //endGame
+                    Api.Battles.GetListBattles().Battles.Remove(battle.Id);
+                   Notifications.EnterPaymentCard( Convert.ToInt32(battle.Price *2), msg.PeerId, "победа в битве");
+                    user.IdBattle = 0;
+                    Api.User.SetUser(user);
                     return "✅ Вы уничтожили противника!";
                 }else 
                 {
@@ -99,7 +113,10 @@ namespace VKGame.Bot.Commands
                 hpUser -= countHP;
                 if (hpUser < 0 || hpUser == 0)
                 {
-                    //endGame
+                    Api.Battles.GetListBattles().Battles.Remove(battle.Id);
+                    Notifications.EnterPaymentCard(Convert.ToInt32(battle.Price * 2), msg.PeerId, "победа в битве");
+                    user.IdBattle = 0;
+                    Api.User.SetUser(user);
                     return "✅ Вы уничтожили противника!";
                 }else 
                 {
@@ -114,7 +131,14 @@ namespace VKGame.Bot.Commands
 
         private string GetBattleText(LongPollVK.Models.AddNewMsg msg) 
         {
-            return "Лобби.";
+            var user = Api.User.GetUser(msg.PeerId);
+            return $"➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖"+
+                   $"\n✋ Привет, {user.Name}!"+
+                   $"\n" +
+                   $"\n⚔ Чтобы начать бой - посмотри список боёв! Напиши: бой список" +
+                   $"\n🛡 Не хочешь вступать в бой? Создай свой! Напиши: бой создать сумма название"+
+                   $"➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖";
+
         }
 
         [Attributes.Trigger("вступить")]
@@ -126,6 +150,9 @@ namespace VKGame.Bot.Commands
                  idBattle = Convert.ToInt32(messageArray[2]);
             }catch(FormatException) {
                 return "❌ Вы указали неверный ID";
+            }catch(IndexOutOfRangeException) 
+            {
+                return "❌ Вы не указали ID";
             }
             if(!Api.Battles.Check(idBattle)) return "❌ Такой битвы не существует";
             var battle = new Api.Battles(idBattle);
@@ -139,7 +166,6 @@ namespace VKGame.Bot.Commands
                 {
                     if(resources.MoneyCard < battle.Price) return "❌ На Вашем банковском счету недостаточно монет.";
                     Notifications.RemovePaymentCard(Convert.ToInt32(battle.Price), msg.PeerId, "битвы");
-                    //battles.Battles.Remove(battle);
                     user.IdBattle = battle.Id;
                     if(!Api.User.SetUser(user)) return "❌ Произошла ошибка при добавлении в БД. Вы не присоеденились к битве. Попробуйте позже";
                     var userHp = (builds.Apartments * 10) + (builds.Eatery * 10) + 
@@ -150,14 +176,53 @@ namespace VKGame.Bot.Commands
                     battle.UserTwo = msg.PeerId;
                     battle.HpTwo = userHp;
                     battle.IsStart = true;
-                   // battles.Battles.Add(battle);
-                  //  Api.Battles.Set(battles);
                     Api.MessageSend("‼ К Вам в битву вступили! Вы атакуете первый!", battle.Creator);
                     return "✅ Вы успешно вступили в эту битву! Враг атакует первый.";
                 }
             
 
             return "❌ Вы указали неверный ID";
+        }
+
+        [Attributes.Trigger("покинуть")]
+        public static string Leave(LongPollVK.Models.AddNewMsg msg) 
+        {
+            var user = Api.User.GetUser(msg.PeerId);
+            if(user.IdBattle == 0) return "Вы не находитесь ни в какой битве.";
+            var battle = new Api.Battles(user.IdBattle);
+            Api.Battles.GetListBattles().Battles.Remove(battle.Id);
+            Notifications.EnterPaymentCard(Convert.ToInt32(battle.Price * 2), msg.PeerId, "победа в битве");
+            user.IdBattle = 0;
+            Api.User.SetUser(user);
+            
+            long userwo = 0 ;
+            if(battle.UserOne == msg.PeerId) userwo = battle.UserTwo;
+            if(battle.UserTwo == msg.PeerId) userwo = battle.UserOne;
+            if(userwo != 0) 
+            {
+                var userTwo = Api.User.GetUser(userwo);
+                userTwo.IdBattle = 0;
+                Api.User.SetUser(userTwo);
+                Notifications.EnterPaymentCard(System.Convert.ToInt32(battle.Price * 2), userwo, "Победа в бое");
+                Api.MessageSend("Ваш противник трусливо сбежал! Вы получаете весь фонд!", userwo);
+            }
+            return "❌ Вы успешно покиунли битву :( Плохо так делать!";
+        }
+
+        [Attributes.Trigger("мой")]
+        public static string MyBattle(LongPollVK.Models.AddNewMsg msg) 
+        {
+            var user = Api.User.GetUser(msg.PeerId);
+            if(user.IdBattle == 0) return "Вы не находитесь ни в какой битве.";
+            var battle = new Api.Battles(user.IdBattle);
+
+            string result = $"⚔ Битва №{battle.Id}.\n Название: {battle.Body}." +
+                          $"\n🧑 Создатель: {user.Name}" +
+                          $"\n🔝 Уровень противника: {user.Level}" +
+                          $"\n🛡 HP противника: {battle.HpOne}" +
+                          $"\n💰 Ставка: {battle.Price}";
+
+            return result;
         }
 
         [Attributes.Trigger("создать")]
@@ -170,19 +235,25 @@ namespace VKGame.Bot.Commands
                 price = Convert.ToInt32(messageArray[2]);
             } catch(FormatException) {
                 return "❌ Вы ввели неверную сумму.";
+            } catch(IndexOutOfRangeException) 
+            {
+                return "❌ Вы не указали цену.";
             }
             string body = "";
-            for(int i=3; messageArray.Length > i; i++) 
+            try {
+                for (int i = 3; messageArray.Length > i; i++)
+                {
+                    body += $"{messageArray[i]} ";
+                }
+            }catch(IndexOutOfRangeException) 
             {
-                body += $"{messageArray[i]} ";
-            }      
+                body = "Бой на смерть";
+            }             
 
             var resources = new Api.Resources(msg.PeerId);
             var user = Api.User.GetUser(msg.PeerId);
             if (user.IdBattle != 0) return "❌ Вы уже находитесь в другой битве.";
             if(resources.MoneyCard < price) return "❌ Вы ставите денег больше, чем у Вас на балансе.";
-            //var battlesList = Api.Battles.Get();
-            //var battle = new Models.Battle();
             long userHp = 0;
             var builds = new Api.Builds(msg.PeerId);
             userHp = (builds.Apartments * 10) + (builds.Eatery * 10) + (builds.Hangars * 50) +
@@ -195,7 +266,6 @@ namespace VKGame.Bot.Commands
             ListBattles.Battles.Add(battleId);
             Api.Battles.SetListBattles(ListBattles);
             Notifications.RemovePaymentCard(price, msg.PeerId, "Содание битвы");
-           // battlesList.Battles.Add(battle);
             user.IdBattle = battleId;
             if(!Api.User.SetUser(user)) return "Ошибка при добавлении пользователя в БД. Но битва создалась наверное. Вы не вошли в битву. И не пытайтесь.";
             return "✅ Вы успешно создали новую битву! Теперь осталось пододать противника.";
@@ -223,10 +293,11 @@ namespace VKGame.Bot.Commands
                           $"\n🛡 HP противника: {battle.HpOne}"+
                           $"\n💰 Ставка: {battle.Price}"+
                           $"\n💥 Чтобы вступить в эту битву, напишите: бой вступить {battle.Id}"+
+                          $"\n"+
                           $"\n";
                           
             }
-            result+= "➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖";
+            result+= "\n➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖";
             return result;
         }
     }

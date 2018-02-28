@@ -110,7 +110,7 @@ namespace VKGame.Bot
             }
         }
 
-        public class Battles 
+        public class Battles : Models.IBattle
         {
             private long id = 0;
             private Database.Methods db = new Database.Methods("Battles");
@@ -138,9 +138,6 @@ namespace VKGame.Bot
             public static long NewBattle(long UserId, string body, long hp, int price)
             {
                 var database = new Database.Methods("Battles");
-               // if (database.Check(id)) return false;
-               // else
-               // {
                    var Id = (long)database.GetFromId(1,"UserOne");
                    var battleId = Id+1;
                    database.Edit(1,"UserOne", (Id+1));
@@ -148,9 +145,7 @@ namespace VKGame.Bot
                     string values = $@"'{battleId}', '{UserId}', '{hp}', '{price}', '{UserId}', '{UserId}', '{body}'";
                     database.Add(fields, values);
 
-                   // Statistics.NewRegistation();
                     return battleId;
-                //}
             }
             public Battles(long Id ) 
             {
@@ -165,7 +160,7 @@ id = Id;
 
             public bool IsStart  
             {
-                get => (bool)db.GetFromId(id, "IsStart");
+                get => System.Convert.ToBoolean((long)db.GetFromId(id, "IsStart"));
                 set => db.Edit(id, "IsStart", value);
             }
 

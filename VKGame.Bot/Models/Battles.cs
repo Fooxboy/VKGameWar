@@ -11,17 +11,16 @@ namespace VKGame.Bot.Models
         public List<long> Battles {get;set;}
     }
     
-    public class Battle 
+    public interface IBattle 
     {
-        public int Id {get; set;}
-        public bool IsStart {get;set;} = false;
-        public long UserOne {get;set;}
-        public long UserTwo {get;set;}
-        public long HpOne {get;set;}
-        public long HpTwo {get;set;}
-        public long Creator {get;set;}
-        public long UserCourse {get;set;}
-        public string Body {get;set;}
-        public long Price {get;set;}
+         long Id {get;}
+         bool IsStart {get;set;}
+         long UserOne {get;set;}
+         long UserTwo {get;set;}
+         long HpOne {get;set;}
+         long HpTwo {get;set;}
+         long Creator {get;set;}
+         long UserCourse {get;set;}
+         string Body {get;set;}
     }
 }
