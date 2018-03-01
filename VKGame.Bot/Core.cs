@@ -18,7 +18,8 @@ namespace VKGame.Bot
             new Bot.Commands.Casino(),
             new Bot.Commands.Army(),
             new Bot.Commands.Buildings(),
-            new Bot.Commands.Battle()
+            new Bot.Commands.Battle(),
+            new Bot.Commands.Store()
         };
         
         private ICommand Proccesing(string text)
@@ -85,7 +86,15 @@ namespace VKGame.Bot
             Statistics.InMessage();
             Logger.WriteDebug($"({message.PeerId}) -> {message.Text}");
             var core = new Core();
-            core.ExecutorCommand(message);
+            try 
+            {
+                core.ExecutorCommand(message);
+            }catch(Exception e) 
+            {
+                Logger.WriteError(e.Message);
+                Api.MessageSend("Включен режим отладки. ОШИБКА: \n {e.Message}", message.PeerId);
+            }
+            
         }
     }
 }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
+using System.Threading;
 
 namespace VKGame.Bot.Commands
 {
@@ -57,36 +58,6 @@ namespace VKGame.Bot.Commands
             }
         }
         
-        
-        
-        /// <summary>
-        /// Объявление выгрыша в билетную лотерею.
-        /// </summary>
-        public static void EndGameTicket(object obj)
-        {
-            var json = "";
-            using (var reader = new StreamReader(@"Files\Tickets.json", System.Text.Encoding.Default))
-            {
-                json = reader.ReadToEnd();
-            }
-
-            Models.Tickets model = JsonConvert.DeserializeObject<Models.Tickets>(json);
-            long[] price = {5, 10, 40, 50, 70, 100, 150, 200, 300, 350, 400, 600, 800, 1000};
-            var r = new Random();
-            
-            foreach (var id in model.Users)
-            {
-                var resources = new Api.Resources(id);
-                var moneyUser = resources.MoneyCard;
-                var priceInt = r.Next(0, price.Length - 1);
-                moneyUser += price[priceInt];
-                resources.MoneyCard = moneyUser;
-                Api.MessageSend($"✨ Денежный перевод! На Ваш банковский счёт было зачислено {price[priceInt]} 💳 от КАЗИНО \"ИСПЫТАЙ УДАЧУ\". ", id);
-            }
-            
-            File.Delete(@"Files\Tickets.json");
-        }
-        
         /// <summary>
         /// Добавление нового билета.
         /// </summary>
@@ -94,39 +65,9 @@ namespace VKGame.Bot.Commands
         /// <param name="билет"></param>
         private void AddTicket(long id, string ticket)
         {
-            if (!Directory.Exists("Files")) Directory.CreateDirectory("Files");
-            
-            Models.Tickets model =new  Models.Tickets();
-            
-            if (!File.Exists(@"Files\Tickets.json"))
-            {
-                using (var file = File.Create(@"Files\Tickets.json"))
-                {
-                }
-                model.ListTickets = new List<string>();
-                model.Users = new List<long>();
-            }
-            else
-            {
-                var json = "";
-                using (var reader = new StreamReader(@"Files\Tickets.json", System.Text.Encoding.Default))
-                {
-                    json = reader.ReadToEnd();            
-                    reader.Close();
-                }
-
-                model = JsonConvert.DeserializeObject<Models.Tickets>(json);
-            }
-            model.ListTickets.Add(ticket);
-            model.Users.Add(id);
-            string result = JsonConvert.SerializeObject(model);
-
-            using (var writter = new StreamWriter(@"Files\Tickets.json", false, System.Text.Encoding.Default))
-            {
-                writter.Write(result);
-                writter.Close();
-            }
-            
+            var model = new Models.Tickets.Ticket {User = id, Number = ticket};
+            var thread = new Thread(new ParameterizedThreadStart(BackgroundProcess.Casino.TimerTriggerEndGame));
+            thread.Start(model);
         }
         
 

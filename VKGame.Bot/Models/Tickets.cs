@@ -7,14 +7,13 @@ namespace VKGame.Bot.Models
     /// </summary>
     public class Tickets
     {
-        /// <summary>
-        /// Список билетов
-        /// </summary>
-        public List<string> ListTickets { get; set; }
-        /// <summary>
-        /// Пользователи
-        /// </summary>
-        public List<long> Users { get; set; }
+        public List<Ticket> List {get;set;}
+
+        public class Ticket 
+        {
+            public long User {get;set;}
+            public string Number {get;set;}
+        }
         
     }
 }

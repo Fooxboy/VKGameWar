@@ -47,7 +47,7 @@ namespace VKGame.Bot
         /// </summary>
             public long Apartments {
                 get => (long) db.GetFromId(Id, "Apartments");
-                set => db.Edit(id, "Food", value);
+                set => db.Edit(id, "Apartments", value);
             }
             /// <summary>
         /// Генераторы электроэнергии.
@@ -69,7 +69,7 @@ namespace VKGame.Bot
         /// </summary>
             public long WaterPressureStation {
                 get => (long) db.GetFromId(Id, "WaterPressureStation");
-                set => db.Edit(id, "Food", value);
+                set => db.Edit(id, "WaterPressureStation", value);
             }
             /// <summary>
         /// Закусочные.
@@ -161,7 +161,7 @@ id = Id;
             public bool IsStart  
             {
                 get => System.Convert.ToBoolean((long)db.GetFromId(id, "IsStart"));
-                set => db.Edit(id, "IsStart", value);
+                set => db.Edit(id, "IsStart", Convert.ToInt64(value));
             }
 
             public long UserOne 

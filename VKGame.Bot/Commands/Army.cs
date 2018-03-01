@@ -89,7 +89,7 @@ namespace VKGame.Bot.Commands
             if(messageArray.Length < 4) return "❌ Вы не указали аргумент. Помощь: Армия обучить солдат 10";
             var user = Api.User.GetUser(msg.PeerId);
             var resources = new Api.Resources(msg.PeerId);
-            if (messageArray[2] != "солдат") return $"❌ Невозможно обучить {messageArray}.";
+            if (messageArray[2] != "солдат") return $"❌ Невозможно обучить {messageArray[2]}.";
             int count = 0;
             try
             {

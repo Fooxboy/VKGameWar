@@ -15,8 +15,8 @@ namespace VKGame.Bot.BackgroundProcess
         {
             
             var data = (Models.DataCreateSoldiery) datas;
+            Logger.WriteDebug(data.Count);
             var userId = data.UserId;
-            Logger.WriteDebug("create2");
             var count = data.Count;
             var resources = new Api.Resources(userId);
 
@@ -27,7 +27,7 @@ namespace VKGame.Bot.BackgroundProcess
                 var soldiery = resources.Soldiery;
                 soldiery++;
                 resources.Soldiery = soldiery;
-                count =- 1;
+                count = count - 1;
             }
             Api.MessageSend("✔ Солдаты были обучены. Вы можете идти в бой!", userId);
         }
@@ -52,7 +52,7 @@ namespace VKGame.Bot.BackgroundProcess
                 var tanks = resources.Tanks;
                 tanks++;
                 resources.Tanks = tanks;
-                count -=1;
+                count = count -1;
             }
 
             Api.MessageSend("✔ Танки были сделаны. Вы можете идти в бой!", userId);

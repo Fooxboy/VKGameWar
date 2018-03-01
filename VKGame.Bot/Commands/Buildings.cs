@@ -144,42 +144,48 @@ namespace VKGame.Bot.Commands
                     if(buildL.Key.ToLower() == "жилой")
                     {
                         var liveBuild = builds.Apartments;
-                        liveBuild++;
+                        liveBuild =liveBuild + 1;
                         builds.Apartments = liveBuild;
                     }else if(buildL.Key.ToLower() == "электростанцию") 
                     {
                         var liveBuild = builds.PowerGenerators;
-                        liveBuild++;
-                        builds.Apartments = liveBuild;
+                        liveBuild = liveBuild + 1;
+
+                        builds.PowerGenerators = liveBuild;
                     }else if(buildL.Key.ToLower() == "водонапорную") 
                     {
                         var liveBuild = builds.WaterPressureStation;
-                        liveBuild++;
-                        builds.Apartments = liveBuild;
+                        liveBuild= liveBuild +1;
+                        builds.WaterPressureStation = liveBuild;
                     }else if(buildL.Key.ToLower() == "закусочную") 
                     {
                         var liveBuild = builds.Eatery;
-                        liveBuild++;
-                        builds.Apartments = liveBuild;
+                        liveBuild = liveBuild + 1;
+
+                        builds.Eatery = liveBuild;
                     }else if(buildL.Key.ToLower() == "энергетическиую") 
                     {
                         var liveBuild = builds.WarehouseEnergy;
-                        liveBuild++;
-                        builds.Apartments = liveBuild;
+                        liveBuild = liveBuild + 1;
+
+                        builds.WarehouseEnergy = liveBuild;
                     }else if(buildL.Key.ToLower() == "бочку") 
                     {
                         var liveBuild = builds.WarehouseWater;
-                        liveBuild++;
-                        builds.Apartments = liveBuild;
+                        liveBuild = liveBuild + 1;
+
+                        builds.WarehouseWater = liveBuild;
                     }else if(buildL.Key.ToLower() == "холодильник") 
                     {
                         var liveBuild = builds.WarehouseEat;
-                        liveBuild++;
-                        builds.Apartments = liveBuild;
+                        liveBuild = liveBuild + 1;
+
+                        builds.WarehouseEat = liveBuild;
                     }else if(buildL.Key.ToLower() == "ангар") {
                         var liveBuild = builds.Hangars;
-                        liveBuild++;
-                        builds.Apartments = liveBuild;
+                        liveBuild = liveBuild + 1;
+
+                        builds.Hangars = liveBuild;
                     }
                     else return "❌ Не удалось купить здание. Попробуйте позже.";
                     
@@ -190,6 +196,7 @@ namespace VKGame.Bot.Commands
             return "❌ Неизвестное название постройки!";
         }
 
+        [Attributes.Trigger("продать")]
         public static string SellOfBuilds(LongPollVK.Models.AddNewMsg msg) 
         {
 
