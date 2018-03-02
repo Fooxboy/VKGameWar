@@ -15,5 +15,8 @@
        public long CountWinBattles {get;set;}
        public long CountCreateBattles {get;set;}
        public long IdBattle {get;set;}
+
+       public string LastMessage {get;set;}
+       public bool StartThread {get;set;}
     }
 }

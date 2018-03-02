@@ -24,6 +24,9 @@ namespace VKGame.Bot.Commands
             Api.User.NewUser(msg.PeerId);
             Api.Resources.Register(msg.PeerId);
             Api.Builds.Register(msg.PeerId);
+            var listusers = Api.UserList.GetList();
+            listusers.Users.Add(msg.PeerId);
+            Api.UserList.SetList(listusers);
             user = Api.User.GetUser(msg.PeerId);
             string resultStr =
                 "Добро пожаловать, новичёк!🙂 Тебе предстоит создать свою армию!😏 Ты, конечно же, будешь командиром!😎 А теперь скажи своим солдатам как тебя называть!😜 Отправь своё имя! Для того чтобы отправить данные - используйте команду записи данных - ! Ваше имя. (пробел после ! обязателен.)";

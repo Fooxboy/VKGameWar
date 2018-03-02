@@ -212,7 +212,8 @@ namespace VKGame.Bot.Commands
             
             long userwo = 0 ;
             if(battle.UserOne == msg.PeerId) userwo = battle.UserTwo;
-            if(battle.UserTwo == msg.PeerId) userwo = battle.UserOne;
+            else if(battle.UserTwo == msg.PeerId) userwo = battle.UserOne;
+            
             if(userwo != 0) 
             {
                 var userTwo = Api.User.GetUser(userwo);

@@ -12,6 +12,28 @@ namespace VKGame.Bot
  /// </summary>
     public class Api
     {
+
+        public class UserList 
+        {
+            public static Models.UsersList GetList()
+            {
+                var json = "";
+                using(var reader = new StreamReader(@"Files/Users.json")) 
+                {
+                    json = reader.ReadToEnd();
+                }
+                return JsonConvert.DeserializeObject<Models.UsersList>(json);
+            }
+
+            public static void SetList(Models.UsersList model) 
+            {
+                var json = JsonConvert.SerializeObject(model);
+                using (var writer = new StreamWriter(@"Files/Users.json", false, System.Text.Encoding.Default))
+                {
+                    writer.Write(json);
+                }
+            }
+        }
         public static void MessageSend(string text, long peerId)
         {
             var data = new Common();
@@ -317,6 +339,8 @@ id = Id;
                     database.Edit(user.Id, "CountWinBattles", user.CountWinBattles);
                     database.Edit(user.Id, "CountCreateBattles", user.CountCreateBattles);
                     database.Edit(user.Id, "IdBattle", user.IdBattle);
+                    database.Edit(user.Id, "LastMessage", user.LastMessage);
+                    database.Edit(user.Id, "StartThread", Convert.ToInt64(user.StartThread));
                     return true;
                 }
                 catch
@@ -340,7 +364,9 @@ id = Id;
                         CountBattles = (long)database.GetFromId(id, "CountBattles"),
                         CountWinBattles = (long)database.GetFromId(id, "CountWinBattles"),
                         CountCreateBattles = (long)database.GetFromId(id, "CountCreateBattles"),
-                        IdBattle = (long)database.GetFromId(id, "IdBattle")
+                        IdBattle = (long)database.GetFromId(id, "IdBattle"),
+                        LastMessage = (string)database.GetFromId(id, "LastMessage"),
+                        StartThread = Convert.ToBoolean((long)database.GetFromId(id, "StartThread"))
                     };
                     return model;
                 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using VKGame.Bot.Commands;
+using System.Threading;
 
 namespace VKGame.Bot
 {
@@ -24,45 +25,62 @@ namespace VKGame.Bot
         
         private ICommand Proccesing(string text)
         {
-            foreach (var command in Commands)
+            try 
             {
-                if (command.Name.ToLower() == text) return command;
+                foreach (var command in Commands)
+                {
+                    if (command.Name.ToLower() == text) return command;
+                }
+                return null;
+            }catch (Exception e) 
+            {
+                Logger.WriteError(e.Message);
+                return null;
             }
-            return null;
+            
         }
         
         /// <summary>
         /// Выполняющий команды.
         /// </summary>
         /// <param name="Сообщение"></param>
-        public void ExecutorCommand(LongPollVK.Models.AddNewMsg msg)
+        public void ExecutorCommand(object msgObj)
         {
-            ICommand command = Proccesing(msg.Text.Split(' ')[0].ToLower());
-            if (command != null)
+            try 
             {
-                object result = command.Execute(msg);
+                var msg = (LongPollVK.Models.AddNewMsg)msgObj;
+                ICommand command = Proccesing(msg.Text.Split(' ')[0].ToLower());
+                if (command != null)
+                {
+
+                    object result = command.Execute(msg);
+
+                    if (command.Type == TypeResponse.Text)
+                    {
+                        Api.MessageSend((string)result, msg.PeerId);
+                    }
+                    else if (command.Type == TypeResponse.Photo)
+                    {
+                        //отправка фото
+                    }
+                    else if (command.Type == TypeResponse.TextAndPhoto)
+                    {
+                        //отправка фото с текстом
+                    }
+                    else if (command.Type == TypeResponse.Console)
+                    {
+                        Console.WriteLine((string)result);
+                    }
+                }
+                else
+                {
+                    NoCommand.Execute(msg);
+                }
+            }catch(Exception e ) 
+            {
+                Logger.WriteError(e.Message);
+            }
             
-                if (command.Type == TypeResponse.Text)
-                {
-                    Api.MessageSend((string)result, msg.PeerId);
-                }
-                else if(command.Type == TypeResponse.Photo)
-                {
-                    //отправка фото
-                }
-                else if (command.Type == TypeResponse.TextAndPhoto)
-                {
-                    //отправка фото с текстом
-                }
-                else if (command.Type == TypeResponse.Console)
-                {
-                    Console.WriteLine((string)result);
-                }
-            }
-            else
-            {
-                NoCommand.Execute(msg);
-            }
             
         }
         
@@ -83,16 +101,28 @@ namespace VKGame.Bot
         /// <param name="message"></param>
         public static void NewMessage(LongPollVK.Models.AddNewMsg message)
         {
+            var user = Api.User.GetUser(message.PeerId);
+            if(user != null) 
+            {
+                if (user.LastMessage != DateTime.Now.Day.ToString())
+                {
+                    user.LastMessage = DateTime.Now.Day.ToString();
+                    Api.User.SetUser(user);
+                }
+            }
+            
             Statistics.InMessage();
             Logger.WriteDebug($"({message.PeerId}) -> {message.Text}");
             var core = new Core();
             try 
             {
-                core.ExecutorCommand(message);
+                var thread = new Thread(new ParameterizedThreadStart(core.ExecutorCommand));
+                //Logger.WriteDebug("Старт потока ответа на сообщение.");
+                thread.Start(message);
             }catch(Exception e) 
             {
                 Logger.WriteError(e.Message);
-                Api.MessageSend("Включен режим отладки. ОШИБКА: \n {e.Message}", message.PeerId);
+                Api.MessageSend($"Включен режим отладки. ОШИБКА: \n {e.Message}", message.PeerId);
             }
             
         }

@@ -605,7 +605,15 @@ namespace VKGame.Bot
                 using (var client = new WebClient())
                 {
                     string url = $"https://{server}?act=a_check&key={key}&ts={ts}&wait=25&mode=2&version=2";
-                    json = client.DownloadString(url);
+                    try 
+                    {
+                        json = client.DownloadString(url);
+                    }catch(Exception e) 
+                    {
+                        Logger.WriteError(e.Message);
+                        json = "[61,123456,1]";
+                    }
+                    
                    // Logger.WriteDebug(json);
                 }
                 return json;
@@ -768,67 +776,69 @@ namespace VKGame.Bot
                 core.Token = token;
                 while (valueRepeat)
                 {
-                    if (Server == null || Key == null)
+                    try 
                     {
+                        if (Server == null || Key == null)
+                        {
                         var model = core.GetTsAndServer();
                         Server = model.Server;
                         Ts = model.Ts;
                         Key = model.Key;
                         Pts = model.Pts;
-                    }
-                    var json = core.GetJson(Server, Key, Ts);
-                    var rootLongPoll = JsonConvert.DeserializeObject<Models.Root>(json);
-
-                    //Обработка ошибок лонг пулла.
-                    if (rootLongPoll.Ts == null)
-                    {
-                        var errorLongPoll = JsonConvert.DeserializeObject<Models.Error>(json);
-                        if (errorLongPoll.failed == 2 || errorLongPoll.failed == 3)
-                        {
-                            var model = core.GetTsAndServer();
-                            Server = model.Server;
-                            Ts = model.Ts;
-                            Key = model.Key;
-                            Pts = model.Pts;
                         }
-                        else if (errorLongPoll.failed == 2) Ts = errorLongPoll.ts;
-                        else if (errorLongPoll.failed == 4) throw new Exception("Мин и макс версия.");
-                    }
+                        var json = core.GetJson(Server, Key, Ts);
+                        var rootLongPoll = JsonConvert.DeserializeObject<Models.Root>(json);
 
-                    //заного задаём значение переменной.
-                    rootLongPoll = JsonConvert.DeserializeObject<Models.Root>(json);
-                    Ts = UInt64.Parse(rootLongPoll.Ts);
-                    var updates = rootLongPoll.Updates;
-
-                    //Проверяем кол-во обновлений.
-                    if (updates.Count != 0)
-                    {
-                        //перебор всех обновлений
-                        foreach (var update in updates)
+                        //Обработка ошибок лонг пулла.
+                        if (rootLongPoll.Ts == null)
                         {
-                            //код обновления
-                            long code = (long)update[0];
-
-                            if (code == 1) //Замена флагов сообщения (FLAGS:=$flags). 
+                            var errorLongPoll = JsonConvert.DeserializeObject<Models.Error>(json);
+                            if (errorLongPoll.failed == 2 || errorLongPoll.failed == 3)
                             {
-                                var model = new Models.ReplaceMsgFlag();
-                                model.MessageId = System.Convert.ToUInt64((long)update[1]);
-                                model.Flags = (long)update[2];
-                                model.PeerId = (long)update[3];
-                                model.Time = Convert.ToString((long)update[4]);
-                                model.Text = (string)update[5];
-                                var type_attach = (JObject)update[6];
-                                model.Attach = type_attach.ToObject<Models.Attach>();
-                                if (model.Attach.From == null)
+                                var model = core.GetTsAndServer();
+                                Server = model.Server;
+                                Ts = model.Ts;
+                                Key = model.Key;
+                                Pts = model.Pts;
+                            }
+                            else if (errorLongPoll.failed == 2) Ts = errorLongPoll.ts;
+                            else if (errorLongPoll.failed == 4) throw new Exception("Мин и макс версия.");
+                        }
+
+                        //заного задаём значение переменной.
+                        rootLongPoll = JsonConvert.DeserializeObject<Models.Root>(json);
+                        Ts = UInt64.Parse(rootLongPoll.Ts);
+                        var updates = rootLongPoll.Updates;
+
+                        //Проверяем кол-во обновлений.
+                        if (updates.Count != 0)
+                        {
+                            //перебор всех обновлений
+                            foreach (var update in updates)
+                            {
+                                //код обновления
+                                long code = (long)update[0];
+
+                                if (code == 1) //Замена флагов сообщения (FLAGS:=$flags). 
                                 {
-                                    model.From = model.PeerId;
-                                    model.Type = Models.TypeMsg.Dialog;
-                                }
-                                else
-                                {
-                                    model.From = Int64.Parse(model.Attach.From);
-                                    model.Type = Models.TypeMsg.Chat;
-                                }
+                                    var model = new Models.ReplaceMsgFlag();
+                                    model.MessageId = System.Convert.ToUInt64((long)update[1]);
+                                    model.Flags = (long)update[2];
+                                    model.PeerId = (long)update[3];
+                                    model.Time = Convert.ToString((long)update[4]);
+                                    model.Text = (string)update[5];
+                                    var type_attach = (JObject)update[6];
+                                    model.Attach = type_attach.ToObject<Models.Attach>();
+                                    if (model.Attach.From == null)
+                                    {
+                                        model.From = model.PeerId;
+                                        model.Type = Models.TypeMsg.Dialog;
+                                    }
+                                    else
+                                    {
+                                        model.From = Int64.Parse(model.Attach.From);
+                                        model.Type = Models.TypeMsg.Chat;
+                                    }
 
                                 ReplaceMsgFlagEvent?.Invoke(model);
                             }
@@ -1025,6 +1035,11 @@ namespace VKGame.Bot
                         }
                     }
                     else NothingHappenedEvent?.Invoke();
+                    }catch (Exception e)
+                    {
+                        Logger.WriteError(e.Message);
+                    }
+                    
                 }
             }
         }
