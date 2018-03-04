@@ -44,7 +44,7 @@ namespace VKGame.Bot
         {
             string[] ListHelp =  
             {
-                "",
+                "Тут",
                 ""
             };
             var r = new Random();

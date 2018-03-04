@@ -99,9 +99,12 @@ namespace VKGame.Bot.Commands
                     Api.Battles.GetListBattles().Battles.Remove(battle.Id);
                     Notifications.EnterPaymentCard( Convert.ToInt32(battle.Price *2), msg.PeerId, "победа в битве");
                     user.IdBattle = 0;
+                    user.CountWinBattles = user.CountWinBattles +1;
+                    user.CountBattles = user.CountBattles + 1;
                     Api.User.SetUser(user);
                     var userTwo = Api.User.GetUser(battle.UserTwo);
                     userTwo.IdBattle = 0;
+                    userTwo.CountBattles = userTwo.CountBattles +1;
                     Api.User.SetUser(userTwo);
                     Api.MessageSend("❌ ВАС УНИЧТОЖИЛИ!", battle.UserTwo);
                     return "✅ Вы уничтожили противника!";
@@ -120,10 +123,14 @@ namespace VKGame.Bot.Commands
                 {
                     Api.Battles.GetListBattles().Battles.Remove(battle.Id);
                     Notifications.EnterPaymentCard(Convert.ToInt32(battle.Price * 2), msg.PeerId, "победа в битве");
+                    user.CountWinBattles = user.CountWinBattles + 1;
+                    user.CountBattles = user.CountBattles + 1;
+
                     user.IdBattle = 0;
                     Api.User.SetUser(user);
                     var userTwo = Api.User.GetUser(battle.UserOne);
                     userTwo.IdBattle = 0;
+                    userTwo.CountBattles = userTwo.CountBattles + 1;
                     Api.User.SetUser(userTwo);
                     Api.MessageSend("❌ ВАС УНИЧТОЖИЛИ!", battle.UserOne);
 
@@ -268,6 +275,7 @@ namespace VKGame.Bot.Commands
 
             var resources = new Api.Resources(msg.PeerId);
             var user = Api.User.GetUser(msg.PeerId);
+            user.CountCreateBattles = user.CountCreateBattles +1;
             if (user.IdBattle != 0) return "❌ Вы уже находитесь в другой битве.";
             if(resources.MoneyCard < price) return "❌ Вы ставите денег больше, чем у Вас на балансе.";
             long userHp = 0;

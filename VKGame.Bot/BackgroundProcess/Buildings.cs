@@ -13,7 +13,7 @@ namespace VKGame.Bot.BackgroundProcess
             {
                 var resources = new Api.Resources(id);
                 var builds = new Api.Builds(id);
-                Logger.WriteDebug("Выполнение фонового процесса дабовления.");
+                //Logger.WriteDebug("Выполнение фонового процесса дабовления.");
                 var energy = resources.Energy;
                 var eat = resources.Food;
                 var water = resources.Water;

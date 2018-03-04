@@ -20,7 +20,9 @@ namespace VKGame.Bot
             new Bot.Commands.Army(),
             new Bot.Commands.Buildings(),
             new Bot.Commands.Battle(),
-            new Bot.Commands.Store()
+            new Bot.Commands.Store(),
+            new Bot.Commands.Promocode(),
+            new Bot.Commands.Bank()
         };
         
         private ICommand Proccesing(string text)
@@ -34,7 +36,7 @@ namespace VKGame.Bot
                 return null;
             }catch (Exception e) 
             {
-                Logger.WriteError(e.Message);
+                Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
                 return null;
             }
             
@@ -78,7 +80,7 @@ namespace VKGame.Bot
                 }
             }catch(Exception e ) 
             {
-                Logger.WriteError(e.Message);
+                Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
             }
             
             
@@ -121,7 +123,7 @@ namespace VKGame.Bot
                 thread.Start(message);
             }catch(Exception e) 
             {
-                Logger.WriteError(e.Message);
+                Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
                 Api.MessageSend($"Включен режим отладки. ОШИБКА: \n {e.Message}", message.PeerId);
             }
             

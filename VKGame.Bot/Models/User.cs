@@ -18,5 +18,8 @@
 
        public string LastMessage {get;set;}
        public bool StartThread {get;set;}
+
+       public long Experience {get;set;}
+        public long Credit {get;set;}
     }
 }

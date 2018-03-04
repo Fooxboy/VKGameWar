@@ -21,7 +21,6 @@ namespace VKGame.Bot
                 database = db;
                 table = db;
                 connectString = $"Filename={database}.db;";
-                Logger.WriteError(connectString);
             }
             
             /// <summary>

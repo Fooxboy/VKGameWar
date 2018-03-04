@@ -13,6 +13,124 @@ namespace VKGame.Bot
     public class Api
     {
 
+        public class Credit 
+        {
+            private long id = 0;
+            private Database.Methods db = new Database.Methods("Credits");
+            public Credit(long credit)
+            {
+                id = credit;
+            }
+
+            public static long New(long userId, long price) 
+            {
+                Database.Methods db = new Database.Methods("Credits");
+                var id = (long)db.GetFromId(1, "Price") +1;
+                var fields = $"`Id`, `Price`, `User`";
+                var value = $"'{id}', '{price}', '{userId}'";
+                db.Edit(1, "Price", id);
+                db.Add(fields, value);
+                return id;
+            }
+
+            public long Id  
+            {
+                get => id;
+            }
+            public long Price 
+            {
+                get => (long)db.GetFromId(id, "Price");
+                set => db.Edit(id, "Price", value);
+            }
+            public long Time 
+            {
+                get => (long)db.GetFromId(id, "Time");
+                set =>db.Edit(id, "Time", value);
+            }
+            public long User 
+            {
+                get => (long)db.GetFromId(id, "User");
+                set => db.Edit(id, "User", value);
+            }
+        }
+
+        public class Promocode 
+        {
+            private long id = 0;
+            private Database.Methods db = new Database.Methods("Promocodes");
+            public Promocode(long promo)
+            {
+                id = promo;
+            }
+
+            public long Id 
+            {
+                get => id;
+            }
+            public long MoneyCard 
+            {
+                get => (long)db.GetFromId(id, "MoneyCard");
+                set => db.Edit(id,"MoneyCard", value);
+            }
+            public static bool Check(long promocode) 
+            {
+                Database.Methods db = new Database.Methods("Promocodes");
+                return db.Check(promocode);
+            }
+
+            public long Count 
+            {
+                get => (long)db.GetFromId(id, "Count");
+                set => db.Edit(id, "Count", value);
+            }
+
+            public List<long> Users 
+            {
+                get 
+                {
+                    var usersString = (string)db.GetFromId(id, "Users");
+                    Logger.WriteDebug(usersString);
+                    if(usersString == "") return new List<long>();
+                    var usersArray = usersString.Split(',');
+                    var userList = new List<long>();
+                    foreach(var userId in usersArray) 
+                    {
+                        Logger.WriteDebug(userId);
+                        userList.Add(Int64.Parse(userId));
+                    } 
+
+                    return userList;
+                }
+                set 
+                {
+                    string users = "";
+                    foreach(var userId in value) users = users + $"{userId},";
+                    db.Edit(id, "Users", users);
+                }
+            }
+        }
+
+        public class CreditList 
+        {
+            public static Models.CreditList GetList()
+            {
+                var json = "";
+                using (var reader = new StreamReader(@"Files/Credits.json"))
+                {
+                    json = reader.ReadToEnd();
+                }
+                return JsonConvert.DeserializeObject<Models.CreditList>(json);
+            }
+
+            public static void SetList(Models.CreditList model)
+            {
+                var json = JsonConvert.SerializeObject(model);
+                using (var writer = new StreamWriter(@"Files/Credits.json", false, System.Text.Encoding.Default))
+                {
+                    writer.Write(json);
+                }
+            }
+        }
         public class UserList 
         {
             public static Models.UsersList GetList()
@@ -341,6 +459,8 @@ id = Id;
                     database.Edit(user.Id, "IdBattle", user.IdBattle);
                     database.Edit(user.Id, "LastMessage", user.LastMessage);
                     database.Edit(user.Id, "StartThread", Convert.ToInt64(user.StartThread));
+                    database.Edit(user.Id, "Credit", user.Credit);
+                    database.Edit(user.Id, "Experience", user.Experience);
                     return true;
                 }
                 catch
@@ -366,7 +486,9 @@ id = Id;
                         CountCreateBattles = (long)database.GetFromId(id, "CountCreateBattles"),
                         IdBattle = (long)database.GetFromId(id, "IdBattle"),
                         LastMessage = (string)database.GetFromId(id, "LastMessage"),
-                        StartThread = Convert.ToBoolean((long)database.GetFromId(id, "StartThread"))
+                        StartThread = Convert.ToBoolean((long)database.GetFromId(id, "StartThread")),
+                        Credit = (long)database.GetFromId(id, "Credit"),
+                        Experience = (long)database.GetFromId(id, "Experience")
                     };
                     return model;
                 }

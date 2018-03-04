@@ -7,6 +7,26 @@ namespace VKGame.Bot.BackgroundProcess
 {
     public class Common 
     {
+
+        public static void DailyBonus() 
+        {
+            while(true) 
+            {
+                if(DateTime.Now.Hour == 8) 
+                {
+                    var listUsers = Api.UserList.GetList();
+                    foreach(var userId in listUsers.Users) 
+                    {
+                        var user = Api.User.GetUser(userId);
+                        //if(Int32.Parse(user.LastMessage) ) 
+                       // {
+
+                        //}
+                    }
+                }
+                
+            }
+        }
         public static void UpdateStatus() 
         {
             
@@ -16,7 +36,7 @@ namespace VKGame.Bot.BackgroundProcess
             {
                 try 
                 {
-                    vk.Status.Set($"♻ Последнее обновление: {DateTime.Now}.");
+                    vk.Status.Set($"♻ Последнее обновление: {DateTime.Now}.", 161965172);
                     Thread.Sleep(10000);
                 }catch 
                 {
@@ -24,6 +44,23 @@ namespace VKGame.Bot.BackgroundProcess
                 }
                 
             }
+        }
+
+        public static void RebootBot() 
+        {        
+            if(DateTime.Now.Hour == 21)  
+            {
+                Thread.Sleep(5000);
+                Logger.WriteError("ПЕРЕЗАГРУЗКА...");
+                string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                //это мы узнали полное имя запущенного приложения.
+                //чтоб запустить его снова сделаем так
+                System.Diagnostics.Process.Start(path);
+                //далее чтоб закрыть это приложение сделаем так
+                System.Diagnostics.Process.GetCurrentProcess().Kill();
+                //хотя думаю просто вернув return в функции Main() закроет приложение
+            }
+            Thread.Sleep(3600000);
         }
 
 
