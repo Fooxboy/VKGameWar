@@ -18,10 +18,12 @@ namespace VKGame.Bot.BackgroundProcess
                     foreach(var userId in listUsers.Users) 
                     {
                         var user = Api.User.GetUser(userId);
-                        //if(Int32.Parse(user.LastMessage) ) 
-                       // {
+                        var lastMessage = DateTime.Parse(user.LastMessage);
+                        int day = lastMessage.Day;
+                        int nowDay = 0;
+                        if (lastMessage.Month == DateTime.Now.Month) nowDay = DateTime.Now.Day;
+                        else nowDay = DateTime.Now.Day + 31;
 
-                        //}
                     }
                 }
                 

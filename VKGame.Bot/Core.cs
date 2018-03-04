@@ -106,9 +106,9 @@ namespace VKGame.Bot
             var user = Api.User.GetUser(message.PeerId);
             if(user != null) 
             {
-                if (user.LastMessage != DateTime.Now.Day.ToString())
+                if (DateTime.Parse(user.LastMessage).Day != DateTime.Now.Day)
                 {
-                    user.LastMessage = DateTime.Now.Day.ToString();
+                    user.LastMessage = DateTime.Now.ToString();
                     Api.User.SetUser(user);
                 }
             }
