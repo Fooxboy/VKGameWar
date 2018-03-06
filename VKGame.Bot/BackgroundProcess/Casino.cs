@@ -16,7 +16,7 @@ namespace VKGame.Bot.BackgroundProcess
         {
             Thread.Sleep(300000);
             Models.Tickets.Ticket ticket = (Models.Tickets.Ticket) ticketObject;
-            long[] price = { 5, 10, 40, 50, 70, 100, 150, 200, 300, 350, 400, 600, 800, 1000 };
+            long[] price = { 5, 8, 1,  10, 20, 30, 40, 50, 55, 70, 80, 100, 150, 200, 300};
             var r = new Random();
                 var resources = new Api.Resources(ticket.User);
                 var moneyUser = resources.MoneyCard;

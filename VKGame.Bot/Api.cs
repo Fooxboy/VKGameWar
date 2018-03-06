@@ -506,12 +506,12 @@ id = Id;
                 if (database.Check(id)) return false;
                 else
                 {
-                    string fields = @"`Id`, `Name`, `TimeReg`";
+                    string fields = @"`Id`, `Name`, `TimeReg`, `LastMessage`";
                     var list = new List<long>();
                     list.Add(id);
                     var common = new Common();
                     var name = common.GetVk().Users.Get(new List<long>() {id})[0].FirstName;
-                    string values = $@"'{id}', '{name}', '{DateTime.Now}'";
+                    string values = $@"'{id}', '{name}', '{DateTime.Now}', '{DateTime.Now}'";
                     database.Add(fields, values);
                     
                     Statistics.NewRegistation();

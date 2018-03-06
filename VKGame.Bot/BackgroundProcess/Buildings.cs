@@ -13,7 +13,6 @@ namespace VKGame.Bot.BackgroundProcess
             {
                 var resources = new Api.Resources(id);
                 var builds = new Api.Builds(id);
-                //Logger.WriteDebug("Выполнение фонового процесса дабовления.");
                 var energy = resources.Energy;
                 var eat = resources.Food;
                 var water = resources.Water;
@@ -27,7 +26,7 @@ namespace VKGame.Bot.BackgroundProcess
                 if(eat < builds.WarehouseEat * 100) 
                 {
                     var temp = builds.Eatery * 5;
-                    eat =  eat + temp;
+                    eat =  (eat + temp) - (1*resources.Soldiery);
                 }
 
                 if(water < builds.WarehouseWater * 100) 

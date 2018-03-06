@@ -78,7 +78,7 @@ namespace VKGame.Bot
                 {
                     NoCommand.Execute(msg);
                 }
-            }catch(Exception e ) 
+            }catch(Exception e) 
             {
                 Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
             }
@@ -111,21 +111,26 @@ namespace VKGame.Bot
                     user.LastMessage = DateTime.Now.ToString();
                     Api.User.SetUser(user);
                 }
+                Logger.WriteDebug($"({message.PeerId}) -> {message.Text}");
+                var core = new Core();
+                try
+                {
+                    var thread = new Thread(new ParameterizedThreadStart(core.ExecutorCommand));
+                    //Logger.WriteDebug("Старт потока ответа на сообщение.");
+                    thread.Start(message);
+                }
+                catch (Exception e)
+                {
+                    Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
+                    Api.MessageSend($"Включен режим отладки. ОШИБКА: \n {e.Message}", message.PeerId);
+                }
+            }else
+            {
+                Api.MessageSend($"Вы ещё не зарегистрированны в нашей игре! Напишите старт", message.PeerId);
             }
             
             Statistics.InMessage();
-            Logger.WriteDebug($"({message.PeerId}) -> {message.Text}");
-            var core = new Core();
-            try 
-            {
-                var thread = new Thread(new ParameterizedThreadStart(core.ExecutorCommand));
-                //Logger.WriteDebug("Старт потока ответа на сообщение.");
-                thread.Start(message);
-            }catch(Exception e) 
-            {
-                Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
-                Api.MessageSend($"Включен режим отладки. ОШИБКА: \n {e.Message}", message.PeerId);
-            }
+            
             
         }
     }

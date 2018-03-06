@@ -68,6 +68,7 @@ namespace VKGame.Bot.Commands
             return "✅ Вы успешно обменяли Ваши монеты!";
         }
 
+        [Attributes.Trigger("кредит")]
         public static string Loan(LongPollVK.Models.AddNewMsg msg) 
         {
             var user = Api.User.GetUser(msg.PeerId);

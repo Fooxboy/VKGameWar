@@ -79,14 +79,14 @@ namespace VKGame.Bot.Commands
         public static string Prices(LongPollVK.Models.AddNewMsg msg) 
         {
             Dictionary<string,int> buildsList = new Dictionary<string, int>();
-            buildsList.Add("Жилой дом", 1000);
-            buildsList.Add("Электростанция", 600);
-            buildsList.Add("Водонапорная башня", 800);
-            buildsList.Add("Закусочная", 1000);
-            buildsList.Add("Энергетическая батарея", 1500);
-            buildsList.Add("Бочка с водой", 1500);
-            buildsList.Add("Холодильник", 1500);
-            buildsList.Add("Ангар", 1500);
+            buildsList.Add("Жилой дом", 400);
+            buildsList.Add("Электростанция", 550);
+            buildsList.Add("Водонапорная башня", 550);
+            buildsList.Add("Закусочная", 500);
+            buildsList.Add("Энергетическая батарея", 500);
+            buildsList.Add("Бочка с водой", 400);
+            buildsList.Add("Холодильник", 400);
+            buildsList.Add("Ангар", 500);
             
 
             string result = "ЦЕНЫ ДЛЯ ПОКУПКИ➖➖➖➖➖➖➖➖➖➖➖\n";
@@ -97,14 +97,14 @@ namespace VKGame.Bot.Commands
             result += "▶ Чтобы купить здание, напишите: постройки купить название_постройки\n ⚠ Название должно быть  в винительном падеже, например: постройки купить Электростанцию\n";
             result += "\n";
             Dictionary<string,int> buildsListSellOf = new Dictionary<string, int>();
-            buildsListSellOf.Add("Жилой дом", 500);
-            buildsListSellOf.Add("Электростанция", 300);
+            buildsListSellOf.Add("Жилой дом", 300);
+            buildsListSellOf.Add("Электростанция", 400);
             buildsListSellOf.Add("Водонапорная башня", 400);
-            buildsListSellOf.Add("Закусочная", 500);
-            buildsListSellOf.Add("Энергетическая батарея", 700);
-            buildsListSellOf.Add("Бочка с водой", 700);
-            buildsListSellOf.Add("Холодильник", 700);
-            buildsListSellOf.Add("Ангар", 700);
+            buildsListSellOf.Add("Закусочная", 400);
+            buildsListSellOf.Add("Энергетическая батарея", 400);
+            buildsListSellOf.Add("Бочка с водой", 300);
+            buildsListSellOf.Add("Холодильник", 300);
+            buildsListSellOf.Add("Ангар", 300);
             
 
             result += "ЦЕНЫ ДЛЯ ПРОДАЖИ➖➖➖➖➖➖➖➖➖➖➖\n";
@@ -125,14 +125,14 @@ namespace VKGame.Bot.Commands
             var messageArray = msg.Text.Split(' ');
             
             Dictionary<string,int> buildsList = new Dictionary<string, int>();
-            buildsList.Add("Жилой", 1000);
-            buildsList.Add("Электростанцию", 600);
-            buildsList.Add("Водонапорную", 800);
-            buildsList.Add("Закусочную", 1000);
-            buildsList.Add("Энергетическиую", 1500);
-            buildsList.Add("Бочку", 1500);
-            buildsList.Add("Холодильник", 1500);
-            buildsList.Add("Ангар", 1500);
+            buildsList.Add("Жилой", 400);
+            buildsList.Add("Электростанцию", 550);
+            buildsList.Add("Водонапорную", 550);
+            buildsList.Add("Закусочную", 500);
+            buildsList.Add("Энергетическиую", 500);
+            buildsList.Add("Бочку", 400);
+            buildsList.Add("Холодильник", 400);
+            buildsList.Add("Ангар", 400);
             
 
             var build = messageArray[2];
@@ -204,15 +204,15 @@ namespace VKGame.Bot.Commands
             var messageArray = msg.Text.Split(' ');
             
             Dictionary<string,int> buildsList = new Dictionary<string, int>();
-            buildsList.Add("Жилой", 500);
-            buildsList.Add("Электростанцию", 300);
+            buildsList.Add("Жилой", 300);
+            buildsList.Add("Электростанцию", 400);
             buildsList.Add("Водонапорную", 400);
-            buildsList.Add("Закусочную", 500);
-            buildsList.Add("Энергетическиую", 700);
-            buildsList.Add("Бочку", 700);
-            buildsList.Add("Холодильник", 700);
-            buildsList.Add("Ангар", 700);
-            
+            buildsList.Add("Закусочную", 400);
+            buildsList.Add("Энергетическиую", 400);
+            buildsList.Add("Бочку", 300);
+            buildsList.Add("Холодильник", 300);
+            buildsList.Add("Ангар", 300);
+
 
             var build = messageArray[2];
 
