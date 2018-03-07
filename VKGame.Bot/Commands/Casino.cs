@@ -89,6 +89,71 @@ namespace VKGame.Bot.Commands
             return $"✔ Вы успешно купили билет! Вот Ваш номер - {ticket}. Уведомление о выгрыше Вам придёт через определённое время.";
         }
 
+        [Attributes.Trigger("рулетка")]
+        public static string Roulette(LongPollVK.Models.AddNewMsg msg)
+        {
+            var user = Api.User.GetUser(msg.PeerId);
+            var resources = new Api.Resources(msg.PeerId);
+            var messageArray = msg.Text.Split(' ');
+            string smile = "";
+            long price = 0;
+            try
+            {
+                smile = messageArray[2].ToLower();
+            }catch(IndexOutOfRangeException)
+            {
+                return "❌ Вы не указали смайл!";
+            }
+
+            try
+            {
+                price = Int64.Parse(messageArray[3]);
+            }catch(IndexOutOfRangeException)
+            {
+                return "❌ Вы не указали сумму!";
+            }catch(FormatException)
+            {
+                return "❌ Вы указали неверную сумму!";
+            }
+
+            if (price < 10) return "❌ Сумма должна быть больше 10!";
+            if (price > resources.MoneyCard) return "❌ Вы ставите больше, чем у Вас есть на балансе";
+            var roulette = Api.Roulette.GetList();
+            bool userUsed = false;
+            foreach (var rouletteItem in roulette.Prices)
+            {
+                if(msg.PeerId == rouletteItem.User)
+                {
+                    userUsed = true;
+                    break;
+                }
+            }
+            if (userUsed) return "❌ Вы уже сделали ставку.";
+            Notifications.RemovePaymentCard(Convert.ToInt32(price), msg.PeerId, "Ставка в рулетке.");
+            if(roulette.Prices.Count == 0)
+            {
+                var theadRoulette = new Thread(BackgroundProcess.Casino.TimerTriggerRoulette);
+                theadRoulette.Name = "theadRoulette";
+                theadRoulette.Start();
+                roulette.Fund = 0;
+            }
+            roulette.Prices.Add(new Models.RoulettePrices { User = msg.PeerId, Price = price, Smile = smile });
+            roulette.Fund = roulette.Fund + price;
+            Api.Roulette.SetList(roulette);
+            string users = "";
+
+            foreach(var priceUser in roulette.Prices)
+            {
+                var userModel = Api.User.GetUser(priceUser.User);
+                users += $"\n▶ {userModel.Name} поставил {priceUser.Price} на {priceUser.Smile}";
+            }
+            return $"✅  Вы успешно поставили на {smile}!" +
+                $"\n" +
+                $"\n💰 Фонд текущей рулетки: {roulette.Fund}" +
+                $"\n😀 Список игроков:" +
+                $"{users}";
+        }
+
         public string GetCasinoText(long id,string notify)
         {
             var user = Api.User.GetUser(id);
@@ -102,12 +167,22 @@ namespace VKGame.Bot.Commands
                           $"\n 💳 Баланс банковского счёта: {resources.MoneyCard}" +
                           $"\n" +
                           $"\n СПИСОК ДОСТУПНЫХ ИГР➖➖➖➖➖➖➖" +
-                          $"\n 🎟 1.Счастливый билет. " +
+                          $"\n 🎟 1. Счастливый билет " +
                           $"\n ▶📝 Описание: пользователю выдаётся билет с определённым номером. Спустя определённое время Вам придёт уведомление о выгрыше." +
                           $"\n ▶💵 Стоимость: 50 💳" +
-                          $"\n ▶💡 Как начать: напишите казино билет. Вам отправится Ваш билет. Чтобы вывести табло, напишите: казино билет табло" +
+                          $"\n ▶💡 Как начать: напишите казино билет. Вам отправится Ваш билет." +
                           $"\n" +
-                          $"\n NameGame" +
+                          $"\n 🎱 2. Рулетка" +
+                          $"\n ▶📝 Описание: вы ставите сумму на смайл. Спустя время рулетка начинает крутится. И тем, кто угадал нужный смайл выплачивается сумма с фонда." +
+                          $"\n ▶💵 Стоимость: вы сами определяете ставку. От 10 монет." +
+                          $"\n ▶💡 Как начать: достаточно написать казино рулетка смайл сумма. Например: казино рулетка сердце 10" +
+                          $"\n ▶❓ Список доступных смайлов для ставки:" +
+                          $"\n ▶▶Сердце -- ❤" +
+                          $"\n ▶▶Взрыв -- 💥" +
+                          $"\n ▶▶Пицца -- 🍕" +
+                          $"\n ▶▶Цветок -- 🌸" +
+                          $"\n ▶▶Лицо -- 😀" +
+                          $"\n ▶❓ Чтобы поставить нужно писать НАЗВАНИЕ смайла, а не сам смайл." +
                           $"\n ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖" +
                           $"\n ⚠ Random help";
         }

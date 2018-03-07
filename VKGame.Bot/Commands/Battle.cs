@@ -75,6 +75,7 @@ namespace VKGame.Bot.Commands
             {
                 return "❌ Вы не указали тип войска.";
             }
+            var r = new Random();
              
             int countHP = 0;
             if(type == "солдат") 
@@ -120,8 +121,18 @@ namespace VKGame.Bot.Commands
                     userTwo.IdBattle = 0;
                     userTwo.CountBattles = userTwo.CountBattles +1;
                     Api.User.SetUser(userTwo);
+                    int shance = r.Next(1, 5);
+                    string WinText = "✨🎉 Поздравляю! Вы победили! Вы уничтожили противника! За это вы получаете фонд битвы!";
+                    if (shance== 4)
+                    {
+                        WinText += "\n 🎈 Вам выпал битвенный кейс!";
+                        var boxes = new Api.Boxes(msg.PeerId);
+                        var battleList = boxes.BattleBox;
+                        battleList.Add(new Models.BattleBox());
+                        boxes.BattleBox = battleList;
+                    }
                     Api.MessageSend("❌ПОРАЖЕНИЕ! ВАС УНИЧТОЖИЛИ! В следующем бою Вам повезёт больше!", battle.UserTwo);
-                    return "✨🎉 Поздравляю! Вы победили! Вы уничтожили противника! За это вы получаете фонд битвы!";
+                    return WinText;
                 }else 
                 {
                     battle.HpTwo = hpUser;
@@ -147,10 +158,19 @@ namespace VKGame.Bot.Commands
                     var userTwo = Api.User.GetUser(battle.UserOne);
                     userTwo.IdBattle = 0;
                     userTwo.CountBattles = userTwo.CountBattles + 1;
-                    Api.User.SetUser(userTwo); 
+                    Api.User.SetUser(userTwo);
+                    int shance = r.Next(1, 5);
+                    string WinText = "✨🎉 Поздравляю! Вы победили! Вы уничтожили противника! За это вы получаете фонд битвы!";
+                    if (shance == 4)
+                    {
+                        WinText += "\n 🎈 Вам выпал битвенный кейс!";
+                        var boxes = new Api.Boxes(msg.PeerId);
+                        var battleList = boxes.BattleBox;
+                        battleList.Add(new Models.BattleBox());
+                        boxes.BattleBox = battleList;
+                    }
                     Api.MessageSend("❌ ПОРАЖЕНИЕ! ВАС УНИЧТОЖИЛИ!  В следующем бою Вам повезёт больше!", battle.UserOne);
-
-                    return "✨🎉 Поздравляю! Вы победили! Вы уничтожили противника! За это вы получаете фонд битвы!";
+                    return WinText;
                 }else 
                 {
                     battle.UserCourse = battle.UserOne;
@@ -309,7 +329,7 @@ namespace VKGame.Bot.Commands
             Notifications.RemovePaymentCard(price, msg.PeerId, "Создание битвы");
             user.IdBattle = battleId;
             if(!Api.User.SetUser(user)) return "Ошибка при добавлении пользователя в БД. Но битва создалась наверное. Вы не вошли в битву. И не пытайтесь.";
-            return "✅ Вы успешно создали новую битву! Теперь осталось пододать противника.";
+            return "✅ Вы успешно создали новую битву! Теперь осталось подождать противника.";
         }
 
         [Attributes.Trigger("список")]

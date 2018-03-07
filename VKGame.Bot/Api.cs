@@ -13,6 +13,28 @@ namespace VKGame.Bot
     public class Api
     {
 
+        public class Roulette
+        {
+            public static Models.Roulette GetList()
+            {
+                var json = "";
+                using (var reader = new StreamReader(@"Files/Roultettes.json"))
+                {
+                    json = reader.ReadToEnd();
+                }
+                return JsonConvert.DeserializeObject<Models.Roulette>(json);
+            }
+
+            public static void SetList(Models.Roulette model)
+            {
+                var json = JsonConvert.SerializeObject(model);
+                using (var writer = new StreamWriter(@"Files/Roultettes.json", false, System.Text.Encoding.Default))
+                {
+                    writer.Write(json);
+                }
+            }
+        }
+
         public class Credit 
         {
             private long id = 0;
@@ -516,6 +538,67 @@ id = Id;
                     
                     Statistics.NewRegistation();
                     return true;
+                }
+            }
+        }
+
+        public class Boxes
+        {
+            long id = 0;
+            private Database.Methods db = new Database.Methods("Boxes");
+            public Boxes(long UserId)
+            {
+                id = UserId;
+            }
+
+            public static void Register(long userId)
+            {
+                Database.Methods db = new Database.Methods("Boxes");
+                var fields = $"`Id`";
+                var value = $"'{userId}'";
+                db.Add(fields, value);
+            }
+
+            public long Id
+            {
+                get => id;
+            }
+
+            public List<Models.BattleBox> BattleBox
+            {
+
+
+                get
+                {
+                    var count = (long)db.GetFromId(id, "BattleBox");
+                    var model = new List<Models.BattleBox>();
+                    for(int i=0; count > i; i++)
+                    {
+                        model.Add(new Models.BattleBox());
+                    }
+                    return model;
+                }
+                set
+                {
+                    db.Edit(id, "BattleBox", value.Count);
+                }
+            }
+
+            public List<Models.BuildBox> BuildBox
+            {
+                get
+                {
+                    var count = (long)db.GetFromId(id, "BuildBox");
+                    var model = new List<Models.BuildBox>();
+                    for (int i = 0; count > i; i++)
+                    {
+                        model.Add(new Models.BuildBox());
+                    }
+                    return model;
+                }
+                set
+                {
+                    db.Edit(id, "BuildBox", value.Count);
                 }
             }
         }

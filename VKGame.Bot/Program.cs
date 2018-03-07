@@ -16,7 +16,7 @@ namespace VKGame.Bot
                 try
                 {
                     Logger.WriteWaring("Старт бота...");
-                    Console.Title = "MyGameVK";
+                    Console.Title = "War of the World";
                     Logger.WriteDebug("Создание экземпляра лонгпулла.");
                     var starter = new LongPollVK.StarterLongPoll();
                     Logger.WriteWaring("Создан.");
@@ -37,11 +37,6 @@ namespace VKGame.Bot
                     Logger.WriteDebug($"Старт потока threadDailyBonus");
                     threadDailyBonus.Name = $"threadDailyBonus";
                     threadDailyBonus.Start();
-
-                    //  var threadReboot = new Thread(BackgroundProcess.Common.RebootBot);
-                    //  threadReboot.Name = "Reboot";
-                    // Logger.WriteWaring("Старт потока Reboot.");
-                    // threadReboot.Start();
 
                     var listUser = Api.UserList.GetList();
                     foreach (var user in listUser.Users)
