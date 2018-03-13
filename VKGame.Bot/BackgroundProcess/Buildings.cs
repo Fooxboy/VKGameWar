@@ -85,9 +85,10 @@ namespace VKGame.Bot.BackgroundProcess
                     Thread.Sleep(60000);
                 }catch(Exception e)
                 {
-                    Logger.WriteError(e.Message);
+                    Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+
                 }
-                
+
             }
         } 
     }

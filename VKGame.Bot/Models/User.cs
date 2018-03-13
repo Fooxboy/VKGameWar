@@ -23,5 +23,6 @@
         public long Credit {get;set;}
         public long Clan { get; set; }
         public long Competition { get; set; }
+        public long Access { get; set; }
     }
 }

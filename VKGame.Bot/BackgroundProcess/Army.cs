@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using System;
 
 namespace VKGame.Bot.BackgroundProcess
 {
@@ -14,19 +15,37 @@ namespace VKGame.Bot.BackgroundProcess
         public static void CreateSoldiery(object objectData)
         {
             var data = (Models.DataCreateSoldiery)objectData;
-            Logger.WriteDebug(data.Count);
-            var userId = data.UserId;
-            var count = data.Count;
-            var resources = new Api.Resources(userId);
+
+            long userId = 0;
+            int count = 0;
+            Api.Resources resources = null;
+            try
+            {
+                 userId = data.UserId;
+                 count = data.Count;
+                 resources = new Api.Resources(userId);
+            }catch(Exception e)
+            {
+                Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+
+            }
+
 
             while (count > 0)
             {
-                if (count < 0) break;       
-                Thread.Sleep(20000);
-                var soldiery = resources.Soldiery;
-                soldiery++;
-                resources.Soldiery = soldiery;
-                count -= 1;
+                try
+                {
+                    if (count < 0) break;
+                    Thread.Sleep(20000);
+                    var soldiery = resources.Soldiery;
+                    soldiery++;
+                    resources.Soldiery = soldiery;
+                    count -= 1;
+                }catch(Exception e)
+                {
+                    Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                }
+                
             }
             Api.MessageSend("✔ Солдаты были обучены. Вы можете идти в бой!", userId);
         }
@@ -37,21 +56,38 @@ namespace VKGame.Bot.BackgroundProcess
         /// </summary>
         public static void CreateTanks(object datas) 
         {
-            Logger.WriteDebug("create");
-            
-            var data = (Models.DataCreateSoldiery) datas;
-            var userId = data.UserId;
-            var count = data.Count;
-            var resources = new Api.Resources(userId);
+            var data = (Models.DataCreateSoldiery)datas;
+            long userId=0;
+            int count=0;
+            Api.Resources resources = null;
+            try
+            {
+                 userId = data.UserId;
+                 count = data.Count;
+                 resources = new Api.Resources(userId);
+            }catch(Exception e)
+            {
+                Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+
+            }
+
 
             while (count > 0)
-            {                
-                if (count < 0) break;
-                Thread.Sleep(60000);
-                var tanks = resources.Tanks;
-                tanks++;
-                resources.Tanks = tanks;
-                count -= 1;
+            {             
+                try
+                {
+                    if (count < 0) break;
+                    Thread.Sleep(60000);
+                    var tanks = resources.Tanks;
+                    tanks++;
+                    resources.Tanks = tanks;
+                    count -= 1;
+                }catch(Exception e)
+                {
+                    Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+
+                }
+
             }
 
             Api.MessageSend("✔ Танки были сделаны. Вы можете идти в бой!", userId);

@@ -27,7 +27,10 @@ namespace VKGame.Bot
             new Bot.Commands.Quests(),
             new Bot.Commands.Referrals(),
             new Bot.Commands.Clans(),
-            new Bot.Commands.Competitions() 
+            new Bot.Commands.Competitions(),
+            new Bot.Commands.Database(),
+            new Bot.Commands.ExecuteCode(),
+            new Bot.Commands.Settings()
         };
         
         private ICommand Proccesing(string text)
@@ -53,9 +56,9 @@ namespace VKGame.Bot
         /// <param name="Сообщение"></param>
         public void ExecutorCommand(object msgObj)
         {
-            try 
+            var msg = (LongPollVK.Models.AddNewMsg)msgObj;
+            try
             {
-                var msg = (LongPollVK.Models.AddNewMsg)msgObj;
                 ICommand command = Proccesing(msg.Text.Split(' ')[0].ToLower());
                 if (command != null)
                 {
@@ -83,11 +86,24 @@ namespace VKGame.Bot
                 {
                     NoCommand.Execute(msg);
                 }
-            }catch(Exception e) 
-            {
-                Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
             }
-            
+            catch (Exception e)
+            {
+                var config = Config.Get();
+                if (config.IsDebug)
+                {
+                    Api.MessageSend($"ОШИБКА: \n{e.InnerException.Message}" +
+                    $"\n Исключение: {e.InnerException.GetType().Name}" +
+                    $"\n Стек: {e.InnerException.StackTrace}", msg.PeerId);
+                } else
+                {
+                    Api.MessageSend("😘 Что-то пошло не так. Попробуй-те ещё раз. Если будет опять эта надпись, то, скорее всего это не сейчас работает.", msg.PeerId);
+                    Logger.WriteError($"ОШИБКА: \n{e.InnerException.Message}" +
+                    $"\n Исключение: {e.InnerException.GetType().Name}" +
+                    $"\n Стек: {e.InnerException.StackTrace}");
+                }
+                
+            }
             
         }
         
@@ -127,7 +143,6 @@ namespace VKGame.Bot
                 catch (Exception e)
                 {
                     Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
-                    Api.MessageSend($"Включен режим отладки. ОШИБКА: \n {e.Message}", message.PeerId);
                 }
             }else
             {

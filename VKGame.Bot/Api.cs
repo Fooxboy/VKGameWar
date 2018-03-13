@@ -27,7 +27,7 @@ namespace VKGame.Bot
                 var id = (long)db.GetFromId(1, "Time") + 1;
                 var fields = $"`Id`, `Name`, `Members`, `Price`, `Time`, `Top`";
                 var value = $"'{id}', '{Name}', '{membersJson}','{Price}', '{Time}' , '{topJson}'";
-                db.Edit(1, "Creator", id);
+                db.Edit(1, "Time", id);
                 db.Add(fields, value);
                 return id;
             }
@@ -65,7 +65,7 @@ namespace VKGame.Bot
                     string memberStr = "";
                     foreach (var member in members) memberStr += $"{JsonConvert.SerializeObject(member)},";
                     memberStr = memberStr.Remove(memberStr.Length - 1);
-                    db.Edit(id, "Member", memberStr);
+                    db.Edit(id, "Members", memberStr);
                 }
             }
 
@@ -706,6 +706,7 @@ id = Id;
                     database.Edit(user.Id, "Experience", user.Experience);
                     database.Edit(user.Id, "Clan", user.Clan);
                     database.Edit(user.Id, "Competition", user.Competition);
+                    database.Edit(user.Id, "Access", user.Access);
                     return true;
                 }
                 catch
@@ -723,8 +724,8 @@ id = Id;
                     var model = new Models.User()
                     {
                         Id = id,
-                        Name = (string) database.GetFromId(id, "Name"),
-                        DateReg = (string) database.GetFromId(id, "TimeReg"),
+                        Name = (string)database.GetFromId(id, "Name"),
+                        DateReg = (string)database.GetFromId(id, "TimeReg"),
                         Level = (long)database.GetFromId(id, "Level"),
                         CountBattles = (long)database.GetFromId(id, "CountBattles"),
                         CountWinBattles = (long)database.GetFromId(id, "CountWinBattles"),
@@ -735,7 +736,8 @@ id = Id;
                         Credit = (long)database.GetFromId(id, "Credit"),
                         Experience = (long)database.GetFromId(id, "Experience"),
                         Clan = (long)database.GetFromId(id, "Clan"),
-                        Competition = (long)database.GetFromId(id, "Competition")
+                        Competition = (long)database.GetFromId(id, "Competition"),
+                        Access = (long)database.GetFromId(id, "Access")
                     };
                     return model;
                 }
@@ -755,7 +757,6 @@ id = Id;
                 {
                     string fields = @"`Id`, `Name`, `TimeReg`, `LastMessage`";
                     var list = new List<long>();
-                    list.Add(id);
                     var common = new Common();
                     var name = common.GetVk().Users.Get(new List<long>() {id})[0].FirstName;
                     string values = $@"'{id}', '{name}', '{DateTime.Now}', '{DateTime.Now}'";

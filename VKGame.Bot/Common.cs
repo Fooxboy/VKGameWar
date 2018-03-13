@@ -20,24 +20,7 @@ namespace VKGame.Bot
         /// <returns></returns>
         public string GetToken()
         {
-
             return "fdbb5fb61db9939adc73759a114ed7b45853e5f171cca4b619e3b44452beef3ace1dbc2467c5e805ac240";
-           /* if (Token != null) return Token;
-            else
-            {
-                using (var client = new WebClient())
-                {
-                    var result = client.DownloadString("http://fooxboy.esy.es/Token.txt");
-                    Token = result;
-                    //Console.WriteLine(Token);
-                };
-
-                if (Token != null)
-                {
-                    return Token;
-                }
-                else throw new ArgumentNullException();
-            }  */
         }  
 
         public static string GetRandomHelp() 
@@ -55,6 +38,7 @@ namespace VKGame.Bot
         public VkApi GetMyVk() 
         {
             var VkApi = new VkApi();
+           
             string tokenMy  = "dc9cb591241f4ac1e81415fd4c98cd396891ec690f4aa9798a846c5e8e39c04196e972dc7d2214859b2e3";
             VkApi.Authorize(new ApiAuthParams
             {

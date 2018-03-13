@@ -19,7 +19,7 @@ namespace VKGame.Bot.Commands
                 return GetCompetitionsText(msg);
             else
             {
-                var type = typeof(Clans);
+                var type = typeof(Competitions);
                 object obj = Activator.CreateInstance(type);
                 var methods = type.GetMethods();
 
@@ -45,6 +45,11 @@ namespace VKGame.Bot.Commands
             }
         }
 
+        public static void EndCompetition(long id)
+        {
+            //конец.
+        }
+
         [Attributes.Trigger("список")]
         public static string List(LongPollVK.Models.AddNewMsg msg)
         {
@@ -56,19 +61,20 @@ namespace VKGame.Bot.Commands
             {
                 string topUsers = String.Empty;
                 var competition = new Api.Competitions(idCompetitions);
-                if (competition.Top.Count == 0)
-                    topUsers = "🤗 Лучших игроков пока что нет.";
+                
                 foreach (var top in competition.Top)
                 {
-                    topUsers += $"\n😲 {top.Top}-- [id{top.Id}|{top.Name}]\n ⚔ Побед: {top.WinBattles}\n";
+                    topUsers += $"😲 {top.Top}-- [id{top.Id}|{top.Name}]\n ⚔ Побед: {top.WinBattles}\n";
                 }
+                if (competition.Top == null || competition.Top.Count == 0) topUsers = "🤗 Лучших игроков пока что нет.";
+        
                 competitionsStr += $"▶ Название: {competition.Name}" +
                                  $"\n🆔 ID: {competition.Id}" +
                                  $"\n💰 Фонд: {competition.Price} " +
-                                 $"\n🕒 До конца осталось {competition.Time} часов.\n" +
+                                 $"\n🕒 До конца осталось {competition.Time} часов." +
                                  $"\n🔝 Лучшие игроки:" +
                                  $"{topUsers}" +
-                                 $"\n";
+                                 $"\n \n";
                 
             }
             return competitionsStr;
@@ -140,6 +146,7 @@ namespace VKGame.Bot.Commands
                 battleId = Api.Battles.NewBattle(msg.PeerId, $"соревнование {competition.Name}", userHp, price);
                 user.IdBattle = battleId;
                 competition.FreeBattle = battleId;
+                Api.User.SetUser(user);
                 return "‼ Вы создали битву! Подождите пока кто-либо вступит!";
 
             }
@@ -159,6 +166,7 @@ namespace VKGame.Bot.Commands
                 battle.HpTwo = userHp;
                 battle.IsStart = true;
                 competition.FreeBattle = battleId;
+                Api.User.SetUser(user);
                 Api.MessageSend("‼ К Вам в битву вступили! Вы атакуете первый! Атаковать так же как и в обычных битвах", battle.Creator);
                 return "‼ Вы вступили в битву! Сейчас ход Вашего врага!";
             }
@@ -205,6 +213,8 @@ namespace VKGame.Bot.Commands
         [Attributes.Trigger("создать")]
         public static string Create(LongPollVK.Models.AddNewMsg msg)
         {
+            var user = Api.User.GetUser(msg.PeerId);
+            if (user.Access < 4) return "❌ Вам недоступна подкоманда.";
             var messageArray = msg.Text.Split(' ');
             string name = messageArray[2];
             long price = Int64.Parse(messageArray[3]);

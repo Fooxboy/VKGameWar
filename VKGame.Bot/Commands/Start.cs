@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using VkNet.Model.RequestParams;
 using System.IO;
 using Newtonsoft.Json;
+using System.Threading;
 
 namespace VKGame.Bot.Commands
 {
@@ -51,7 +52,14 @@ namespace VKGame.Bot.Commands
             {
                 writer.Write(json);
             }
-            if(referral != 0)
+
+            //старт потока добавления ресурсов.
+            Thread threadAddingResource = new Thread(new ParameterizedThreadStart(BackgroundProcess.Buildings.AddingResources));
+            Logger.WriteDebug($"Старт потока AddResource_{user}");
+            threadAddingResource.Name = $"AddResource_{user}";
+            threadAddingResource.Start(user);
+
+            if (referral != 0)
             {
                 var userRef = Api.User.GetUser(referral);
                 if (userRef != null)

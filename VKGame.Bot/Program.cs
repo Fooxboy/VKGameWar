@@ -20,15 +20,18 @@ namespace VKGame.Bot
                     Logger.WriteDebug("Создание экземпляра лонгпулла.");
                     var starter = new LongPollVK.StarterLongPoll();
                     Logger.WriteWaring("Создан.");
-                    const string token = "Тут токен, который никому не нужен.ы";
                     Logger.WriteDebug("Создание потока LongPoll.");
                     Thread threadLongPoll = new Thread(new ParameterizedThreadStart(starter.Start));
                     threadLongPoll.Name = "LongPoll";
-                    threadLongPoll.Start(token);
-                    Thread threadStatus = new Thread(BackgroundProcess.Common.UpdateStatus);
-                    threadStatus.Name = "Status";
-                    Logger.WriteDebug("Старт потока Status.");
-                    threadStatus.Start();
+                    threadLongPoll.Start("группа");
+                    /* Thread threadStatus = new Thread(BackgroundProcess.Common.UpdateStatus);
+                     threadStatus.Name = "Status";
+                     Logger.WriteDebug("Старт потока Status.");
+                     threadStatus.Start();*/
+                    Thread threadCompetitions = new Thread(BackgroundProcess.Competitions.StartCompetition);
+                    threadCompetitions.Name = "threadCompetitions";
+                    threadCompetitions.Start();
+                    Logger.WriteDebug("Старт потока threadCompetitions.");
                     Thread threadCreditCheck = new Thread(BackgroundProcess.Bank.CheckCreditList);
                     Logger.WriteDebug($"Старт потока threadCreditCheck");
                     threadCreditCheck.Name = $"threadCreditCheck";
@@ -44,7 +47,17 @@ namespace VKGame.Bot
                         var userModel = Api.User.GetUser(user);
                         try
                         {
-                            var lastMessage = DateTime.Parse(userModel.LastMessage);
+                            DateTime lastMessage;
+                            try
+                            {
+                                lastMessage = DateTime.Parse(userModel.LastMessage);
+
+                            }catch(FormatException)
+                            {
+                                lastMessage = DateTime.Now;
+                                userModel.LastMessage = lastMessage.ToString();
+                                Api.User.SetUser(userModel);
+                            }
                             int day = lastMessage.Day;
                             int nowDay = 0;
                             if (lastMessage.Month == DateTime.Now.Month) nowDay = DateTime.Now.Day;

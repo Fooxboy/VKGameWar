@@ -44,6 +44,12 @@ namespace VKGame.Bot.Commands
             }
         }
 
+        [Attributes.Trigger("оп")]
+        public static string Exceptions(LongPollVK.Models.AddNewMsg msg)
+        {
+            throw new Exception("Тестовое исключение.");
+        }
+
         [Attributes.Trigger("исключить")]
         public static string RemoveMember(LongPollVK.Models.AddNewMsg msg)
         {
