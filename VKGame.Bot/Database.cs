@@ -15,7 +15,8 @@ namespace VKGame.Bot
             private string database = null;
             private string connectString = null;
             private string table = null;
-            private Methods methods = null; 
+            private Methods methods = null;
+            //SqliteConnection connection = null;
             
             public Methods(string db)
             {

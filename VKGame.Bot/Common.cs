@@ -11,7 +11,7 @@ namespace VKGame.Bot
     /// </summary>
     public class Common
     {
-        string Token = null;
+        //string Token = null;
         VkApi VkApi = null;
 
         /// <summary>

@@ -11,10 +11,9 @@ namespace VKGame.Bot.BackgroundProcess
         /// Обучение солдат.
         /// </summary>
         /// <param name="ид пользователя"></param>
-        public static void CreateSoldiery(object datas)
+        public static void CreateSoldiery(object objectData)
         {
-            
-            var data = (Models.DataCreateSoldiery) datas;
+            var data = (Models.DataCreateSoldiery)objectData;
             Logger.WriteDebug(data.Count);
             var userId = data.UserId;
             var count = data.Count;
@@ -27,7 +26,7 @@ namespace VKGame.Bot.BackgroundProcess
                 var soldiery = resources.Soldiery;
                 soldiery++;
                 resources.Soldiery = soldiery;
-                count = count - 1;
+                count -= 1;
             }
             Api.MessageSend("✔ Солдаты были обучены. Вы можете идти в бой!", userId);
         }
@@ -52,7 +51,7 @@ namespace VKGame.Bot.BackgroundProcess
                 var tanks = resources.Tanks;
                 tanks++;
                 resources.Tanks = tanks;
-                count = count -1;
+                count -= 1;
             }
 
             Api.MessageSend("✔ Танки были сделаны. Вы можете идти в бой!", userId);

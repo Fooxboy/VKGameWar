@@ -12,6 +12,148 @@ namespace VKGame.Bot
  /// </summary>
     public class Api
     {
+        public class Competitions
+        {
+            private long id = 0;
+            private Database.Methods db = new Database.Methods("Competitions");
+
+            public static long New(string Name, long Price, long Time)
+            {
+                Database.Methods db = new Database.Methods("Competitions");
+                var members = new List<Models.CompetitionsList.Member>();
+                var membersJson = JsonConvert.SerializeObject(members);
+                var top = new List<Models.CompetitionsList.TopMember>();
+                var topJson = JsonConvert.SerializeObject(top);
+                var id = (long)db.GetFromId(1, "Time") + 1;
+                var fields = $"`Id`, `Name`, `Members`, `Price`, `Time`, `Top`";
+                var value = $"'{id}', '{Name}', '{membersJson}','{Price}', '{Time}' , '{topJson}'";
+                db.Edit(1, "Creator", id);
+                db.Add(fields, value);
+                return id;
+            }
+            
+            public Competitions(long compId)
+            {
+                id = compId;
+            }
+
+            public long Id => id;
+            public string Name
+            {
+                get => (string)db.GetFromId(id, "Name");
+                set => db.Edit(id, "Name", value);
+            }
+
+            public long FreeBattle
+            {
+                get => (long)db.GetFromId(id, "FreeBattle");
+                set => db.Edit(id, "FreeBattle", value);
+            }
+
+            public List<Models.CompetitionsList.Member> Members
+            {
+                get
+                {
+                    string membersStr = (string)db.GetFromId(id, "Members");
+                    string[] membersArray = membersStr.Split(',');
+                    var members = new List<Models.CompetitionsList.Member>();
+                    foreach (var member in membersArray) members.Add(JsonConvert.DeserializeObject<Models.CompetitionsList.Member>(member));
+                    return members;
+                }set
+                {
+                    var members = value;
+                    string memberStr = "";
+                    foreach (var member in members) memberStr += $"{JsonConvert.SerializeObject(member)},";
+                    memberStr = memberStr.Remove(memberStr.Length - 1);
+                    db.Edit(id, "Member", memberStr);
+                }
+            }
+
+            public List<Models.CompetitionsList.TopMember> Top
+            {
+                get
+                {
+                    string membersStr = (string)db.GetFromId(id, "Top");
+                    string[] membersArray = membersStr.Split(',');
+                    var members = new List<Models.CompetitionsList.TopMember>();
+                    foreach (var member in membersArray) members.Add(JsonConvert.DeserializeObject<Models.CompetitionsList.TopMember>(member));
+                    return members;
+                }
+                set
+                {
+                    var members = value;
+                    string memberStr = "";
+                    foreach (var member in members) memberStr += $"{JsonConvert.SerializeObject(member)},";
+                    memberStr = memberStr.Remove(memberStr.Length - 1);
+                    db.Edit(id, "Top", memberStr);
+                }
+            }
+
+            public bool isEnd
+            {
+                get => Convert.ToBoolean((long)db.GetFromId(id, "IsEnd"));
+                set => db.Edit(id, "IsEnd", Convert.ToInt64(value));
+            }
+
+            public static bool Check(long CompId)
+            {
+                Database.Methods db = new Database.Methods("Competitions");
+                return db.Check(CompId);
+            }
+
+            public long Price
+            {
+                get => (long)db.GetFromId(id, "Price");
+                set => db.Edit(id, "Price", value);
+            }
+
+            public long Time
+            {
+                get => (long)db.GetFromId(id, "Time");
+                set => db.Edit(id, "Time", value);
+            }
+
+            public static Models.CompetitionsList GetList()
+            {
+                var json = "";
+                using (var reader = new StreamReader($@"Files/CompetitionsList.json"))
+                {
+                    json = reader.ReadToEnd();
+                }
+                return JsonConvert.DeserializeObject<Models.CompetitionsList>(json);
+            }
+
+            public static void SetList(Models.CompetitionsList model)
+            {
+                var json = JsonConvert.SerializeObject(model);
+                using (var writer = new StreamWriter($@"Files/CompetitionsList.json", false, System.Text.Encoding.Default))
+                {
+                    writer.Write(json);
+                }
+            }
+        }
+
+        public class Referrals
+        {
+            public static Models.Referrals GetList(long userId)
+            {
+                var json = "";
+                using (var reader = new StreamReader($@"Files/ReferralsFiles/Refferals_{userId}"))
+                {
+                    json = reader.ReadToEnd();
+                }
+                return JsonConvert.DeserializeObject<Models.Referrals>(json);
+            }
+
+            public static void SetList(Models.Referrals model, long userId)
+            {
+                var json = JsonConvert.SerializeObject(model);
+                using (var writer = new StreamWriter($@"Files/ReferralsFiles/Refferals_{userId}", false, System.Text.Encoding.Default))
+                {
+                    writer.Write(json);
+                }
+            }
+        }
 
         public class Roulette
         {
@@ -33,6 +175,79 @@ namespace VKGame.Bot
                     writer.Write(json);
                 }
             }
+        }
+
+        public class Clans
+        {
+            private long id = 0;
+            private Database.Methods db = new Database.Methods("Clans");
+
+            public Clans(long clan)
+            {
+                id = clan;
+            }
+
+            public static bool Check(long clanId)
+            {
+                Database.Methods db = new Database.Methods("Clans");
+                return db.Check(clanId);
+            }
+
+            public static void Delete(long clanId)
+            {
+                Database.Methods db = new Database.Methods("Clans");
+                db.Delete(clanId);
+            }
+
+            public static long New(long userId, string Name)
+            {
+                Database.Methods db = new Database.Methods("Clans");
+                var id = (long)db.GetFromId(1, "Creator") + 1;
+                var fields = $"`Id`, `Name`, `Members`, `Creator`";
+                var value = $"'{id}', '{Name}', '{userId}','{userId}'";
+                db.Edit(1, "Creator", id);
+                db.Add(fields, value);
+                return id;
+            }
+
+            public long Id
+            {
+                get => id;
+            }
+            public string Name
+            {
+                get => (string)db.GetFromId(id, "Name");
+                set => db.Edit(id, "Name", value);
+            }
+
+            public List<long> Members
+            {
+                get
+                {
+                    string membersStr = (string)db.GetFromId(id, "Members");
+                    string[] membersArray = membersStr.Split(',');
+                    List<long> members = new List<long>();
+                    foreach (var member in membersArray) members.Add(Int64.Parse(member));
+                    return members;
+                }
+                set
+                {
+                    List<long> members = value;
+                    string memberStr = "";
+                    foreach (var member in members) memberStr += $"{member},";
+                    memberStr = memberStr.Remove(memberStr.Length - 1);
+                    db.Edit(id, "Member", memberStr);
+                }
+            }
+
+            
+
+            public long Creator
+            {
+                get => (long)db.GetFromId(id, "Creator");
+                set => db.Edit(id, "Creator", value);
+            }
+
         }
 
         public class Credit 
@@ -459,6 +674,12 @@ id = Id;
                 get => (long) db.GetFromId(Id, "Tanks");
                 set => db.Edit(id, "Tanks", value);
             }
+
+            public long TicketsCompetition
+            {
+                get => (long)db.GetFromId(Id, "TicketsCompetitions");
+                set => db.Edit(Id, "TicketsCompetitions", value);
+            }
         }
         
         /// <summary>
@@ -483,6 +704,8 @@ id = Id;
                     database.Edit(user.Id, "StartThread", Convert.ToInt64(user.StartThread));
                     database.Edit(user.Id, "Credit", user.Credit);
                     database.Edit(user.Id, "Experience", user.Experience);
+                    database.Edit(user.Id, "Clan", user.Clan);
+                    database.Edit(user.Id, "Competition", user.Competition);
                     return true;
                 }
                 catch
@@ -510,7 +733,9 @@ id = Id;
                         LastMessage = (string)database.GetFromId(id, "LastMessage"),
                         StartThread = Convert.ToBoolean((long)database.GetFromId(id, "StartThread")),
                         Credit = (long)database.GetFromId(id, "Credit"),
-                        Experience = (long)database.GetFromId(id, "Experience")
+                        Experience = (long)database.GetFromId(id, "Experience"),
+                        Clan = (long)database.GetFromId(id, "Clan"),
+                        Competition = (long)database.GetFromId(id, "Competition")
                     };
                     return model;
                 }

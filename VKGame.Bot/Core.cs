@@ -23,7 +23,11 @@ namespace VKGame.Bot
             new Bot.Commands.Store(),
             new Bot.Commands.Promocode(),
             new Bot.Commands.Bank(),
-            new Bot.Commands.Boxes()
+            new Bot.Commands.Boxes(),
+            new Bot.Commands.Quests(),
+            new Bot.Commands.Referrals(),
+            new Bot.Commands.Clans(),
+            new Bot.Commands.Competitions() 
         };
         
         private ICommand Proccesing(string text)

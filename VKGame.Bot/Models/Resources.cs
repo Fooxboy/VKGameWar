@@ -37,5 +37,9 @@
         /// Танки.
         /// </summary>
         long Tanks { get; set; }
+        /// <summary>
+        /// Билеты на соревнования.
+        /// </summary>
+        long TicketsCompetition { get; set; }
     }
 }

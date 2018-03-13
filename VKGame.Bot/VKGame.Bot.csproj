@@ -11,4 +11,7 @@
   <ItemGroup>
     <None Remove="Users.db-journal" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Files\ReferralsFiles\" />
+  </ItemGroup>
 </Project>

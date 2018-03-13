@@ -3,8 +3,15 @@ using System;
 
 namespace VKGame.Bot.BackgroundProcess
 {
+    /// <summary>
+    /// Фоновые процессы построек и не только!
+    /// </summary>
     public class Buildings 
     {
+        /// <summary>
+        /// Добавление ресурсов
+        /// </summary>
+        /// <param name="obj">Id</param>
         public static void AddingResources(object obj) 
         {
             long id = (long)obj;   
@@ -15,6 +22,31 @@ namespace VKGame.Bot.BackgroundProcess
                 {
                     var resources = new Api.Resources(id);
                     var builds = new Api.Builds(id);
+                    if (DateTime.Now.Day == 15)
+                    {
+                        var referrals = Api.Referrals.GetList(id);
+                        if(referrals.MouthCash != DateTime.Now.Month)
+                        {
+                            int countReferrals = referrals.ReferralsList.Count;
+                            long sumCash = 0;
+                            foreach (var referral in referrals.ReferralsList)
+                            {
+                                referrals.ReferralsList.Remove(referral);
+                                var userRef = Api.User.GetUser(referral.Id);
+                                long cashRef = 100 * userRef.Level;
+                                resources.MoneyCard = resources.MoneyCard + cashRef;
+                                sumCash += cashRef;
+                                referral.FarmMoney += cashRef;
+                                referrals.ReferralsList.Add(referral);
+                            }
+
+                            referrals.SumCash += sumCash;
+                            referrals.MouthCash = DateTime.Now.Month;
+                            Api.MessageSend($"🎉 Вы получили с {countReferrals} рефералов: {sumCash} 💳", id);
+                            Api.Referrals.SetList(referrals, id); 
+                        }
+                    }
+                    
                     var energy = resources.Energy;
                     var eat = resources.Food;
                     var water = resources.Water;

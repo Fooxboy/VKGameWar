@@ -21,5 +21,7 @@
 
        public long Experience {get;set;}
         public long Credit {get;set;}
+        public long Clan { get; set; }
+        public long Competition { get; set; }
     }
 }

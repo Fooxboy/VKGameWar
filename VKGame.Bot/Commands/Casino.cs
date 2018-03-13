@@ -69,6 +69,14 @@ namespace VKGame.Bot.Commands
             var thread = new Thread(new ParameterizedThreadStart(BackgroundProcess.Casino.TimerTriggerEndGame));
             thread.Start(model);
         }
+
+        [Attributes.Trigger("карты")]
+        public string Cards(LongPollVK.Models.AddNewMsg msg)
+        {
+            var messageArray = msg.Text.Split(' ');
+
+            return "карты в разработке. И будут там долго :)";
+        }
         
 
         [Attributes.Trigger("билет")]

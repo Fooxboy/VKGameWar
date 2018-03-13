@@ -14,10 +14,12 @@ namespace VKGame.Bot.BackgroundProcess
                 {
                     var user = Api.User.GetUser(userId);
                     var credit = new Api.Credit(user.Credit);
-                    credit.Time = credit.Time -1;
-                    if(credit.Time == 0) 
+                    var creditTime = credit.Time;
+                    creditTime -= 1;
+                    credit.Time = creditTime;
+                    if(creditTime == 0) 
                     {
-                        Notifications.RemovePaymentCard(Convert.ToInt32(credit.Price), userId, "Оплата кредита.");
+                        Notifications.RemovePaymentCard(Convert.ToInt32(credit.Price), userId, "оплата кредита.");
                         user.Credit = 0;
                         listCredits.Credits.Remove(userId);
                         Api.CreditList.SetList(listCredits);
