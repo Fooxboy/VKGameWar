@@ -92,7 +92,7 @@ namespace VKGame.Bot.Commands
             user.Credit = idCredit;
             var listCredit = Api.CreditList.GetList();
             listCredit.Credits.Add(user.Id);
-            
+            Statistics.NewCredit();
             Api.CreditList.SetList(listCredit);
             Api.User.SetUser(user);
             return "✅ Вы успешно взяли кредит сумма снимется через 10 часов!";

@@ -71,12 +71,16 @@ namespace VKGame.Bot.Commands
                     Notifications.RemovePaymentCard(50, msg.PeerId, "покупка кейсов");
                     battleList.Add(new Models.BattleBox());
                     boxes.BattleBox = battleList;
+                    Statistics.BuyBox();
+
                     return "🎉 Вы купили битвенный кейс!";
                 case "строительный":
                     var battleList1 = boxes.BuildBox;
                     Notifications.RemovePaymentCard(100, msg.PeerId, "покупка кейсов");
                     battleList1.Add(new Models.BuildBox());
                     boxes.BuildBox = battleList1;
+                    Statistics.BuyBox();
+
                     return "🎉 Вы купили строительный кейс!";
                 default:
                     return "❌ Неизвестный тип кейса!";

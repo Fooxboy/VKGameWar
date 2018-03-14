@@ -16,10 +16,11 @@ namespace VKGame.Bot
                 try
                 {
                     Logger.WriteWaring("Старт бота...");
-                    Console.Title = "War of the World";
+                    var config = Config.Get();
+                    Console.Title = $"War of the World  ver {config.Version}";
                     Logger.WriteDebug("Создание экземпляра лонгпулла.");
                     var starter = new LongPollVK.StarterLongPoll();
-                    Logger.WriteWaring("Создан.");
+                    Logger.WriteDebug("Создан.");
                     Logger.WriteDebug("Создание потока LongPoll.");
                     Thread threadLongPoll = new Thread(new ParameterizedThreadStart(starter.Start));
                     threadLongPoll.Name = "LongPoll";
@@ -28,10 +29,39 @@ namespace VKGame.Bot
                      threadStatus.Name = "Status";
                      Logger.WriteDebug("Старт потока Status.");
                      threadStatus.Start();*/
+
+                    /*
+                    var stat = new Models.Statistics();
+                    stat.AllMessages = 0;
+                    stat.Battles = new Models.Statistics.BattlesModel { All = 0, Day = 0 };
+                    stat.Boxs = new Models.Statistics.BoxsModel { BuyStoreAll = 0, BuyStoreDay = 0, WinBattleAll = 0, WinBattleDay = 0 };
+                    stat.Competitions = new Models.Statistics.CompetitionsModel { All = 0, BattleCompetitionAll = 0, BattleCompetitionDay = 0, JoinPeopleAll = 0, JoinPeopleDay = 0 };
+                    stat.CreateArmy = new Models.Statistics.CreateArmyModel { AllSol = 0, AllTanks = 0, DaySol = 0, DayTanks = 0 };
+                    stat.CreateClans = new Models.Statistics.CreateClansModel { All = 0, Day = 0 };
+                    stat.Errors = new Models.Statistics.ErrorsModel { All = 0, Day = 0 };
+                    stat.GoHomeDay = 0;
+                    stat.InMessageDay = 0;
+                    stat.KreditsAll = 0;
+                    stat.OutMessageDay = 0;
+                    stat.PromocodesAll = 0;
+                    stat.RefferalAll = 0;
+                    stat.Registrations = new Models.Statistics.RegistrationsModel { All = 0, Day = 0 };
+                    stat.WinBattleAll = 0;
+                    stat.WinBattleDay = 0;
+                    stat.WinCasino = new Models.Statistics.WinCasinoModel { All = 0, Day = 0 };
+
+                    Bot.Statistics.SetStat(stat);
+                   */
+
+
                     Thread threadCompetitions = new Thread(BackgroundProcess.Competitions.StartCompetition);
                     threadCompetitions.Name = "threadCompetitions";
                     threadCompetitions.Start();
                     Logger.WriteDebug("Старт потока threadCompetitions.");
+                    Thread threadStatistics = new Thread(BackgroundProcess.Statistics.StartAdd);
+                    threadStatistics.Name = "threadStatistics";
+                    threadStatistics.Start();
+                    Logger.WriteDebug("Старт потока threadStatistics.");
                     Thread threadCreditCheck = new Thread(BackgroundProcess.Bank.CheckCreditList);
                     Logger.WriteDebug($"Старт потока threadCreditCheck");
                     threadCreditCheck.Name = $"threadCreditCheck";

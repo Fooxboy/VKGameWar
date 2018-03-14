@@ -132,6 +132,7 @@ namespace VKGame.Bot.Commands
 
             long battleId = 0;
 
+            Statistics.BattleCompetition();
             if (competition.FreeBattle == 0)
             {
                 user.CountCreateBattles = user.CountCreateBattles + 1;
@@ -205,7 +206,7 @@ namespace VKGame.Bot.Commands
             members.Add(member);
             competition.Members = members;
             user.Competition = competition.Id;
-           
+            Statistics.JoinCompetition();
             Api.User.SetUser(user);
             return "✅ Вы успешно участвуете в соревновании. Для начала атаки напишите соревнования бой";
         }
@@ -223,6 +224,7 @@ namespace VKGame.Bot.Commands
             var listComp = Api.Competitions.GetList();
             listComp.List.Add(idComp);
             Api.Competitions.SetList(listComp);
+            Statistics.NewCompetition();
             return $"Вы создали соревнование с ID = {idComp}";
         }
 

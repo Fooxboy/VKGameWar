@@ -14,7 +14,8 @@ namespace VKGame.Bot.Commands
 
         public object Execute(LongPollVK.Models.AddNewMsg msg)
         {
-            var text = GetHomeText(msg, $"Последнее обновление данных: {DateTime.Now}");     
+            var text = GetHomeText(msg, $"Последнее обновление данных: {DateTime.Now}");
+            Statistics.GoToHome();
             return text;
         }
 

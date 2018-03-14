@@ -41,6 +41,7 @@ namespace VKGame.Bot.Commands
             usersPromo.Add(msg.PeerId);
             promo.Users = usersPromo;
             promo.Count = promo.Count -1;
+            Statistics.ActivatePromo();
             return "✅ Вы успешно активировали промокод.";
         }
     }

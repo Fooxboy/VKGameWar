@@ -45,6 +45,7 @@ namespace VKGame.Bot
             }catch (Exception e) 
             {
                 Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
+                Statistics.NewError();
                 return null;
             }
             
@@ -89,19 +90,49 @@ namespace VKGame.Bot
             }
             catch (Exception e)
             {
-                var config = Config.Get();
-                if (config.IsDebug)
+                Statistics.NewError();
+
+                try
                 {
-                    Api.MessageSend($"ОШИБКА: \n{e.InnerException.Message}" +
-                    $"\n Исключение: {e.InnerException.GetType().Name}" +
-                    $"\n Стек: {e.InnerException.StackTrace}", msg.PeerId);
-                } else
+                    var config = Config.Get();
+                    if (config.IsDebug)
+                    {
+                        Statistics.NewError();
+
+                        if (e.InnerException != null)
+                        {
+                            Api.MessageSend($"ОШИБКА: {e.InnerException.Message}" +
+                            $"\n Исключение: {e.InnerException.GetType().Name}" +
+                            $"\n StackTrace: {e.InnerException.StackTrace}", msg.PeerId);
+
+                            Statistics.NewError();
+                        }
+                        else
+                        {
+                            Api.MessageSend($"ОШИБКА: {e.Message}" +
+                             $"\n Исключение: {e.GetType().Name}" +
+                            $"\n StackTrace: {e.StackTrace}", msg.PeerId);
+                        }
+
+                    }
+                    else
+                    {
+                        Statistics.NewError();
+
+                        Api.MessageSend("😘 Что-то пошло не так. Попробуй-те ещё раз. Если будет опять эта надпись, то, скорее всего это не сейчас работает.", msg.PeerId);
+                        Logger.WriteError($"ОШИБКА: \n{e.InnerException.Message}" +
+                        $"\n Исключение: {e.InnerException.GetType().Name}" +
+                        $"\n Стек: {e.InnerException.StackTrace}");
+                    }
+                }catch(Exception e2)
                 {
-                    Api.MessageSend("😘 Что-то пошло не так. Попробуй-те ещё раз. Если будет опять эта надпись, то, скорее всего это не сейчас работает.", msg.PeerId);
-                    Logger.WriteError($"ОШИБКА: \n{e.InnerException.Message}" +
-                    $"\n Исключение: {e.InnerException.GetType().Name}" +
-                    $"\n Стек: {e.InnerException.StackTrace}");
+                    Statistics.NewError();
+
+                    Api.MessageSend($"ОШИБКА: \n{e2.Message}" +
+                            $"\n Исключение: {e2.GetType().Name}" +
+                           $"\n StackTrace: {e2.StackTrace}", msg.PeerId);
                 }
+                
                 
             }
             
@@ -124,34 +155,70 @@ namespace VKGame.Bot
         /// <param name="message"></param>
         public static void NewMessage(LongPollVK.Models.AddNewMsg message)
         {
-            var user = Api.User.GetUser(message.PeerId);
-            if(user != null) 
+            try
             {
-                if (DateTime.Parse(user.LastMessage).Day != DateTime.Now.Day)
+                Common.LastMessage = message.MessageId;
+                var messagesCache = Api.CacheMessages.GetList();
+                if (messagesCache == null) messagesCache = new Models.MessagesCache() { Message = new List<Models.MessageCache>() };
+                if (messagesCache.Message == null) messagesCache.Message = new List<Models.MessageCache>();
+                messagesCache.Message.Add(new Models.MessageCache { Text = message.Text, Id = message.MessageId, PeerId = message.PeerId, Time = message.Time });
+                Api.CacheMessages.SetList(messagesCache);
+                var user = Api.User.GetUser(message.PeerId);
+                if (user != null)
                 {
-                    user.LastMessage = DateTime.Now.ToString();
-                    Api.User.SetUser(user);
+                    if (DateTime.Parse(user.LastMessage).Day != DateTime.Now.Day)
+                    {
+                        user.LastMessage = DateTime.Now.ToString();
+                        Api.User.SetUser(user);
+                    }
+                    Logger.WriteDebug($"({message.PeerId}) -> {message.Text}");
+                    var core = new Core();
+                    try
+                    {
+                        var thread = new Thread(new ParameterizedThreadStart(core.ExecutorCommand));
+                        thread.Start(message);
+                    }
+                    catch (Exception e)
+                    {
+                        Statistics.NewError();
+
+                        Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
+                    }
                 }
-                Logger.WriteDebug($"({message.PeerId}) -> {message.Text}");
-                var core = new Core();
-                try
+                else
                 {
-                    var thread = new Thread(new ParameterizedThreadStart(core.ExecutorCommand));
-                    //Logger.WriteDebug("Старт потока ответа на сообщение.");
-                    thread.Start(message);
+                    var command = message.Text.Split(' ')[0].ToLower();
+                    if (command == "старт")
+                    {
+                        Logger.WriteDebug($"({message.PeerId}) -> {message.Text}");
+                        var core = new Core();
+                        try
+                        {
+                            var thread = new Thread(new ParameterizedThreadStart(core.ExecutorCommand));
+                            thread.Start(message);
+                        }
+                        catch (Exception e)
+                        {
+                            Statistics.NewError();
+
+                            Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
+                        }
+                    }
+                    else
+                    {
+                        Api.MessageSend($"Вы ещё не зарегистрированны в нашей игре! Напишите: старт", message.PeerId);
+                    }
+
                 }
-                catch (Exception e)
-                {
-                    Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
-                }
-            }else
+
+                Statistics.SendMessage();
+                Statistics.InMessage();
+            }catch(Exception e)
             {
-                Api.MessageSend($"Вы ещё не зарегистрированны в нашей игре! Напишите старт", message.PeerId);
-            }
-            
-            Statistics.InMessage();
-            
-            
+                Statistics.NewError();
+
+                Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
+            }          
         }
     }
 }

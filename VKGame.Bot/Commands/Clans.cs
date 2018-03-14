@@ -103,6 +103,7 @@ namespace VKGame.Bot.Commands
             var user = Api.User.GetUser(msg.PeerId);
             user.Clan = idClan;
             Api.User.SetUser(user);
+            Statistics.CreateClan();
             return $"✅ Вы успешно создали клан {name}!";
         }
 

@@ -27,12 +27,15 @@ namespace VKGame.Bot.BackgroundProcess
             }catch(Exception e)
             {
                 Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                Bot.Statistics.NewError();
 
             }
 
-
+            Bot.Statistics.CreateSol(count);
             while (count > 0)
             {
+               
+
                 try
                 {
                     if (count < 0) break;
@@ -44,6 +47,7 @@ namespace VKGame.Bot.BackgroundProcess
                 }catch(Exception e)
                 {
                     Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                    Bot.Statistics.NewError();
                 }
                 
             }
@@ -65,12 +69,15 @@ namespace VKGame.Bot.BackgroundProcess
                  userId = data.UserId;
                  count = data.Count;
                  resources = new Api.Resources(userId);
+                
             }catch(Exception e)
             {
                 Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                Bot.Statistics.NewError();
 
             }
 
+            Bot.Statistics.CreateTanks(count);
 
             while (count > 0)
             {             
@@ -85,6 +92,7 @@ namespace VKGame.Bot.BackgroundProcess
                 }catch(Exception e)
                 {
                     Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                    Bot.Statistics.NewError();
 
                 }
 

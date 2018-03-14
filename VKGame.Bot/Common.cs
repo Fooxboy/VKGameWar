@@ -21,7 +21,9 @@ namespace VKGame.Bot
         public string GetToken()
         {
             return "fdbb5fb61db9939adc73759a114ed7b45853e5f171cca4b619e3b44452beef3ace1dbc2467c5e805ac240";
-        }  
+        }
+
+        public static ulong LastMessage = 0;
 
         public static string GetRandomHelp() 
         {

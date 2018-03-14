@@ -44,23 +44,28 @@ namespace VKGame.Bot.Commands
             Api.UserList.SetList(listusers);
             user = Api.User.GetUser(msg.PeerId);
             user.isSetup = true;
-            File.Create($@"Files/ReferralsFiles/Refferals_{msg.PeerId}");
+            using (File.Create($@"Files/ReferralsFiles/Refferals_{msg.PeerId}.json"))
+            {
+
+            }
             var modelRefferals = new Models.Referrals();
             modelRefferals.ReferralsList = new List<Models.Referrals.Referral>();
+            Statistics.NewRegistation();
             var json = JsonConvert.SerializeObject(modelRefferals);
-            using(var writer = new StreamWriter($@"Files/ReferralsFiles/Refferals_{ msg.PeerId }",false, System.Text.Encoding.Default))
+            using(var writer = new StreamWriter($@"Files/ReferralsFiles/Refferals_{msg.PeerId}.json",false, System.Text.Encoding.Default))
             {
                 writer.Write(json);
             }
 
             //старт потока добавления ресурсов.
             Thread threadAddingResource = new Thread(new ParameterizedThreadStart(BackgroundProcess.Buildings.AddingResources));
-            Logger.WriteDebug($"Старт потока AddResource_{user}");
-            threadAddingResource.Name = $"AddResource_{user}";
-            threadAddingResource.Start(user);
+            Logger.WriteDebug($"Старт потока AddResource_{user.Id}");
+            threadAddingResource.Name = $"AddResource_{user.Id}";
+            threadAddingResource.Start(user.Id);
 
             if (referral != 0)
             {
+                Statistics.NewReferral();
                 var userRef = Api.User.GetUser(referral);
                 if (userRef != null)
                 {

@@ -12,6 +12,28 @@ namespace VKGame.Bot
  /// </summary>
     public class Api
     {
+        public class CacheMessages
+        {
+            public static Models.MessagesCache GetList()
+            {
+                var json = "";
+                using (var reader = new StreamReader(@"Files/CacheMessage.json"))
+                {
+                    json = reader.ReadToEnd();
+                }
+                return JsonConvert.DeserializeObject<Models.MessagesCache>(json);
+            }
+
+            public static void SetList(Models.MessagesCache model)
+            {
+                var json = JsonConvert.SerializeObject(model);
+                using (var writer = new StreamWriter(@"Files/CacheMessage.json", false, System.Text.Encoding.Default))
+                {
+                    writer.Write(json);
+                }
+            }
+        }
+
         public class Competitions
         {
             private long id = 0;
@@ -138,7 +160,7 @@ namespace VKGame.Bot
             public static Models.Referrals GetList(long userId)
             {
                 var json = "";
-                using (var reader = new StreamReader($@"Files/ReferralsFiles/Refferals_{userId}"))
+                using (var reader = new StreamReader($@"Files/ReferralsFiles/Refferals_{userId}.json"))
                 {
                     json = reader.ReadToEnd();
                 }
@@ -148,7 +170,7 @@ namespace VKGame.Bot
             public static void SetList(Models.Referrals model, long userId)
             {
                 var json = JsonConvert.SerializeObject(model);
-                using (var writer = new StreamWriter($@"Files/ReferralsFiles/Refferals_{userId}", false, System.Text.Encoding.Default))
+                using (var writer = new StreamWriter($@"Files/ReferralsFiles/Refferals_{userId}.json", false, System.Text.Encoding.Default))
                 {
                     writer.Write(json);
                 }

@@ -15,4 +15,5 @@
   <ItemGroup>
     <Folder Include="Files\ReferralsFiles\" />
   </ItemGroup>
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 </Project>

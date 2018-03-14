@@ -193,12 +193,14 @@ namespace VKGame.Bot.Commands
                     string WinText = "✨🎉 Поздравляю! Вы победили! Вы уничтожили противника! За это вы получаете фонд битвы!";
                     if (shance== 4)
                     {
+                        Statistics.WinBox();
                         WinText += "\n 🎈 Вам выпал битвенный кейс!";
                         var boxes = new Api.Boxes(msg.PeerId);
                         var battleList = boxes.BattleBox;
                         battleList.Add(new Models.BattleBox());
                         boxes.BattleBox = battleList;
                     }
+                    Statistics.WinBattle();
                     if(battle.UserTwo != 16101) Api.MessageSend("❌ПОРАЖЕНИЕ! ВАС УНИЧТОЖИЛИ! В следующем бою Вам повезёт больше!", battle.UserTwo);
                     if(user.Competition != 0)
                     {
@@ -243,6 +245,8 @@ namespace VKGame.Bot.Commands
                     string WinText = "✨🎉 Поздравляю! Вы победили! Вы уничтожили противника! За это вы получаете фонд битвы!";
                     if (shance == 4)
                     {
+                        Statistics.WinBox();
+
                         WinText += "\n 🎈 Вам выпал битвенный кейс!";
                         var boxes = new Api.Boxes(msg.PeerId);
                         var battleList = boxes.BattleBox;
@@ -319,6 +323,7 @@ namespace VKGame.Bot.Commands
                     var listBattle = Api.Battles.GetListBattles();
                     listBattle.Battles.Remove(battle.Id);
                     Api.Battles.SetListBattles(listBattle);
+                    Statistics.JoinBattle();
                     Api.MessageSend("‼ К Вам в битву вступили! Вы атакуете первый!", battle.Creator);
                     return "✅ Вы успешно вступили в эту битву! Враг атакует первый.";
                 }
@@ -380,6 +385,7 @@ namespace VKGame.Bot.Commands
         public static string CreateBattle(LongPollVK.Models.AddNewMsg msg) 
         {
             var messageArray = msg.Text.Split(' ');
+            Statistics.CreateBattle();
 
             var price = 0;
             try {

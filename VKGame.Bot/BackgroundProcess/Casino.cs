@@ -26,11 +26,13 @@ namespace VKGame.Bot.BackgroundProcess
                 var priceInt = r.Next(0, price.Length - 1);
                 moneyUser += price[priceInt];
                 resources.MoneyCard = moneyUser;
+                Bot.Statistics.WinCasino(price[priceInt]);
                 Api.MessageSend($"✨ Денежный перевод! На Ваш банковский счёт было зачислено {price[priceInt]} 💳 от КАЗИНО \"ИСПЫТАЙ УДАЧУ\". ", ticket.User);
 
             }catch(Exception e)
             {
                 Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                Bot.Statistics.NewError();
 
             }
 
@@ -100,6 +102,7 @@ namespace VKGame.Bot.BackgroundProcess
 
                     Api.MessageSend(winText, price.User);
                 }
+                Bot.Statistics.WinCasino(priceWinner);
 
                 roulette.Fund = 0;
                 roulette.Prices = new List<Models.RoulettePrices>();
@@ -107,7 +110,7 @@ namespace VKGame.Bot.BackgroundProcess
             }catch(Exception e)
             {
                 Logger.WriteError($"{e.Message} \n {e.StackTrace}");
-
+                Bot.Statistics.NewError();
             }
 
         }

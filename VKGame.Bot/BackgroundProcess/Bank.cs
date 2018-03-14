@@ -30,6 +30,7 @@ namespace VKGame.Bot.BackgroundProcess
                     }
                 }catch(Exception e)
                 {
+                    Bot.Statistics.NewError();
                     Logger.WriteError($"{e.Message} \n {e.StackTrace}");
                 }
 
