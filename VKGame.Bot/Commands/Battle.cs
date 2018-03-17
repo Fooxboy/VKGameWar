@@ -75,12 +75,12 @@ namespace VKGame.Bot.Commands
             Api.User.SetUser(user);
 
             //Бот присоединяется к битве
-            var battle = new Api.Battles(battleId);
-            battle.UserTwo = 16101;
-            battle.HpTwo = userHp;
-            battle.IsStart = true;
-
-
+            var battle = new Api.Battles(battleId)
+            {
+                UserTwo = 16101,
+                HpTwo = userHp,
+                IsStart = true
+            };
             return "✅ Вы успешно создали новую битву! Вы атакуете первый! Скорее атакуйте!";
         }
 
@@ -151,7 +151,7 @@ namespace VKGame.Bot.Commands
                 var soldiery = resources.Soldiery;
                 resources.Soldiery = soldiery- countArmy;
                 var countFoodForSoldiery = countArmy * 5;
-                if (countFoodForSoldiery > food) return "❌ У Вас недостаточно еды, чтобы прокармить армию!";
+                if (countFoodForSoldiery > food) return "❌ У Вас недостаточно еды, чтобы прокормить армию!";
                 food = food - countFoodForSoldiery;
                 resources.Food = food;
             }else if( type == "танков") 
@@ -185,11 +185,15 @@ namespace VKGame.Bot.Commands
                     user.CountBattles = user.CountBattles + 1;
                     user.Experience = user.Experience + 10;
                     Api.User.SetUser(user);
-                    var userTwo = Api.User.GetUser(battle.UserTwo);
-                    userTwo.IdBattle = 0;
-                    userTwo.CountBattles = userTwo.CountBattles +1;
-                    Api.User.SetUser(userTwo);
-                    int shance = r.Next(1, 5);
+                    if(battle.UserTwo !=16101)
+                    {
+                        var userTwo = Api.User.GetUser(battle.UserTwo);
+                        userTwo.IdBattle = 0;
+                        userTwo.CountBattles = userTwo.CountBattles + 1;
+                        Api.User.SetUser(userTwo);
+                    }
+                    int shance = r.Next(1, 4);
+                    Quests.WinBattle(user.Id);
                     string WinText = "✨🎉 Поздравляю! Вы победили! Вы уничтожили противника! За это вы получаете фонд битвы!";
                     if (shance== 4)
                     {
@@ -242,6 +246,8 @@ namespace VKGame.Bot.Commands
                     userTwo.CountBattles = userTwo.CountBattles + 1;
                     Api.User.SetUser(userTwo);
                     int shance = r.Next(1, 5);
+                    Quests.WinBattle(user.Id);
+
                     string WinText = "✨🎉 Поздравляю! Вы победили! Вы уничтожили противника! За это вы получаете фонд битвы!";
                     if (shance == 4)
                     {
@@ -452,8 +458,7 @@ namespace VKGame.Bot.Commands
                           $"\n💰 Ставка: {battle.Price}"+
                           $"\n💥 Чтобы вступить в эту битву, напишите: бой вступить {battle.Id}"+
                           $"\n"+
-                          $"\n";
-                          
+                          $"\n";                   
             }
             result+= "\n➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖";
             return result;

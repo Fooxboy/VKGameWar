@@ -15,35 +15,41 @@ namespace VKGame.Bot.Commands
 
         public object Execute(LongPollVK.Models.AddNewMsg msg)
         {
-            var messageArray = msg.Text.Split(' ');
-            if (messageArray.Length == 1)
-                return "не указаны аргументы";
-            else
+            var user = Api.User.GetUser(msg.PeerId);
+
+            if (user.Access < 4)
             {
-                var type = typeof(Clans);
-                object obj = Activator.CreateInstance(type);
-                var methods = type.GetMethods();
-
-                foreach (var method in methods)
+                var messageArray = msg.Text.Split(' ');
+                if (messageArray.Length == 1)
+                    return "не указаны аргументы";
+                else
                 {
-                    var attributesCustom = Attribute.GetCustomAttributes(method);
+                    var type = typeof(Database);
+                    object obj = Activator.CreateInstance(type);
+                    var methods = type.GetMethods();
 
-                    foreach (var attribute in attributesCustom)
+                    foreach (var method in methods)
                     {
-                        if (attribute.GetType() == typeof(Attributes.Trigger))
-                        {
-                            var myAtr = ((Attributes.Trigger)attribute);
+                        var attributesCustom = Attribute.GetCustomAttributes(method);
 
-                            if (myAtr.Name == messageArray[1])
+                        foreach (var attribute in attributesCustom)
+                        {
+                            if (attribute.GetType() == typeof(Attributes.Trigger))
                             {
-                                object result = method.Invoke(obj, new object[] { msg });
-                                return (string)result;
+                                var myAtr = ((Attributes.Trigger)attribute);
+
+                                if (myAtr.Name == messageArray[1])
+                                {
+                                    object result = method.Invoke(obj, new object[] { msg });
+                                    return (string)result;
+                                }
                             }
                         }
                     }
+                    return "❌ Неизвестная подкоманда.";
                 }
-                return "❌ Неизвестная подкоманда.";
             }
+            else return "Вам недоступна команда!";     
         }
 
         [Attributes.Trigger("изменить")]

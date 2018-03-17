@@ -94,8 +94,9 @@ namespace VKGame.Bot.Commands
             listCredit.Credits.Add(user.Id);
             Statistics.NewCredit();
             Api.CreditList.SetList(listCredit);
+            Notifications.EnterPaymentCard(Convert.ToInt32(count), user.Id, "кредит");
             Api.User.SetUser(user);
-            return "✅ Вы успешно взяли кредит сумма снимется через 10 часов!";
+            return "✅ Вы успешно взяли кредит, сумма снимется через 10 часов!";
         }
 
         private string GetBankText(LongPollVK.Models.AddNewMsg msg) 

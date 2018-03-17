@@ -24,5 +24,6 @@
         public long Clan { get; set; }
         public long Competition { get; set; }
         public long Access { get; set; }
+        public long Quest { get; set; }
     }
 }

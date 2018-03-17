@@ -9,7 +9,7 @@ namespace VKGame.Bot.Commands
     {
         public static void Execute(LongPollVK.Models.AddNewMsg msg)
         {
-            //Нихуя не делать.
+            //ничего не делать..
         }
     }
 }

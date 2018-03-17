@@ -142,6 +142,7 @@ namespace VKGame.Bot.Commands
             {
                 var theadRoulette = new Thread(BackgroundProcess.Casino.TimerTriggerRoulette);
                 theadRoulette.Name = "theadRoulette";
+                Logger.WriteDebug("старт потока theadRoulette");
                 theadRoulette.Start();
                 roulette.Fund = 0;
             }
@@ -154,6 +155,7 @@ namespace VKGame.Bot.Commands
             {
                 var userModel = Api.User.GetUser(priceUser.User);
                 users += $"\n▶ {userModel.Name} поставил {priceUser.Price} на {priceUser.Smile}";
+                Api.MessageSend($"К игре присоединился новый игрок! Фонд рулетки теперь: {roulette.Fund}", userModel.Id);
             }
             return $"✅  Вы успешно поставили на {smile}!" +
                 $"\n" +

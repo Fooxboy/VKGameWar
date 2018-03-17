@@ -10,7 +10,7 @@ namespace VKGame.Bot.Server
     {
         public static void Listen()
         {
-            int portIn = 8005;
+            int portIn = 5002;
 
             IPEndPoint ipPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), portIn);
             Socket listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -36,11 +36,9 @@ namespace VKGame.Bot.Server
 
                     var result = builder.ToString();
 
-
-
+                    var response = Core.Processing(result);
                     // отправляем ответ
-                    string message = "ваше сообщение доставлено";
-                    data = Encoding.Unicode.GetBytes(message);
+                    data = Encoding.Unicode.GetBytes(response);
                     handler.Send(data);
                     // закрываем сокет
                     handler.Shutdown(SocketShutdown.Both);

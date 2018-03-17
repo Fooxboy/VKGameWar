@@ -48,6 +48,35 @@ namespace VKGame.Bot.Commands
         public static void EndCompetition(long id)
         {
             //конец.
+            try
+            {
+                var competition = new Api.Competitions(id);
+                var listCompetitions = Api.Competitions.GetList();
+                var priceWinners = (competition.Price / 2) / 3;
+                var priceUsers = (competition.Price / 2) / competition.Members.Count;
+                var topUsers = competition.Top;
+                var members = competition.Members;
+                foreach (var user in topUsers)
+                {
+                    Api.MessageSend($"❤ Соревнование закончилсь! ТЫ ВОШЁЛ В ТОП 3!!! ВАШ ВЫИГРЫШ: {priceWinners}", user.Id);
+                    Notifications.EnterPaymentCard(Convert.ToInt32(priceWinners), user.Id, "конец соревнования");
+                }
+
+                foreach (var user in members)
+                {
+                    Api.MessageSend($"❤ Соревнование закончилсь! Вы получили: {priceUsers}", user.Id);
+                    Notifications.EnterPaymentCard(Convert.ToInt32(priceUsers), user.Id, "конец соревнования");
+                }
+
+                listCompetitions.List.Remove(id);
+                Api.Competitions.SetList(listCompetitions);
+            }catch(Exception e)
+            {
+                Statistics.NewError();
+                Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+            }
+
+
         }
 
         [Attributes.Trigger("список")]

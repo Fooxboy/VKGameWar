@@ -32,10 +32,9 @@ namespace VKGame.Bot.BackgroundProcess
             }
 
             Bot.Statistics.CreateSol(count);
+            Api.MessageSend($"➡ Они будут обучаться:  {count * 20} секунд", userId);
             while (count > 0)
             {
-               
-
                 try
                 {
                     if (count < 0) break;
@@ -51,7 +50,7 @@ namespace VKGame.Bot.BackgroundProcess
                 }
                 
             }
-            Api.MessageSend("✔ Солдаты были обучены. Вы можете идти в бой!", userId);
+            Api.MessageSend($"✔ Солдаты были обучены. Вы можете идти в бой! ", userId);
         }
 
 
@@ -79,6 +78,8 @@ namespace VKGame.Bot.BackgroundProcess
 
             Bot.Statistics.CreateTanks(count);
 
+            Api.MessageSend($"➡ Они будут создаватся:  {count} минут", userId);
+
             while (count > 0)
             {             
                 try
@@ -89,7 +90,9 @@ namespace VKGame.Bot.BackgroundProcess
                     tanks++;
                     resources.Tanks = tanks;
                     count -= 1;
-                }catch(Exception e)
+
+                }
+                catch (Exception e)
                 {
                     Logger.WriteError($"{e.Message} \n {e.StackTrace}");
                     Bot.Statistics.NewError();

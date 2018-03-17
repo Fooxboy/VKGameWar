@@ -109,6 +109,7 @@ namespace VKGame.Bot.Commands
                     var food = box.Food;
                     var money = box.Money;
                     var soldiery = box.Soldiery;
+                    var tanks = box.Tanks;
                     resources.Food = resources.Food + food;
                     resources.MoneyCard = resources.MoneyCard + money;
                     resources.Soldiery = resources.Soldiery + soldiery;
@@ -119,6 +120,7 @@ namespace VKGame.Bot.Commands
                             $"\n 💳 Монеты: {money}" +
                             $"\n 🍕 Еда: {food}" +
                             $"\n 🧑 Солдат: {soldiery}" +
+                            $"\n 💣 Танков: {tanks}" +
                             $"\n ✨ Поздравляем!";
                 case "строительный":
                     if (boxes.BuildBox.Count == 0) return "❌ У Вас нет таких боксов";
@@ -134,55 +136,54 @@ namespace VKGame.Bot.Commands
                     {
                         builds.Apartments = builds.Apartments + count;
                         return $"✨ Вот, что Вам выпало из кейса: " +
-                           $"\n 🏡 Жилой дом: {count}" +
+                           $"\n 🏡 Жилые дома: {count}" +
                            $"\n ✨ Поздравляем!";
                     }else if(rand == 2)
                     {
                         builds.Eatery = builds.Eatery + count;
                         return $"✨ Вот, что Вам выпало из кейса: " +
-                           $"\n 🏡 Столовая: {count}" +
+                           $"\n 🍔 Закусочные: {count}" +
                            $"\n ✨ Поздравляем!";
                     }else if(rand == 3)
                     {
                         builds.Hangars = builds.Hangars + count;
                         return $"✨ Вот, что Вам выпало из кейса: " +
-                           $"\n 🏡 Ангар: {count}" +
+                           $"\n 💣 Ангары: {count}" +
                            $"\n ✨ Поздравляем!";
                     }else if(rand == 4)
                     {
                         builds.Mine = builds.Mine + count;
-                        return $"✨ Вот, что Вам выпало из кейса: " +
-                           $"\n 🏡 Шахта: {count}" +
-                           $"\n ✨ Поздравляем!";
+                        return $"✨ Вот, что Вам выпало из кейса:" +
+                            $"\n ПУСТ ";
                     }else if(rand == 5)
                     {
                         builds.PowerGenerators = builds.PowerGenerators + count;
                         return $"✨ Вот, что Вам выпало из кейса: " +
-                           $"\n 🏡 Генератор энергии: {count}" +
+                           $"\n ⚡ Электростанции: {count}" +
                            $"\n ✨ Поздравляем!";
                     }else if(rand == 6)
                     {
                         builds.WarehouseEat = builds.WarehouseEat + count;
                         return $"✨ Вот, что Вам выпало из кейса: " +
-                           $"\n 🏡 Холодильник: {count}" +
+                           $"\n 🍬 Холодильники: {count}" +
                            $"\n ✨ Поздравляем!";
                     }else if(rand == 7)
                     {
                         builds.WarehouseEnergy = builds.WarehouseEnergy + count;
                         return $"✨ Вот, что Вам выпало из кейса: " +
-                           $"\n 🏡 Батареии: {count}" +
+                           $"\n 🔋 Энергетические батареи: {count}" +
                            $"\n ✨ Поздравляем!";
                     }else if(rand == 8)
                     {
                         builds.WarehouseWater = builds.WarehouseWater + count;
                         return $"✨ Вот, что Вам выпало из кейса: " +
-                           $"\n 🏡 Бочки с водой: {count}" +
+                           $"\n 🌊 Бочки с водой: {count}" +
                            $"\n ✨ Поздравляем!";
                     }else if(rand == 9)
                     {
                         builds.WaterPressureStation = builds.WaterPressureStation + count;
                         return $"✨ Вот, что Вам выпало из кейса: " +
-                           $"\n 🏡 Водонапорная башня: {count}" +
+                           $"\n 💦 Водонапорные башни: {count}" +
                            $"\n ✨ Поздравляем!";
                     }else
                     {

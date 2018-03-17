@@ -9,6 +9,7 @@ namespace VKGame.Bot.Models
         private long money = 0;
         private long food = 0;
         private long soldiery = 0;
+        private long tanks = 0;
 
         public BattleBox()
         {
@@ -16,12 +17,14 @@ namespace VKGame.Bot.Models
             money = r.Next(5, 80);
             food = r.Next(0, 20);
             soldiery = r.Next(0, 5);
+            tanks = r.Next(0, 3);
         }
 
         public string Name => "Битвенный";
         public long Money => money;
         public long Food => food;
         public long Soldiery => soldiery;
+        public long Tanks => tanks;
     }
 
 
@@ -32,7 +35,7 @@ namespace VKGame.Bot.Models
         public BuildBox()
         {
             var r = new Random();
-            count = r.Next(0, 3);
+            count = r.Next(0, 4);
         }
 
         public string Name => "Строительный";

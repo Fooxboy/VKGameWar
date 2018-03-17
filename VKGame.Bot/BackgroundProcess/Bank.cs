@@ -9,6 +9,7 @@ namespace VKGame.Bot.BackgroundProcess
         {
             while(true) 
             {
+                Thread.Sleep(3600000);
                 try
                 {
                     var listCredits = Api.CreditList.GetList();
@@ -34,7 +35,7 @@ namespace VKGame.Bot.BackgroundProcess
                     Logger.WriteError($"{e.Message} \n {e.StackTrace}");
                 }
 
-                Thread.Sleep(3600000);
+
             }
         }
     }

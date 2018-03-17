@@ -89,6 +89,11 @@ namespace VKGame.Bot.Server
             return Database.SetValue(data.Id, data.Table, data.Column, data.Value);
         }
 
+        [AttributeMethod("Stat.All")]
+        public static string StatAll(object dataObj)
+        {
+            return Statistics.GetAll();
+        }
 
 
         public class InData

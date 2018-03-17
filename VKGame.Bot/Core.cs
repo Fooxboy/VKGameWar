@@ -206,7 +206,7 @@ namespace VKGame.Bot
                     }
                     else
                     {
-                        Api.MessageSend($"Вы ещё не зарегистрированны в нашей игре! Напишите: старт", message.PeerId);
+                        //Api.MessageSend($"Вы ещё не зарегистрированны в нашей игре! Напишите: старт", message.PeerId);
                     }
 
                 }

@@ -64,30 +64,49 @@ namespace VKGame.Bot.BackgroundProcess
                 "🌸",
                 "😀"
                 };
-                var priceWinner = roulette.Fund / roulette.Prices.Count;
+
+               
                 var r = new Random();
                 var i = r.Next(0, smiles.Count - 1);
                 var winSmile = smiles[smilesList[i]];
                 int countWinners = 0;
-                var winersTxt = "😪 Победителей нет ";
+                var winersTxt = " Победителей нет 😪";
+
+                foreach (var winner in roulette.Prices)
+                {
+                    if (winner.Smile == winSmile)
+                    {
+                        countWinners += 1;
+                    }
+                }
+
+                long priceWinner = 0;
+                if (countWinners == 0)
+                {
+                    priceWinner = 0;
+                }else
+                {
+                    priceWinner = roulette.Fund / countWinners;
+                }
+
+
                 foreach (var price in roulette.Prices)
                 {
                     if (price.Smile == winSmile)
                     {
-                        countWinners = countWinners + 1;
+                        Notifications.EnterPaymentCard(Convert.ToInt32(priceWinner), price.User, "победа в рулетке");
+
                         var userWin = Api.User.GetUser(price.User);
                         winersTxt = "";
-                        winersTxt += $"\n😀 {userWin.Name}";
+                        winersTxt += $"\n😀 {userWin.Name} взял {priceWinner}";
                     }
                 }
-                if (countWinners == 0)
-                {
-                    priceWinner = 0;
-                }
-                string winText = $"🎉 Результаты рулетки!\n" +
-                                   $"\n▶▶▶▶ ⬇ ◀◀◀◀" +
+               
+                string winText = $"🎉 Результаты рулетки!🎉" +
+                                   $"\n" +
+                                   $"\n➡➡➡➡ ⬇ ⬅⬅⬅⬅" +
                                    $"\n{smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]} {smilesList[i]} {smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]}" +
-                                   $"\n▶▶▶▶ ⬆ ◀◀◀◀\n" +
+                                   $"\n➡➡ ⬆ ⬅⬅\n" +
                                    $"\n💳 Выигрыш: {priceWinner}" +
                                    $"\nСписок победителей: {winersTxt}";
                 foreach (var price in roulette.Prices)
@@ -96,7 +115,6 @@ namespace VKGame.Bot.BackgroundProcess
 
                     if (price.Smile == winSmile)
                     {
-                        Notifications.EnterPaymentCard(Convert.ToInt32(priceWinner), price.User, "победа в рулетке");
 
                     }
 

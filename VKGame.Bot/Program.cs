@@ -58,6 +58,10 @@ namespace VKGame.Bot
                     threadCompetitions.Name = "threadCompetitions";
                     threadCompetitions.Start();
                     Logger.WriteDebug("Старт потока threadCompetitions.");
+                    Thread threadServer = new Thread(BackgroundProcess.Common.StartServer);
+                    threadServer.Name = "threadServer";
+                    threadServer.Start();
+                    Logger.WriteDebug("Старт потока threadServer.");
                     Thread threadStatistics = new Thread(BackgroundProcess.Statistics.StartAdd);
                     threadStatistics.Name = "threadStatistics";
                     threadStatistics.Start();

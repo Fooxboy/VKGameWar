@@ -32,9 +32,16 @@ namespace VKGame.Bot
 
         public static void NewError()
         {
-            var stat = GetStat();
-            stat.Errors.Day += 1;
-            SetStat(stat);
+            try
+            {
+                var stat = GetStat();
+                stat.Errors.Day += 1;
+                SetStat(stat);
+            }catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            
         }
 
         public static void NewRegistation()

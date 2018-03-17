@@ -44,6 +44,7 @@ namespace VKGame.Bot.BackgroundProcess
                     }
                 }catch(Exception e)
                 {
+                    Bot.Statistics.NewError();
                     Logger.WriteError($"{e.Message} \n {e.StackTrace}");
 
                 }
@@ -51,23 +52,49 @@ namespace VKGame.Bot.BackgroundProcess
 
             }
         }
-        public static void UpdateStatus() 
+    
+        public static void StartServer()
         {
-            
-            var common = new Bot.Common();
-            var vk = common.GetMyVk();
-            while(true) 
+            Server.Start.Listen();
+
+        }
+
+        public static void ResetMembers()
+        {
+            while(true)
             {
-                try 
+                if (DateTime.Now.Hour == 23)
                 {
-                    vk.Status.Set($"♻ Последнее обновление: {DateTime.Now}.", 161965172);
-                    Thread.Sleep(10000);
-                }catch 
-                {
-                    Thread.Sleep(60000);
+                    var stat = new Models.Statistics();
+                    Bot.Statistics.SetStat(stat);
+
+                    //обуление пользователей в квесте 1
+                    var quest = new Api.Quests(1);
+                    var members = quest.Users.List;
+                    foreach (var member in members)
+                    {
+                        var user = Api.User.GetUser(member.Id);
+                        user.Quest = 0;
+                        Api.User.SetUser(user);
+                    }
+                    members = new System.Collections.Generic.List<Models.Quests.User>();
+                    quest.Users = new Models.Quests.Users() { List = members };
+
+                    //Обнуление пользователй в квесте 2
+                    var quest2 = new Api.Quests(2);
+                    var members2 = quest.Users.List;
+                    foreach (var member2 in members2)
+                    {
+                        var user2 = Api.User.GetUser(member2.Id);
+                        user2.Quest = 0;
+                        Api.User.SetUser(user2);
+                    }
+                    members2 = new System.Collections.Generic.List<Models.Quests.User>();
+                    quest2.Users = new Models.Quests.Users() { List = members2 };
                 }
-                
+                Thread.Sleep(3600000);
             }
+            
         }
 
         public static void RebootBot() 
@@ -85,18 +112,6 @@ namespace VKGame.Bot.BackgroundProcess
                 //хотя думаю просто вернув return в функции Main() закроет приложение
             }
             Thread.Sleep(3600000);
-        }
-
-
-        public static void UpdateHeaderGroup() 
-        {
-           //ы var common = new Bot.Common();
-           // var vk = common.GetMyVk();
-            //var image = "картинка";
-            while(true) 
-            {
-                
-            }
         }
     }
 }

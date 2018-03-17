@@ -272,6 +272,74 @@ namespace VKGame.Bot
 
         }
 
+        public class Quests
+        {
+            private long id = 0;
+            private Database.Methods db = new Database.Methods("Quests");
+
+            public Quests(long userId)
+            {
+                id = userId;
+            }
+
+            public long Id => id;
+
+            public bool IsOnline
+            {
+                get => Convert.ToBoolean((long)db.GetFromId(id, "DayKill"));
+                set => db.Edit(id, "DayKill", Convert.ToInt32(value));
+            }
+
+            public Models.Quests.Users Users
+            {
+                get
+                {
+                    var json = (string)db.GetFromId(id, "Users");
+                    Models.Quests.Users model;
+                    if (json == "")
+                    {
+                        model = new Models.Quests.Users() { List = new List<Models.Quests.User>() };
+                    }else
+                    {
+                        model = JsonConvert.DeserializeObject<Models.Quests.Users>(json);
+                    }
+
+                    return model;
+                }
+                set
+                {
+                    var json = JsonConvert.SerializeObject(value);
+                    db.Edit(id, "Users", json);
+                }
+            }
+
+            public long Status
+            {
+                get => (long)db.GetFromId(id, "Status");
+                set => db.Edit(id, "Status", value);
+            }
+            
+
+            public static bool Check(long id)
+            {
+               Database.Methods db = new Database.Methods("Quests");
+               return db.Check(id);
+            }
+
+            public string Name
+            {
+                get => (string)db.GetFromId(id, "Name");
+                set => db.Edit(id, "Name", value);
+            }
+
+            public long Price
+            {
+                get => (long)db.GetFromId(id, "Price");
+                set => db.Edit(id, "Price", value);
+            }
+            
+        }
+
         public class Credit 
         {
             private long id = 0;
@@ -369,7 +437,7 @@ namespace VKGame.Bot
             }
         }
 
-        public class CreditList 
+        public class CreditList
         {
             public static Models.CreditList GetList()
             {
@@ -390,6 +458,7 @@ namespace VKGame.Bot
                 }
             }
         }
+
         public class UserList 
         {
             public static Models.UsersList GetList()
@@ -411,17 +480,25 @@ namespace VKGame.Bot
                 }
             }
         }
+
         public static void MessageSend(string text, long peerId)
         {
-            var data = new Common();
-            var vk = data.GetVk();
-
-            vk.Messages.Send(new MessagesSendParams()
+            try
             {
-                UserId = peerId,
-                Message = text
-            });
-            Statistics.SendMessage();
+                var data = new Common();
+                var vk = data.GetVk();
+
+                vk.Messages.Send(new MessagesSendParams()
+                {
+                    UserId = peerId,
+                    Message = text
+                });
+            }catch(Exception e)
+            {
+                Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                Bot.Statistics.NewError();
+            }
+           
         }
 
         public class Builds: Models.IBuilds 
@@ -625,8 +702,8 @@ id = Id;
             public static void Register(long id)
             {
                 var database = new Database.Methods("Resources");
-                string fields = @"`Id`";
-                string values = $@"'{id}'";
+                string fields = @"`Id`, `MoneyCard`";
+                string values = $@"'{id}', '100'";
                 database.Add(fields, values);
             }
 
@@ -729,6 +806,7 @@ id = Id;
                     database.Edit(user.Id, "Clan", user.Clan);
                     database.Edit(user.Id, "Competition", user.Competition);
                     database.Edit(user.Id, "Access", user.Access);
+                    database.Edit(user.Id, "Quest", user.Quest);
                     return true;
                 }
                 catch
@@ -743,6 +821,11 @@ id = Id;
                 var database = new Database.Methods("Users");
                 if (database.Check(id))
                 {
+                    long quest = 0;
+                    if(database.GetFromId(id, "Access").GetType().Name != DBNull.Value.GetType().Name)
+                    {
+                        quest = (long)database.GetFromId(id, "Quest");
+                    }
                     var model = new Models.User()
                     {
                         Id = id,
@@ -759,7 +842,8 @@ id = Id;
                         Experience = (long)database.GetFromId(id, "Experience"),
                         Clan = (long)database.GetFromId(id, "Clan"),
                         Competition = (long)database.GetFromId(id, "Competition"),
-                        Access = (long)database.GetFromId(id, "Access")
+                        Access = (long)database.GetFromId(id, "Access"),
+                        Quest = quest
                     };
                     return model;
                 }
@@ -814,8 +898,6 @@ id = Id;
 
             public List<Models.BattleBox> BattleBox
             {
-
-
                 get
                 {
                     var count = (long)db.GetFromId(id, "BattleBox");

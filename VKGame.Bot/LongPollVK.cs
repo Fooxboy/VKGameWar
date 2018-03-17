@@ -610,11 +610,10 @@ namespace VKGame.Bot
                         json = client.DownloadString(url);
                     }catch(Exception e) 
                     {
-                        Logger.WriteError(e.Message);
+                        Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                        Statistics.NewError();
                         json = "[61,123456,1]";
                     }
-                    
-                   // Logger.WriteDebug(json);
                 }
                 return json;
             }
@@ -769,7 +768,7 @@ namespace VKGame.Bot
             /// </summary>
             /// <param name="objToken"></param>
             public void Start(object objToken)
-            {
+            {             
                 var common = new Common();
                 string token = common.GetToken();
                 var core = new Core();
@@ -801,7 +800,7 @@ namespace VKGame.Bot
                                 Key = model.Key;
                                 Pts = model.Pts;
                             }
-                            else if (errorLongPoll.failed == 2) Ts = errorLongPoll.ts;
+                            //else if (errorLongPoll.failed == 2) Ts = errorLongPoll.ts;
                             else if (errorLongPoll.failed == 4) throw new Exception("Мин и макс версия.");
                         }
 
@@ -1037,7 +1036,8 @@ namespace VKGame.Bot
                     else NothingHappenedEvent?.Invoke();
                     }catch (Exception e)
                     {
-                        Logger.WriteError(e.Message);
+                        Bot.Statistics.NewError();
+                        Logger.WriteError($"{e.Message} \n {e.StackTrace}");
                     }
                     
                 }
