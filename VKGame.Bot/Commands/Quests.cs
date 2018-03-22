@@ -74,10 +74,13 @@ namespace VKGame.Bot.Commands
             Models.Quests.User member = null;
             var membersList = quest.Users.List;
             var membersWhere = membersList.Where(u => u.Id == msg.PeerId);
-            foreach (Models.Quests.User memberfor in membersWhere)
+            if (membersWhere != null)
             {
-                member = memberfor;
-            }
+                foreach (Models.Quests.User memberfor in membersWhere)
+                {
+                    member = memberfor;
+                }
+            }       
 
             if(member == null)
             {
@@ -96,7 +99,7 @@ namespace VKGame.Bot.Commands
             }
            
             quest.Users = members;
-            
+            Api.User.SetUser(user);
 
             return "✅ Вы успешно начали выполнять квест! Чтобы узнать прогресс, напишите: квесты прогресс";
         }
@@ -112,10 +115,14 @@ namespace VKGame.Bot.Commands
                 Models.Quests.User member = null;
                 var membersList = quest.Users.List;
                 var membersWhere = membersList.Where(u => u.Id == id);
-                foreach (Models.Quests.User memberfor in membersWhere)
+
+                if(membersWhere != null)
                 {
-                    member = memberfor;
-                }
+                    foreach (Models.Quests.User memberfor in membersWhere)
+                    {
+                        member = memberfor;
+                    }
+                }       
 
                 if(member != null)
                 {
@@ -155,11 +162,14 @@ namespace VKGame.Bot.Commands
                 Models.Quests.User member = null;
                 var membersList = quest.Users.List;
                 var membersWhere = membersList.Where(u => u.Id == id);
-                foreach (Models.Quests.User memberfor in membersWhere)
+                if(membersWhere != null)
                 {
-                    member = memberfor;
+                    foreach (Models.Quests.User memberfor in membersWhere)
+                    {
+                        member = memberfor;
+                    }
                 }
-
+               
                 if (member != null)
                 {
                     if (member.Status == 1)

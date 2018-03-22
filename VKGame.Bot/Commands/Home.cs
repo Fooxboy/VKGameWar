@@ -24,6 +24,7 @@ namespace VKGame.Bot.Commands
             var user = Api.User.GetUser(msg.PeerId);
             var builds = new Api.Builds(msg.PeerId);
             Models.IResources resources = new Api.Resources(msg.PeerId);
+            Quests.GoToHome(msg.PeerId);
             return $"‼{notify}‼" +
                           $"\n➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖" +
                           $"\n" +
@@ -42,7 +43,7 @@ namespace VKGame.Bot.Commands
                           $"\n👨 Солдат: {resources.Soldiery}/{builds.Apartments * 10}." +
                           $"\n💣 Танков: {resources.Tanks}/{builds.Hangars*5}." +
                           $"\n" +
-                          $"\n▶ Вы можете перейти в другие разделы. В такие как:" +
+                          $"\n➡ Вы можете перейти в другие разделы. В такие как:" +
                           $"\n- 🎲 Казино‍" +
                           $"\n- 🏹 Армия" +
                           $"\n- 🏡 Постройки" +

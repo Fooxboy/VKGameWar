@@ -120,6 +120,7 @@ namespace VKGame.Bot
                         }
                         catch (Exception e)
                         {
+                            Statistics.NewError();
                             Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
                         }
                     }
@@ -128,6 +129,7 @@ namespace VKGame.Bot
                     var argumentsArg = Console.ReadLine();
                 }catch(Exception e)
                 {
+                    Statistics.NewError();
                     Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
                 }
                 
