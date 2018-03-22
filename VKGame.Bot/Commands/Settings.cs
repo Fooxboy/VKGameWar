@@ -13,7 +13,69 @@ namespace VKGame.Bot.Commands
 
         public object Execute(LongPollVK.Models.AddNewMsg msg)
         {
-            return "Настроки пока что недоступны. :(";
+            var messageArray = msg.Text.Split(' ');
+            if (messageArray.Length == 1)
+                return GetSettingsText();
+            else
+            {
+                var type = typeof(Settings);
+                object obj = Activator.CreateInstance(type);
+                var methods = type.GetMethods();
+
+                foreach (var method in methods)
+                {
+                    var attributesCustom = Attribute.GetCustomAttributes(method);
+
+                    foreach (var attribute in attributesCustom)
+                    {
+                        if (attribute.GetType() == typeof(Attributes.Trigger))
+                        {
+
+                            var myAtr = ((Attributes.Trigger)attribute);
+
+                            if (myAtr.Name == messageArray[1])
+                            {
+
+                                object result = method.Invoke(obj, new object[] { msg });
+                                return (string)result;
+                            }
+                        }
+                    }
+
+                }
+            }
+            return "❌ Неизвестная подкоманда";
+        }
+
+        [Attributes.Trigger("имя")]
+        public static string NameEdit(LongPollVK.Models.AddNewMsg msg)
+        {
+            var resources = new Api.Resources(msg.PeerId);
+
+            if (resources.MoneyCard < 100) return $"❌ На балансе недостаточно средств. Баланс: {resources.MoneyCard}. Необходимо: 100";
+            string text = "";
+            string[] arrayText = msg.Text.Split(' ');
+            for (int i = 2; arrayText.Length > i; i++) text += $"{arrayText[i]} ";
+            if (text == "") text = $"{msg.PeerId}";
+            var user = Api.User.GetUser(msg.PeerId);
+            user.Name = text;
+            Notifications.RemovePaymentCard(100, user.Id, "изменение имени");
+            Api.User.SetUser(user);
+            return $"🎉 Вы успешно изменили Ваше имя на {text}!";
+        }
+
+        private string GetSettingsText()
+        {
+            string text = $"➖➖➖➖➖➖➖➖➖➖➖➖" +
+                $"\n ⚙НАСТРОЙКИ ПОЛЬЗОВАТЕЛЯ." +
+                $"\n" +
+                $"\n ➡😀 ИМЯ" +
+                $"\n➡❓ Чтобы изменить своё имя, напишите: настройки имя ваше имя" +
+                $"\n➡💳 Цена: 100 монет." +
+                $"\n" +
+                $"\n➖➖➖➖➖➖➖➖➖➖➖➖";
+
+            return text;
         }
     }
 }

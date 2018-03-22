@@ -16,15 +16,20 @@ namespace VKGame.Bot
                 try
                 {
                     Logger.WriteWaring("Старт бота...");
+
                     var config = Config.Get();
-                    Console.Title = $"War of the World  ver {config.Version}";
+
+                    Console.Title = $"War of the World  ver. {config.Version}";
+
                     Logger.WriteDebug("Создание экземпляра лонгпулла.");
                     var starter = new LongPollVK.StarterLongPoll();
                     Logger.WriteDebug("Создан.");
+
                     Logger.WriteDebug("Создание потока LongPoll.");
                     Thread threadLongPoll = new Thread(new ParameterizedThreadStart(starter.Start));
                     threadLongPoll.Name = "LongPoll";
                     threadLongPoll.Start("группа");
+
                     /* Thread threadStatus = new Thread(BackgroundProcess.Common.UpdateStatus);
                      threadStatus.Name = "Status";
                      Logger.WriteDebug("Старт потока Status.");
@@ -58,18 +63,27 @@ namespace VKGame.Bot
                     threadCompetitions.Name = "threadCompetitions";
                     threadCompetitions.Start();
                     Logger.WriteDebug("Старт потока threadCompetitions.");
+
+                    Thread threadResetMembers = new Thread(BackgroundProcess.Common.ResetMembers);
+                    threadResetMembers.Name = "threadResetMembers";
+                    threadResetMembers.Start();
+                    Logger.WriteDebug("Старт потока threadResetMembers.");
+
                     Thread threadServer = new Thread(BackgroundProcess.Common.StartServer);
                     threadServer.Name = "threadServer";
                     threadServer.Start();
                     Logger.WriteDebug("Старт потока threadServer.");
+
                     Thread threadStatistics = new Thread(BackgroundProcess.Statistics.StartAdd);
                     threadStatistics.Name = "threadStatistics";
                     threadStatistics.Start();
                     Logger.WriteDebug("Старт потока threadStatistics.");
+
                     Thread threadCreditCheck = new Thread(BackgroundProcess.Bank.CheckCreditList);
                     Logger.WriteDebug($"Старт потока threadCreditCheck");
                     threadCreditCheck.Name = $"threadCreditCheck";
                     threadCreditCheck.Start();
+
                     Thread threadDailyBonus = new Thread(BackgroundProcess.Common.DailyBonus);
                     Logger.WriteDebug($"Старт потока threadDailyBonus");
                     threadDailyBonus.Name = $"threadDailyBonus";
@@ -108,7 +122,6 @@ namespace VKGame.Bot
                         {
                             Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
                         }
-
                     }
                     starter.AddNewMsgEvent += Core.NewMessage;
 

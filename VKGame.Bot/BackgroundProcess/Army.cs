@@ -28,8 +28,8 @@ namespace VKGame.Bot.BackgroundProcess
             {
                 Logger.WriteError($"{e.Message} \n {e.StackTrace}");
                 Bot.Statistics.NewError();
-
             }
+            var builds = new Api.Builds(userId);
 
             Bot.Statistics.CreateSol(count);
             Api.MessageSend($"➡ Они будут обучаться:  {count * 20} секунд", userId);
@@ -42,6 +42,7 @@ namespace VKGame.Bot.BackgroundProcess
                     var soldiery = resources.Soldiery;
                     soldiery++;
                     resources.Soldiery = soldiery;
+                    if (resources.Soldiery > builds.Apartments *10) resources.Soldiery = builds.Apartments * 10;
                     count -= 1;
                 }catch(Exception e)
                 {
@@ -50,7 +51,7 @@ namespace VKGame.Bot.BackgroundProcess
                 }
                 
             }
-            Api.MessageSend($"✔ Солдаты были обучены. Вы можете идти в бой! ", userId);
+            Api.MessageSend($"✅ Солдаты были обучены. Вы можете идти в бой! ", userId);
         }
 
 
@@ -77,8 +78,9 @@ namespace VKGame.Bot.BackgroundProcess
             }
 
             Bot.Statistics.CreateTanks(count);
+            var builds = new Api.Builds(userId);
 
-            Api.MessageSend($"➡ Они будут создаватся:  {count} минут", userId);
+            Api.MessageSend($"➡ Они будут создаваться:  {count} минут", userId);
 
             while (count > 0)
             {             
@@ -89,6 +91,8 @@ namespace VKGame.Bot.BackgroundProcess
                     var tanks = resources.Tanks;
                     tanks++;
                     resources.Tanks = tanks;
+                    if (resources.Tanks > builds.Hangars * 5) resources.Tanks = builds.Hangars * 5;
+
                     count -= 1;
 
                 }
@@ -101,7 +105,7 @@ namespace VKGame.Bot.BackgroundProcess
 
             }
 
-            Api.MessageSend("✔ Танки были сделаны. Вы можете идти в бой!", userId);
+            Api.MessageSend("✅ Танки были сделаны. Вы можете идти в бой!", userId);
         }
     }
 }

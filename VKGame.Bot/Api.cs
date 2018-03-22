@@ -822,10 +822,15 @@ id = Id;
                 if (database.Check(id))
                 {
                     long quest = 0;
-                    if(database.GetFromId(id, "Access").GetType().Name != DBNull.Value.GetType().Name)
+                    try
                     {
                         quest = (long)database.GetFromId(id, "Quest");
+                    }catch(Exception)
+                    {
+                        quest = 0;
                     }
+                   
+                    
                     var model = new Models.User()
                     {
                         Id = id,

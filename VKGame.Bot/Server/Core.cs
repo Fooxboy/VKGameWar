@@ -65,8 +65,8 @@ namespace VKGame.Bot.Server
         [AttributeMethod("Messages.GetNow")]
         public static string MessagesGetNow(object dataObj)
         {
-            var data = (Messages.InNowMessagers)dataObj;
-            return Messages.GetNow(data.Ts);
+            var data = (ulong)dataObj;
+            return Messages.GetNow(data);
         }
 
         [AttributeMethod("Messages.SubscribeOnNewMessages")]

@@ -28,7 +28,7 @@ namespace VKGame.Bot.BackgroundProcess
                             else nowDay = DateTime.Now.Day + 31;
                             if (DateTime.Now.Day - day < 2)
                             {
-                                Api.MessageSend("🎉 Ежедневный бонус! Спасибо, что Вы играете каждый день! Вот Ваш маленький бонус сегодня! 500 монет!", userId);
+                                Api.MessageSend("🎉 Ежедневный бонус! Спасибо, что Вы играете каждый день! Вот Ваш маленький бонус сегодня! 300 монет!", userId);
                                 Notifications.EnterPaymentCard(500, userId, "ежедненый бонус");
                             }
                             else
@@ -48,50 +48,79 @@ namespace VKGame.Bot.BackgroundProcess
                     Logger.WriteError($"{e.Message} \n {e.StackTrace}");
 
                 }
-
-
             }
         }
     
         public static void StartServer()
         {
-            Server.Start.Listen();
+            try
+            {
+                Server.Start.Listen();
 
+            }catch(Exception e)
+            {
+                Bot.Statistics.NewError();
+                Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+            }
         }
 
         public static void ResetMembers()
         {
             while(true)
             {
-                if (DateTime.Now.Hour == 23)
+                try
                 {
-                    var stat = new Models.Statistics();
-                    Bot.Statistics.SetStat(stat);
-
-                    //обуление пользователей в квесте 1
-                    var quest = new Api.Quests(1);
-                    var members = quest.Users.List;
-                    foreach (var member in members)
+                    if (DateTime.Now.Hour == 23)
                     {
-                        var user = Api.User.GetUser(member.Id);
-                        user.Quest = 0;
-                        Api.User.SetUser(user);
-                    }
-                    members = new System.Collections.Generic.List<Models.Quests.User>();
-                    quest.Users = new Models.Quests.Users() { List = members };
 
-                    //Обнуление пользователй в квесте 2
-                    var quest2 = new Api.Quests(2);
-                    var members2 = quest.Users.List;
-                    foreach (var member2 in members2)
-                    {
-                        var user2 = Api.User.GetUser(member2.Id);
-                        user2.Quest = 0;
-                        Api.User.SetUser(user2);
+                        try
+                        {
+                            var model = new Models.MessagesCache();
+                            model.Message = new System.Collections.Generic.List<Models.MessageCache>();
+                            Api.CacheMessages.SetList(model);
+                        }catch(Exception e)
+                        {
+                            Bot.Statistics.NewError();
+                            Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                        }
+                        
+
+                        //обуление пользователей в квесте 1
+                        var quest = new Api.Quests(1);
+                        var members = quest.Users.List;
+                        if(members.Count != 0)
+                        {
+                            foreach (var member in members)
+                            {
+                                var user = Api.User.GetUser(member.Id);
+                                user.Quest = 0;
+                                Api.User.SetUser(user);
+                            }
+                            members = new System.Collections.Generic.List<Models.Quests.User>();
+                        }
+                            quest.Users = new Models.Quests.Users() { List = members };
+
+                        //Обнуление пользователй в квесте 2
+                        var quest2 = new Api.Quests(2);
+                        var members2 = quest.Users.List;
+                        if(members2.Count != 0)
+                        {
+                            foreach (var member2 in members2)
+                            {
+                                var user2 = Api.User.GetUser(member2.Id);
+                                user2.Quest = 0;
+                                Api.User.SetUser(user2);
+                            }
+                            members2 = new System.Collections.Generic.List<Models.Quests.User>();
+                        }         
+                        quest2.Users = new Models.Quests.Users() { List = members2 };
                     }
-                    members2 = new System.Collections.Generic.List<Models.Quests.User>();
-                    quest2.Users = new Models.Quests.Users() { List = members2 };
+                }catch(Exception e)
+                {
+                    Bot.Statistics.NewError();
+                    Logger.WriteError($"{e.Message} \n {e.StackTrace}");
                 }
+                
                 Thread.Sleep(3600000);
             }
             

@@ -30,7 +30,7 @@ namespace VKGame.Bot.Commands
             }
             if(!Api.Promocode.Check(promocode)) return "❌ Такого промокода не существует.";
             var promo = new Api.Promocode(promocode);
-            if(promo.Count == 0) return "❌ Количество использований этого промокода изчерпано.";
+            if(promo.Count == 0) return "❌ Количество использований этого промокода уже изчерпано.";
             foreach(var userId in promo.Users) 
             {
                 if(userId == msg.PeerId) return "❌ Вы уже использовали данный промокод.";
@@ -42,7 +42,7 @@ namespace VKGame.Bot.Commands
             promo.Users = usersPromo;
             promo.Count = promo.Count -1;
             Statistics.ActivatePromo();
-            return "✅ Вы успешно активировали промокод.";
+            return $"✅ Вы успешно активировали промокод {promocode}.";
         }
     }
 }

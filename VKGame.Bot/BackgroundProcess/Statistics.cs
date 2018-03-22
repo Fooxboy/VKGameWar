@@ -13,7 +13,7 @@ namespace VKGame.Bot.BackgroundProcess
             {
                 try
                 {
-                    if(DateTime.Now.Hour == 1)
+                    if(DateTime.Now.Hour == 23)
                     {
                         var stat = Bot.Statistics.GetStat();
                         stat.Battles.All += stat.Battles.Day;
@@ -51,10 +51,7 @@ namespace VKGame.Bot.BackgroundProcess
 
                         Bot.Statistics.SetStat(stat);
                     }
-
                     Thread.Sleep(3600000);
-                    
-
                 }catch(Exception e)
                 {
                     Bot.Statistics.NewError();

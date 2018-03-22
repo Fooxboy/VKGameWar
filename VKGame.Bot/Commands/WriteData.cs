@@ -25,7 +25,7 @@ namespace VKGame.Bot.Commands
             var vk = common.GetVk();
             var historyMessage = vk.Messages.GetHistory(new MessagesGetHistoryParams()
             {
-                Count = 5,
+                Count = 10,
                 PeerId = msg.PeerId
             });
 

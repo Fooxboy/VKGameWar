@@ -30,7 +30,9 @@ namespace VKGame.Bot
             new Bot.Commands.Competitions(),
             new Bot.Commands.Database(),
             new Bot.Commands.ExecuteCode(),
-            new Bot.Commands.Settings()
+            new Bot.Commands.Settings(),
+            new Bot.Commands.Sections(),
+            new Bot.Commands.Balance()
         };
         
         private ICommand Proccesing(string text)
@@ -171,7 +173,7 @@ namespace VKGame.Bot
                         user.LastMessage = DateTime.Now.ToString();
                         Api.User.SetUser(user);
                     }
-                    Logger.WriteDebug($"({message.PeerId}) -> {message.Text}");
+                    Logger.NewMessage($"({message.PeerId}) -> {message.Text}");
                     var core = new Core();
                     try
                     {

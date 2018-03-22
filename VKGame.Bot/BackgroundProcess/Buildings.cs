@@ -23,6 +23,8 @@ namespace VKGame.Bot.BackgroundProcess
                 {
                     var resources = new Api.Resources(id);
                     var builds = new Api.Builds(id);
+                    var user = Api.User.GetUser(id);
+
 
                     if (bufferTime > 60 || bufferTime == 60) bufferTime = 0;
                   
@@ -60,23 +62,33 @@ namespace VKGame.Bot.BackgroundProcess
                             Api.Referrals.SetList(referrals, id); 
                         }
                     }
-                    
+
+                    if (user.Experience >= user.Level * 100)
+                    {    
+                        ++user.Level;
+                        Api.MessageSend($"🎉 Вы получили {user.Level} уровень! Давай ещё больше!", id);
+                        Notifications.EnterPaymentCard(100, id, "новый уровень");
+                    }
                     //само добавление ресурсов
                     var energy = resources.Energy;
                     var eat = resources.Food;
                     var water = resources.Water;
 
-                    if (eat < resources.Soldiery&& bufferTime == 30)
+                    if ((resources.Soldiery > 1) || (resources.Soldiery != 0))
                     {
-                        Api.MessageSend("А Вам нечем кормить армию! Купите еды в магазине или 5 солдат каждые 30 минут будут умирать!", id);
-                        resources.Soldiery = resources.Soldiery - 5;
+                        if ((eat < resources.Soldiery) && (bufferTime == 30))
+                        {
+                            Api.MessageSend("👨‍🍳 А Вам нечем кормить армию! Купите еды в магазине или 5 солдат каждые 30 минут будут умирать!", id);
+                            resources.Soldiery = resources.Soldiery - 5;
+                        }
+                        else
+                        {
+                            if (eat > 0) eat = eat - resources.Soldiery;
+                            else eat = 0;
+
+                        }
                     }
-                    else
-                    {
-                        if (eat > 0) eat = eat - resources.Soldiery;
-                        else eat = 0;
-                        
-                    }
+                   
                     //Пиздец говнокод, но почему-то по другому не работает :/
                     if (energy < builds.WarehouseEnergy * 100)
                     {
@@ -118,6 +130,7 @@ namespace VKGame.Bot.BackgroundProcess
                     resources.Food = eat;
                     resources.Water = water;
                     ++bufferTime;
+                    Api.User.SetUser(user);
                     Thread.Sleep(60000);
                 }catch(Exception e)
                 {

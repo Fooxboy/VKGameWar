@@ -44,12 +44,6 @@ namespace VKGame.Bot.Commands
             }
         }
 
-        [Attributes.Trigger("оп")]
-        public static string Exceptions(LongPollVK.Models.AddNewMsg msg)
-        {
-            throw new Exception("Тестовое исключение.");
-        }
-
         [Attributes.Trigger("исключить")]
         public static string RemoveMember(LongPollVK.Models.AddNewMsg msg)
         {
@@ -70,7 +64,7 @@ namespace VKGame.Bot.Commands
                 return "❌ Вы указали неверное id пользователя!";
             }
             var userRemove = Api.User.GetUser(userId);
-            if (userRemove == null) return "❌ Этот пользователь не играет в эту игру вообще. Можешь ему рассказать о ней :)";
+            if (userRemove == null) return $"❌ Этот пользователь не играет в эту игру вообще. Можешь ему рассказать о ней -  [id{userId}|тыкай]. :)";
             bool isUser = false;
             var members = clan.Members;
             if (!isUser) return "❌ Такого пользователя нет в клане!";
@@ -97,7 +91,7 @@ namespace VKGame.Bot.Commands
             }
             if (name.Length > 30 || name.Length < 2) return "❌ Название клана должно быть меньше 30 символов или больше двух.";
             var resources = new Api.Resources(msg.PeerId);
-            if (resources.MoneyCard < 1000) return "❌ Для создания клана нужна сумма в размере 1000 💳";
+            if (resources.MoneyCard < 1000) return $"❌ Для создания клана нужна сумма в размере 1000 💳 Ваш баланс: {resources.MoneyCard}";
             var idClan = Api.Clans.New(msg.PeerId, name);
             Notifications.RemovePaymentCard(1000, msg.PeerId, "создание клана");
             var user = Api.User.GetUser(msg.PeerId);
@@ -126,7 +120,7 @@ namespace VKGame.Bot.Commands
                 }
                 var infoClan = $"➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖" +
                              $"\n✅ Название: {clan.Name}" +
-                             $"\n😀 Создатель: {clan.Creator}" +
+                             $"\n😀 Создатель: *id{clan.Creator}" +
                              $"\n" +
                              $"\n🖐 Участники: " +
                              $"{MemberString}" +
@@ -195,14 +189,14 @@ namespace VKGame.Bot.Commands
                 id = Int64.Parse(messageArray[2]);
             }catch(IndexOutOfRangeException)
             {
-                return "❌ Вы не указали id клана. Напрмиер: клан вступить 229";
+                return "❌ Вы не указали id клана. Напрмиер: клан вступить 666";
             }catch(FormatException)
             {
                 return "❌ Вы ввели неверный id клана.";
             }
             if (!Api.Clans.Check(id)) return "❌ Клана с таким id несуществует!";
             var user = Api.User.GetUser(msg.PeerId);
-            if (user.Clan != 0) return "❌ Вы уже находитесь в клане! Для начала покинте его! Клан покинуть";
+            if (user.Clan != 0) return "❌ Вы уже находитесь в клане! Для начала покинте его! Напишите: Клан покинуть";
             var clan = new Api.Clans(id);
             List<long> members = clan.Members;
             members.Add(msg.PeerId);

@@ -49,12 +49,12 @@ namespace VKGame.Bot.Server
 
         public static string SubscribeOnNewMessages()
         {
-            var response = new Common.Response<SubscribeOnNewMessageResponse>();
+            var response = new Common.Response<ulong>();
 
             try
             {
                 var ts = Bot.Common.LastMessage;
-                var model = new SubscribeOnNewMessageResponse() { Ts = ts };
+                var model = ts;
                 response.Data = model;
                 response.Ok = true;
             }catch(Exception e)
@@ -83,11 +83,6 @@ namespace VKGame.Bot.Server
         {
             public ulong Ts { get; set; }
 
-        }
-
-        public class InNowMessagers
-        {
-            public ulong Ts { get; set; }
         }
     }
 }

@@ -33,7 +33,6 @@ namespace VKGame.Bot.BackgroundProcess
             {
                 Logger.WriteError($"{e.Message} \n {e.StackTrace}");
                 Bot.Statistics.NewError();
-
             }
 
 
@@ -70,7 +69,7 @@ namespace VKGame.Bot.BackgroundProcess
                 var i = r.Next(0, smiles.Count - 1);
                 var winSmile = smiles[smilesList[i]];
                 int countWinners = 0;
-                var winersTxt = " Победителей нет 😪";
+                var winersTxt = "\n Победителей нет 😪";
 
                 foreach (var winner in roulette.Prices)
                 {
@@ -106,7 +105,7 @@ namespace VKGame.Bot.BackgroundProcess
                                    $"\n" +
                                    $"\n➡➡➡➡ ⬇ ⬅⬅⬅⬅" +
                                    $"\n{smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]} {smilesList[i]} {smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]}" +
-                                   $"\n➡➡ ⬆ ⬅⬅\n" +
+                                   $"\n➡➡➡➡ ⬆ ⬅⬅⬅⬅\n" +
                                    $"\n💳 Выигрыш: {priceWinner}" +
                                    $"\nСписок победителей: {winersTxt}";
                 foreach (var price in roulette.Prices)

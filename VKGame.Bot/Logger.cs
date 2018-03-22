@@ -19,6 +19,14 @@ namespace VKGame.Bot
             Console.WriteLine($"[{time}]=> {message}");
             Console.ResetColor();
         }
+
+        public static void NewMessage(object message)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            var time = DateTime.Now;
+            Console.WriteLine($"[{time}]=> {message}");
+            Console.ResetColor();
+        }
         
         /// <summary>
         /// Вывод ошибок на консоль.
