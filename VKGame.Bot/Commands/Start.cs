@@ -18,9 +18,9 @@ namespace VKGame.Bot.Commands
         public TypeResponse Type => TypeResponse.Text;
         
         [Attributes.Trigger("Старт")]
-        public object Execute(LongPollVK.Models.AddNewMsg msg)
+        public object Execute(Models.Message msg)
         {
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
             long referral = 0;
             try
             {
@@ -32,19 +32,19 @@ namespace VKGame.Bot.Commands
             {
                 return "❌ Вы не были зарегистрированы. Введите валидный ид реферала и попробуйте снова.";
             }
-            if (referral == msg.PeerId) return "❌ Вы не были зарегистрированы. Вы не можете использовать себя как реферала. Попробуйте снова, только введите другово реферала!";
+            if (referral == msg.from_id) return "❌ Вы не были зарегистрированы. Вы не можете использовать себя как реферала. Попробуйте снова, только введите другово реферала!";
             var common = new Common();
-            var user = Api.User.GetUser(msg.PeerId);
+            var user = Api.User.GetUser(msg.from_id);
             if (user != null) return "❌ Вы уже зарегистрированы в игре.";
-            Api.User.NewUser(msg.PeerId);
-            Api.Resources.Register(msg.PeerId);
-            Api.Builds.Register(msg.PeerId);
+            Api.User.NewUser(msg.from_id);
+            Api.Resources.Register(msg.from_id);
+            Api.Builds.Register(msg.from_id);
             var listusers = Api.UserList.GetList();
-            listusers.Users.Add(msg.PeerId);
+            listusers.Users.Add(msg.from_id);
             Api.UserList.SetList(listusers);
-            user = Api.User.GetUser(msg.PeerId);
+            user = Api.User.GetUser(msg.from_id);
             user.isSetup = true;
-            using (File.Create($@"Files/ReferralsFiles/Refferals_{msg.PeerId}.json"))
+            using (File.Create($@"Files/ReferralsFiles/Refferals_{msg.from_id}.json"))
             {
 
             }
@@ -52,7 +52,7 @@ namespace VKGame.Bot.Commands
             modelRefferals.ReferralsList = new List<Models.Referrals.Referral>();
             Statistics.NewRegistation();
             var json = JsonConvert.SerializeObject(modelRefferals);
-            using(var writer = new StreamWriter($@"Files/ReferralsFiles/Refferals_{msg.PeerId}.json",false, System.Text.Encoding.Default))
+            using(var writer = new StreamWriter($@"Files/ReferralsFiles/Refferals_{msg.from_id}.json",false, System.Text.Encoding.Default))
             {
                 writer.Write(json);
             }
@@ -73,36 +73,36 @@ namespace VKGame.Bot.Commands
                     listReferral.ReferralsList.Add(new Models.Referrals.Referral { Name = userRef.Name, DateRegistration = DateTime.Now.ToString(), FarmMoney = 100, Id = userRef.Id });
                     Api.MessageSend($"✨ У Вас новый реферал по имени {userRef.Name}! Он вам принёс 100 💳", referral);
                     Notifications.EnterPaymentCard(100, referral, "реферальная система");
-                    Notifications.EnterPaymentCard(100, msg.PeerId, "реферальная система");
-                    Api.MessageSend("✨ На Вас счёт поступило 100 💳 за то, что вы указали реферала!", msg.PeerId);
+                    Notifications.EnterPaymentCard(100, msg.from_id, "реферальная система");
+                    Api.MessageSend("✨ На Вас счёт поступило 100 💳 за то, что вы указали реферала!", msg.from_id);
                 }
             }
 
             Api.User.SetUser(user);
-            Api.Boxes.Register(msg.PeerId);
+            Api.Boxes.Register(msg.from_id);
 
             string resultStr =
                 "🎉 Добро пожаловать, новичёк!🙂" +
                 "\nТебе предстоит создать свою армию!😏 Ты, конечно же, будешь командиром!" +
                 "\nА теперь скажи своим солдатам как тебя называть!😜" +
                 "\nОтправь своё имя! Для того чтобы отправить данные - используйте команду записи данных - ! Ваше имя. (пробел после ! обязателен.)";
-            var vk = common.GetVk();
-            var uservkdata = vk.Groups.IsMember("161965172", msg.PeerId, new List<long>() {msg.PeerId}, true)[0];
+            var vk = Common.GetVk();
+            var uservkdata = vk.Groups.IsMember("161965172", msg.from_id, new List<long>() {msg.from_id}, true)[0];
 
             if (uservkdata.Member) return resultStr;
             else resultStr += "\n \n❗ Ого ого! Я заметил, что ты не подписан на группу! ⚠ Играть можно и не подписавшись на группу, но подписчикам дают разные плюшки :) Так что советую подписаться! 😉 \n И за подписку ты можешь получить бонус :)";
             return resultStr;
         }
 
-        public static string SetNick(LongPollVK.Models.AddNewMsg msg, string nick)
+        public static string SetNick(Models.Message msg, string nick)
         {
-            var user = Api.User.GetUser(msg.PeerId);
+            var user = Api.User.GetUser(msg.from_id);
             if (user.isSetup) return "❌ Вы уже прошли этап установки.!";
                 
             user.Name = nick;
             if (Api.User.SetUser(user))
             {
-                OneRunGame(msg.PeerId);
+                OneRunGame(user.Id);
                 return $"✅ Так точно! Мы теперь будем называть Вас - {nick}! Вы всегда сможете изменить своё имя в настройках.";
             }
                 

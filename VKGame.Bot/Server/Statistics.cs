@@ -18,12 +18,12 @@ namespace VKGame.Bot.Server
                 response.Data = stat;
             }catch(Exception e)
             {
+                Logger.WriteError(e);
+                Bot.Statistics.NewError();
                 response.Ok = false;
                 response.Error = new Error() { Code = 5, Message = $"Внутренняя ошибка сервера: {e.Message}" };
             }
-
             return JsonConvert.SerializeObject(response);
-
         }
     }
 }

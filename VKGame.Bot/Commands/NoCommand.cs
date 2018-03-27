@@ -7,7 +7,7 @@ namespace VKGame.Bot.Commands
     /// </summary>
     public class NoCommand
     {
-        public static void Execute(LongPollVK.Models.AddNewMsg msg)
+        public static void Execute(Models.Message msg)
         {
             //ничего не делать..
         }

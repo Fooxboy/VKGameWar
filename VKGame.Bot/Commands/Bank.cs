@@ -6,13 +6,13 @@ namespace VKGame.Bot.Commands
 {
     public class Bank :ICommand 
     {
-        public string Name => "банк";
+        public string Name => "Банк";
         public string Caption => "Этот раздел предназначан для работы с банком";
         public string Arguments => "(), (Вариант_Выбора)";
         public TypeResponse Type => TypeResponse.Text;
-        public object Execute(LongPollVK.Models.AddNewMsg msg) 
+        public object Execute(Models.Message msg) 
         {
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
                 return GetBankText(msg);
             else
@@ -33,23 +33,39 @@ namespace VKGame.Bot.Commands
                             var myAtr = ((Attributes.Trigger)attribute);
 
                             if (myAtr.Name == messageArray[1])
-                            {
-
+                            { 
                                 object result = method.Invoke(obj, new object[] { msg });
                                 return (string)result;
                             }
                         }
                     }
-
                 }
             }
             return "❌ Неизвестная подкоманда";
         }
 
-        [Attributes.Trigger("обмен")]
-        public static string Exchange(LongPollVK.Models.AddNewMsg msg) 
+        public static class Api
         {
-            var messageArray = msg.Text.Split(' ');
+            public static long SumCredit(long userLvl) => userLvl * 500;
+            public static bool NewCredit(long userId, long price, Models.User user = null)
+            {
+                if (user == null) user = Bot.Api.User.GetUser(userId);
+                var idCredit = Bot.Api.Credit.New(userId, price);
+                user.Credit = idCredit;
+                var listCredit = Bot.Api.CreditList.GetList();
+                listCredit.Credits.Add(user.Id);
+                Statistics.NewCredit();
+                Bot.Api.CreditList.SetList(listCredit);
+                Notifications.EnterPaymentCard(Convert.ToInt32(price), user.Id, "кредит");
+                Bot.Api.User.SetUser(user);
+                return true;
+            }
+        }
+
+        [Attributes.Trigger("обмен")]
+        public static string Exchange(Models.Message msg) 
+        {
+            var messageArray = msg.body.Split(' ');
             long count = 0;
             try 
             {
@@ -61,18 +77,18 @@ namespace VKGame.Bot.Commands
             {
                 return $"❌ {messageArray[2]} не является числом.";
             }
-            var resources = new Api.Resources(msg.PeerId);
+            var resources = new Bot.Api.Resources(msg.from_id);
             if(count > resources.Money) return $"❌ У Вас недостаточно монет. Ваш баланс: {resources.Money} наличных монет. Необходимо: {count} наличных монет. Наличные монеты можно получить с кейсов или из промо акций. А так же купить за реальные деньги!";
             resources.Money = resources.Money - count;
-            Notifications.EnterPaymentCard(Convert.ToInt32(count), msg.PeerId, "банк");
+            Notifications.EnterPaymentCard(Convert.ToInt32(count), msg.from_id, "банк");
             return $"✅ Вы успешно обменяли {count} наличных монет на электронные!";
         }
 
         [Attributes.Trigger("кредит")]
-        public static string Loan(LongPollVK.Models.AddNewMsg msg) 
+        public static string Loan(Models.Message msg) 
         {
-            var user = Api.User.GetUser(msg.PeerId);
-            var messageArray = msg.Text.Split(' ');
+            var user = Bot.Api.User.GetUser(msg.from_id);
+            var messageArray = msg.body.Split(' ');
             long count = 0;
             try
             {
@@ -86,25 +102,21 @@ namespace VKGame.Bot.Commands
             {
                 return $"❌ {messageArray[2]} не является числом!";
             }
-            if(count > (user.Level *500)) return $"❌ Ваша сумма слишком большая. Вам доступно: {user.Level *500}. Чем больше уровень, тем больше доступно кредита!";
+            if(count > (Api.SumCredit(user.Level))) return $"❌ Ваша сумма слишком большая. Вам доступно: {Api.SumCredit(user.Level)}. Чем больше уровень, тем больше размер кредита!";
             if(user.Credit != 0) return "❌ На Вас ещё числится кредит!";
-            var idCredit = Api.Credit.New(msg.PeerId, count);
-            user.Credit = idCredit;
-            var listCredit = Api.CreditList.GetList();
-            listCredit.Credits.Add(user.Id);
-            Statistics.NewCredit();
-            Api.CreditList.SetList(listCredit);
-            Notifications.EnterPaymentCard(Convert.ToInt32(count), user.Id, "кредит");
-            Api.User.SetUser(user);
+
+            Api.NewCredit(user.Id, count, user);
+            
             return $"✅ Вы успешно взяли кредит в размере {count}, сумма снимется через 10 часов!";
         }
 
-        private string GetBankText(LongPollVK.Models.AddNewMsg msg) 
+        private string GetBankText(Models.Message msg) 
         {
-            var resources = new Api.Resources(msg.PeerId);
+            var resources = new Bot.Api.Resources(msg.from_id);
             return $"➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖"+
                    $"\n💰 БАНК \"ВАШИ ДЕНЬГИ\""+
-                   $"\n💳 Состояние Вашего банковского счёта: {resources.MoneyCard}"+
+                   $"\n💳 Состояние Вашего банковского счёта: {resources.MoneyCard}" +
+                   $"\n✨ Состояние Вашего наличного кошелька: {resources.Money}"+
                    $"\n"+
                    $"\nСПИСОК УСЛУГ➖➖➖➖➖➖➖➖➖➖"+
                    $"\n💵 ОБМЕН"+
@@ -115,7 +127,7 @@ namespace VKGame.Bot.Commands
                    $"\n❓ Вы можете взять деньги в долг, а потом вернуть." +
                    $"\n❓ Использование: Банк кредит сумма" +
                    $"\n"+
-                   $"\n▶ Подробную помощь Вы можете посмотреть тут: (ссылка на помощь)" +
+                   $"\n▶ Подробную помощь Вы можете посмотреть в группе." +
                    $"\n➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖";
         }
     }

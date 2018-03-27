@@ -22,15 +22,13 @@ namespace VKGame.Bot.BackgroundProcess
                             var competition = new Api.Competitions(idCompetition);
                             competition.Time = competition.Time - 1;
                             if (competition.Time == 0)
-                            {
                                 Commands.Competitions.EndCompetition(competition.Id);
-                            }
                         }
                     }
                 }catch(Exception e)
                 {
                     Bot.Statistics.NewError();
-                    Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                    Logger.WriteError(e);
 
                 }
             }

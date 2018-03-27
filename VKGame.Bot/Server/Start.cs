@@ -35,10 +35,10 @@ namespace VKGame.Bot.Server
                     while (handler.Available > 0);
 
                     var result = builder.ToString();
-                    Logger.WriteDebug($"НА СЕРВЕР ПОСТУПИЛ ЗАПРОС:  {result}");
+                    Logger.WriteDebug($">>>>>НА СЕРВЕР ПОСТУПИЛ ЗАПРОС:  {result}");
 
                     var response = Core.Processing(result);
-                    Logger.WriteDebug($"СЕРВЕР ОТВЕТИЛ:  {response}");
+                    Logger.WriteDebug($">>>>>СЕРВЕР ОТВЕТИЛ:  {response}");
 
                     // отправляем ответ
                     data = Encoding.Unicode.GetBytes(response);
@@ -51,7 +51,7 @@ namespace VKGame.Bot.Server
             catch (Exception e)
             {
                 Bot.Statistics.NewError();
-                Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                Logger.WriteError(e);
             }
         }
     }

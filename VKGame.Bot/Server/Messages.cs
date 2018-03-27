@@ -15,10 +15,10 @@ namespace VKGame.Bot.Server
 
             try
             {
-                if (ts == Bot.Common.LastMessage) Thread.Sleep(10000);
+                if (ts == Convert.ToUInt64(Bot.Common.LastMessage)) Thread.Sleep(10000);
                 var modelMessages = new NowMessagesResponse { Updates = new List<MessageResponse>() };
                 var listMessages = Api.CacheMessages.GetList();
-                var messageNotWatch = listMessages.Message.Where(message => message.Id > ts);
+                var messageNotWatch = listMessages.Message.Where(message => Convert.ToUInt64(message.Id) > ts);
                 foreach (Models.MessageCache message in messageNotWatch)
                 {
                     var modelMessage = new MessageResponse
@@ -29,7 +29,7 @@ namespace VKGame.Bot.Server
                         PeerId = message.PeerId
                     };
                     modelMessages.Updates.Add(modelMessage);
-                    ts = message.Id;
+                    ts = Convert.ToUInt64(message.Id);
                 }
 
                 modelMessages.Ts = ts;
@@ -39,8 +39,7 @@ namespace VKGame.Bot.Server
 
             }catch(Exception e)
             {
-                Logger.WriteError($"Ошибка при отправке данных сервера: {e.Message}" +
-                    $"\n{e.StackTrace}");
+                Logger.WriteError(e);
                 response.Ok = false;
                 response.Error = new Error() { Code = 5, Message = $"Внутренняя ошибка сервера: {e.Message}" };
                 return JsonConvert.SerializeObject(response);
@@ -55,12 +54,11 @@ namespace VKGame.Bot.Server
             {
                 var ts = Bot.Common.LastMessage;
                 var model = ts;
-                response.Data = model;
+                response.Data = Convert.ToUInt64(model);
                 response.Ok = true;
             }catch(Exception e)
             {
-                Logger.WriteError($"Ошибка при отправке данных сервера: {e.Message}" +
-                    $"\n {e.StackTrace}");
+                Logger.WriteError(e);
                 response.Ok = false;
                 response.Error = new Error() { Code = 5, Message = $"Внутренняя ошибка сервера: {e.Message}" };
             }

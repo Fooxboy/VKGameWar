@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace VKGame.Bot
 {
-    public class LongPollVK
+    /*public class OldLongPollVK
     {
         #region Модели
         public class Models
@@ -786,9 +786,28 @@ namespace VKGame.Bot
                         Pts = model.Pts;
                         }
                         var json = core.GetJson(Server, Key, Ts);
-                        var rootLongPoll = JsonConvert.DeserializeObject<Models.Root>(json);
+                        Models.Root rootLongPoll;
+                        try
+                        {
+                            rootLongPoll = JsonConvert.DeserializeObject<Models.Root>(json);
 
-                        //Обработка ошибок лонг пулла.
+                        }catch
+                        {
+                            //Обработка ошибок лонг пулла.
+                            var errorLongPoll = JsonConvert.DeserializeObject<Models.Error>(json);
+                            if (errorLongPoll.failed == 2 || errorLongPoll.failed == 3)
+                            {
+                                var model = core.GetTsAndServer();
+                                Server = model.Server;
+                                Ts = model.Ts;
+                                Key = model.Key;
+                                Pts = model.Pts;
+                            }
+                                //else if (errorLongPoll.failed == 2) Ts = errorLongPoll.ts;
+                            else if (errorLongPoll.failed == 4) throw new Exception("Мин и макс версия.");
+                            rootLongPoll = JsonConvert.DeserializeObject<Models.Root>(json);
+                        }
+
                         if (rootLongPoll.Ts == null)
                         {
                             var errorLongPoll = JsonConvert.DeserializeObject<Models.Error>(json);
@@ -802,11 +821,14 @@ namespace VKGame.Bot
                             }
                             //else if (errorLongPoll.failed == 2) Ts = errorLongPoll.ts;
                             else if (errorLongPoll.failed == 4) throw new Exception("Мин и макс версия.");
+                            rootLongPoll = JsonConvert.DeserializeObject<Models.Root>(json);
+
                         }
 
                         //заного задаём значение переменной.
-                        rootLongPoll = JsonConvert.DeserializeObject<Models.Root>(json);
-                        Ts = UInt64.Parse(rootLongPoll.Ts);
+
+
+                        if (rootLongPoll.Ts != null) Ts = UInt64.Parse(rootLongPoll.Ts);
                         var updates = rootLongPoll.Updates;
 
                         //Проверяем кол-во обновлений.
@@ -983,7 +1005,7 @@ namespace VKGame.Bot
                             }
                             else if (code == 14) //Восстановление недавно удаленных сообщений в диалоге $peer_id с идентификаторами вплоть до $local_id.
                             {
-                                //TODO: сделать модель
+                                //щаTODO: сделать модель
                             }
                             else if (code == 51) //Один из параметров (состав, тема) беседы $chat_id были изменены. $self — 1 или 0 (вызваны ли изменения самим пользователем). 
                             {
@@ -1044,5 +1066,5 @@ namespace VKGame.Bot
             }
         }
         #endregion
-    }
+    }*/
 }

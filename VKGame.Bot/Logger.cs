@@ -32,11 +32,14 @@ namespace VKGame.Bot
         /// Вывод ошибок на консоль.
         /// </summary>
         /// <param name="Сообщение"></param>
-        public static void WriteError(object message)
+        public static void WriteError(Exception e)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             var time = DateTime.Now;
-            Console.WriteLine($"[{time}]=> {message}");
+            Console.WriteLine($"[{time}]=>" +
+                $"\n >>ИСКЛЮЧЕНИЕ: {e.GetType().Name}" +
+                $"\n >>СООБЩЕНИЕ: {e.Message}" +
+                $"\n >>STACK TRACE: {e.StackTrace}");
             Console.ResetColor();
         }
         

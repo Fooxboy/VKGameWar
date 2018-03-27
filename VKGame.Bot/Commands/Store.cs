@@ -1,6 +1,7 @@
 using System;
 using Newtonsoft.Json;
 using System.IO;
+using VKGame.Bot.Models;
 
 namespace VKGame.Bot.Commands
 {
@@ -10,9 +11,9 @@ namespace VKGame.Bot.Commands
         public string Caption => "Эта команда предназначена для работы с разделом магазина";
         public string Arguments => "(), (Вариант_выбора)";
         public TypeResponse Type => TypeResponse.Text;
-        public object Execute(LongPollVK.Models.AddNewMsg msg) 
+        public object Execute(Message msg) 
         {
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
                 return GetStoreText(msg);
             else
@@ -43,9 +44,9 @@ namespace VKGame.Bot.Commands
             }
         }
 
-        public static string GetStoreText(LongPollVK.Models.AddNewMsg msg) 
+        public static string GetStoreText(Message msg) 
         {
-            var resource = new Api.Resources(msg.PeerId);
+            var resource = new Api.Resources(msg.from_id);
             return $"➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖"+
                    $"\n💳 Ваш баланс: {resource.MoneyCard}"+
                    $"\n"+
@@ -75,9 +76,9 @@ namespace VKGame.Bot.Commands
         
 
         [Attributes.Trigger("ресурс")]
-        public static string Resources(LongPollVK.Models.AddNewMsg msg)
+        public static string Resources(Message msg)
         {
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
             string resource = "";
             try
             {
@@ -99,7 +100,7 @@ namespace VKGame.Bot.Commands
                 return "❌ Вы указали неверное количество.";
             }
 
-            var resources = new Api.Resources(msg.PeerId);
+            var resources = new Api.Resources(msg.from_id);
 
             if (count < 10) return "❌ Минимальное количество: 10";
             if (resources.MoneyCard < count / 10) return $"❌ У Вас недосточно монет для покупки. Ваш баланс: {resources.MoneyCard}. Необходимо: {count / 10}";
@@ -108,14 +109,14 @@ namespace VKGame.Bot.Commands
             else if (resource.ToLower() == "еда") resources.Food = resources.Food + count;
             else if (resource.ToLower() == "энергия") resources.Energy = resources.Energy + count;
             else return "❌ Вы указали несуществующий ресурс. Доступные ресурсы: еда, энергия, вода";
-            Notifications.RemovePaymentCard(Convert.ToInt32(count / 10), msg.PeerId, "покупка ресурсов в магазине");
+            Notifications.RemovePaymentCard(Convert.ToInt32(count / 10), msg.from_id, "покупка ресурсов в магазине");
             return "✅ Вы успешно купили ресурсы! ";
         }
 
         [Attributes.Trigger("опыт")]
-        public static string Exp(LongPollVK.Models.AddNewMsg msg)
+        public static string Exp(Message msg)
         {
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
             long count = 0;
             try
             {
@@ -127,10 +128,10 @@ namespace VKGame.Bot.Commands
             {
                 return "❌ Вы указали не число.";
             }
-            var resources = new Api.Resources(msg.PeerId);
-            var user = Api.User.GetUser(msg.PeerId);
+            var resources = new Api.Resources(msg.from_id);
+            var user = Api.User.GetUser(msg.from_id);
             if (resources.MoneyCard < count) return $"❌ У Вас недостаточно денег для такой покупки! Ваш баланс: {resources.MoneyCard}. Необходимо: {count}";
-            Notifications.RemovePaymentCard(Convert.ToInt32(count), msg.PeerId, "Покупка опыта.");
+            Notifications.RemovePaymentCard(Convert.ToInt32(count), user.Id, "Покупка опыта.");
             user.Experience = user.Experience + count;
             Api.User.SetUser(user);
             return $"✅ Вы успешно купили {count} опыта!";

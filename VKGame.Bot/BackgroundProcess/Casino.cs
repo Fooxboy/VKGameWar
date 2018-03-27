@@ -15,9 +15,10 @@ namespace VKGame.Bot.BackgroundProcess
         /// </summary>
         public static void TimerTriggerEndGame(object ticketObject)
         {
+
+            Thread.Sleep(300000);
             try
             {
-                Thread.Sleep(300000);
                 Models.Tickets.Ticket ticket = (Models.Tickets.Ticket)ticketObject;
                 long[] price = { 5, 8, 1, 10, 20, 30, 40, 50, 55, 70, 80, 100, 150, 200, 300 };
                 var r = new Random();
@@ -31,7 +32,7 @@ namespace VKGame.Bot.BackgroundProcess
 
             }catch(Exception e)
             {
-                Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                Logger.WriteError(e);
                 Bot.Statistics.NewError();
             }
 
@@ -43,8 +44,8 @@ namespace VKGame.Bot.BackgroundProcess
         /// </summary>
         public static void TimerTriggerRoulette()
         {
-            Thread.Sleep(120000);
 
+            Thread.Sleep(120000);
             try
             {
                 var roulette = Api.Roulette.GetList();
@@ -73,20 +74,13 @@ namespace VKGame.Bot.BackgroundProcess
 
                 foreach (var winner in roulette.Prices)
                 {
-                    if (winner.Smile == winSmile)
-                    {
-                        countWinners += 1;
-                    }
+                    if (winner.Smile == winSmile) ++countWinners;
                 }
 
                 long priceWinner = 0;
-                if (countWinners == 0)
-                {
-                    priceWinner = 0;
-                }else
-                {
+                if (countWinners == 0) priceWinner = 0;
+                else
                     priceWinner = roulette.Fund / countWinners;
-                }
 
 
                 foreach (var price in roulette.Prices)
@@ -114,10 +108,8 @@ namespace VKGame.Bot.BackgroundProcess
 
                     if (price.Smile == winSmile)
                     {
-
+                        Api.MessageSend(winText, price.User);
                     }
-
-                    Api.MessageSend(winText, price.User);
                 }
                 Bot.Statistics.WinCasino(priceWinner);
 
@@ -126,7 +118,7 @@ namespace VKGame.Bot.BackgroundProcess
                 Api.Roulette.SetList(roulette);
             }catch(Exception e)
             {
-                Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                Logger.WriteError(e);
                 Bot.Statistics.NewError();
             }
 

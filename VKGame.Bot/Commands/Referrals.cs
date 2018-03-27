@@ -10,9 +10,9 @@ namespace VKGame.Bot.Commands
         public string Caption => "Здесь можно посмотреть кто у Вас реферал и сколько вы получаете с него прибыли.";
         public string Arguments => "()";
         public TypeResponse Type => TypeResponse.Text;
-        public object Execute(LongPollVK.Models.AddNewMsg msg)
+        public object Execute(Models.Message msg)
         {
-            return GetReferralsText(msg.PeerId);
+            return GetReferralsText(msg.from_id);
         }
 
         private string GetReferralsText(long id)

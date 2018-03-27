@@ -14,9 +14,9 @@ namespace VKGame.Bot.Commands
         public string Caption =>"Раздел предназначен для работы с промокодами.";
         public string Arguments => "(промокод)";
         public TypeResponse Type => TypeResponse.Text;
-        public object Execute(LongPollVK.Models.AddNewMsg msg) 
+        public object Execute(Models.Message msg) 
         {
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
             long promocode = 0;
             try 
             {
@@ -33,12 +33,12 @@ namespace VKGame.Bot.Commands
             if(promo.Count == 0) return "❌ Количество использований этого промокода уже изчерпано.";
             foreach(var userId in promo.Users) 
             {
-                if(userId == msg.PeerId) return "❌ Вы уже использовали данный промокод.";
+                if(userId == msg.from_id) return "❌ Вы уже использовали данный промокод.";
             }
-            var resources =  new Api.Resources(msg.PeerId);
-            Notifications.EnterPaymentCard(Convert.ToInt32(promo.MoneyCard), msg.PeerId, "Активация промокода.");
+            var resources =  new Api.Resources(msg.from_id);
+            Notifications.EnterPaymentCard(Convert.ToInt32(promo.MoneyCard), msg.from_id, "Активация промокода.");
             var usersPromo = promo.Users;
-            usersPromo.Add(msg.PeerId);
+            usersPromo.Add(msg.from_id);
             promo.Users = usersPromo;
             promo.Count = promo.Count -1;
             Statistics.ActivatePromo();

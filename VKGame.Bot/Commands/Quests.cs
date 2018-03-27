@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using VKGame.Bot.Models;
 
 namespace VKGame.Bot.Commands
 {
@@ -12,9 +13,9 @@ namespace VKGame.Bot.Commands
         public string Arguments => "(), (Вариант выбора)";
         public TypeResponse Type => TypeResponse.Text;
 
-        public object Execute(LongPollVK.Models.AddNewMsg msg)
+        public object Execute(Message msg)
         {
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
                 return GetQuestsText(msg);
             else
@@ -46,9 +47,9 @@ namespace VKGame.Bot.Commands
         }
 
         [Attributes.Trigger("старт")]
-        public static string Start(LongPollVK.Models.AddNewMsg msg)
+        public static string Start(Message msg)
         {
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
             long choise = 0;
             try
             {
@@ -64,16 +65,16 @@ namespace VKGame.Bot.Commands
             if (Api.Quests.Check(choise)) return "❌ Вы указали неверный ID квеста! Чтобы посмотреть список: Квесты";
             var quest = new Api.Quests(choise);
             var members = quest.Users;
-            if (members.List.Any(u => u.Id == msg.PeerId)) return "❌ Вы и так учавствуете в квесте!";
+            if (members.List.Any(u => u.Id == msg.from_id)) return "❌ Вы и так учавствуете в квесте!";
             if (!quest.IsOnline) return "❌ Квест уже закончился :( Чтобы посмотреть список: Квесты ";
 
-            var user = Api.User.GetUser(msg.PeerId);
+            var user = Api.User.GetUser(msg.from_id);
 
             if (user.Quest != 0) return $"❌ Вы и так учавствуете в квесте № {user.Quest}! Если хоитите покинуть квест - Квесты покинуть";
 
             Models.Quests.User member = null;
             var membersList = quest.Users.List;
-            var membersWhere = membersList.Where(u => u.Id == msg.PeerId);
+            var membersWhere = membersList.Where(u => u.Id == user.Id);
             if (membersWhere != null)
             {
                 foreach (Models.Quests.User memberfor in membersWhere)
@@ -86,7 +87,7 @@ namespace VKGame.Bot.Commands
             {
                 member = new Models.Quests.User()
                 {
-                    Id = msg.PeerId,
+                    Id = user.Id,
                     Progress = 0,
                     Status = 1
                 };
@@ -193,20 +194,20 @@ namespace VKGame.Bot.Commands
         }
 
         [Attributes.Trigger("Покинуть")]
-        public static string Leave(LongPollVK.Models.AddNewMsg msg)
+        public static string Leave(Message msg)
         {
             return "возможность покинуть квест пока что недоступна :/";
         }
 
         [Attributes.Trigger("прогресс")]
-        public static string Progress(LongPollVK.Models.AddNewMsg msg)
+        public static string Progress(Message msg)
         {
-            var user = Api.User.GetUser(msg.PeerId);
+            var user = Api.User.GetUser(msg.from_id);
             if (user.Quest == 0) return "❌ Вы у не учавствуете ни в каком квесте! Посмотрите список квестов, написав: квесты";
             var quest = new Api.Quests(user.Quest);
 
             Models.Quests.User member = null;
-            var membersWhere = quest.Users.List.Where(u => u.Id == msg.PeerId);
+            var membersWhere = quest.Users.List.Where(u => u.Id == user.Id);
             foreach(Models.Quests.User memberfor in membersWhere)
             {
                 member = memberfor;
@@ -226,7 +227,7 @@ namespace VKGame.Bot.Commands
             return info;
         }
 
-        private string GetQuestsText(LongPollVK.Models.AddNewMsg msg)
+        private string GetQuestsText(Message msg)
         {
        
             string text = $"➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖" +

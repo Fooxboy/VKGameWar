@@ -5,15 +5,15 @@ namespace VKGame.Bot.Commands
 {
     public class Buildings : ICommand
     {
-        public string Name => "постройки";
+        public string Name => "Постройки";
         public string Arguments => "(), (Вариант_выбора)";
         public string Caption => "Раздел для управления Вашими зданиями.";
         public TypeResponse Type => TypeResponse.Text;
 
-        public object Execute(LongPollVK.Models.AddNewMsg msg)
+        public object Execute(Models.Message msg)
         {
 
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
                 return GetBuildingsText(msg, $"Время последнего обновления: {DateTime.Now}");
             else
@@ -30,12 +30,9 @@ namespace VKGame.Bot.Commands
                     {
                         if (attribute.GetType() == typeof(Attributes.Trigger))
                         {
-
                             var myAtr = ((Attributes.Trigger) attribute);
-
                             if (myAtr.Name == messageArray[1])
                             {
-
                                 object result = method.Invoke(obj, new object[] {msg});
                                 return (string) result;
                             }
@@ -47,24 +44,44 @@ namespace VKGame.Bot.Commands
             return "❌ Неизвестная подкоманда.";
         }
 
-        private string GetBuildingsText(LongPollVK.Models.AddNewMsg msg, string notify) 
+        public static class Api
         {
-            var user = Api.User.GetUser(msg.PeerId);
-            var builds = new Api.Builds(msg.PeerId);        
+            public static long MaxTanks(long countHangars) => countHangars * 5;
+
+            public static long MaxSoldiery(long coutApartaments) => coutApartaments * 10;
+
+            public static long MaxEnergyGen(long enGenerators) => enGenerators * 10;
+
+            public static long MaxWaterGen(long watGenerators) => watGenerators * 10;
+
+            public static long MaxFoodGen(long foodGenerators) => foodGenerators * 10;
+
+            public static long MaxEnergy(long battary) => battary * 100;
+
+            public static long MaxWater(long boxWater) => boxWater * 100;
+
+            public static long MaxFood(long foodWare) => foodWare * 100;
+
+        }
+
+        private string GetBuildingsText(Models.Message msg, string notify) 
+        {
+            var user = Bot.Api.User.GetUser(msg.from_id);
+            var builds = new Bot.Api.Builds(user.Id);        
             return $"‼{notify}"+
                    $"\n➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖"+
                    $"\n⚠В этом разделе Вы можете наблюдать какие здания у Вас есть. Сможете их купить или продать."+
                    $"\n"+
                    $"\nВАШИ ЗДАНИЯ➖➖➖➖➖➖➖➖➖➖➖➖➖"+
-                   $"\n🏡 Жилые дома: {builds.Apartments}. Может поселится {builds.Apartments * 10} солдат."+
-                   $"\n⚡ Электростанции: {builds.PowerGenerators}. Генерируется {builds.PowerGenerators * 10} ⚡ в минуту."+
-                   $"\n💦 Водонапорные башни: {builds.WaterPressureStation}. Генерируется {builds.WaterPressureStation* 10} 💧 в минуту."+
-                   $"\n🍔 Закусочные: {builds.Eatery}. Готовится {builds.Eatery * 5} 🍕 в минуту."+
+                   $"\n🏡 Жилые дома: {builds.Apartments}. Может поселится {Api.MaxSoldiery(builds.Apartments)} солдат."+
+                   $"\n⚡ Электростанции: {builds.PowerGenerators}. Генерируется {Api.MaxEnergyGen(builds.PowerGenerators)} ⚡ в минуту."+
+                   $"\n💦 Водонапорные башни: {builds.WaterPressureStation}. Генерируется {Api.MaxWaterGen(builds.WaterPressureStation)} 💧 в минуту."+
+                   $"\n🍔 Закусочные: {builds.Eatery}. Готовится {Api.MaxFoodGen(builds.Eatery)} 🍕 в минуту."+
                    $"\n"+
-                   $"\n🔋 Энергетические батареи: {builds.WarehouseEnergy}"+
-                   $"\n🌊 Бочки с водой: {builds.WarehouseWater}"+
-                   $"\n🍬 Холодильники: {builds.WarehouseEat}"+
-                   $"\n💣 Ангары: {builds.WarehouseEat}"+
+                   $"\n🔋 Энергетические батареи: {builds.WarehouseEnergy}. Вмещается: {Api.MaxEnergy(builds.WarehouseEnergy)} ⚡" +
+                   $"\n🌊 Бочки с водой: {builds.WarehouseWater}. Вмещается: {Api.MaxWater(builds.WarehouseWater)} 💧" +
+                   $"\n🍬 Холодильники: {builds.WarehouseEat}. Вмещается: {Api.MaxFood(builds.WarehouseEat)} 🍕" +
+                   $"\n💣 Ангары: {builds.Hangars}. Вмещается: {Api.MaxTanks(builds.Hangars)} танков"+
                    $"\n"+
                    $"\n➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖"+
                    $"\n💵 Вы можете покупать новые постройки. Для этого напишите: {Name} купить название_постройки"+
@@ -76,7 +93,7 @@ namespace VKGame.Bot.Commands
         }
 
         [Attributes.Trigger("цены")]
-        public static string Prices(LongPollVK.Models.AddNewMsg msg) 
+        public static string Prices(Models.Message msg) 
         {
             Dictionary<string,int> buildsList = new Dictionary<string, int>();
             buildsList.Add("Жилой дом", 400);
@@ -118,11 +135,11 @@ namespace VKGame.Bot.Commands
         }
 
         [Attributes.Trigger("купить")]
-        public static string BuyBuilds(LongPollVK.Models.AddNewMsg msg) 
+        public static string BuyBuilds(Models.Message msg) 
         {
-            var user = Api.User.GetUser(msg.PeerId);
-            var builds = new Api.Builds(msg.PeerId);
-            var messageArray = msg.Text.Split(' ');
+            var user = Bot.Api.User.GetUser(msg.from_id);
+            var builds = new Bot.Api.Builds(user.Id);
+            var messageArray = msg.body.Split(' ');
             
             Dictionary<string,int> buildsList = new Dictionary<string, int>();
             buildsList.Add("Жилой", 400);
@@ -140,7 +157,7 @@ namespace VKGame.Bot.Commands
             {
                 if(buildL.Key.ToLower() == build.ToLower()) 
                 {
-                    if(!Notifications.RemovePaymentCard(buildL.Value, msg.PeerId, "Покупка построек")) return "❌ На Вашем счету нет нужной суммы.";
+                    if(!Notifications.RemovePaymentCard(buildL.Value, user.Id, "Покупка построек")) return "❌ На Вашем счету нет нужной суммы.";
                     if(buildL.Key.ToLower() == "жилой")
                     {
                         var liveBuild = builds.Apartments;
@@ -188,20 +205,19 @@ namespace VKGame.Bot.Commands
                         builds.Hangars = liveBuild;
                     }
                     else return "❌ Не удалось купить здание. Попробуйте позже.";
-                    
-
+                   
                     return "✅ Вы успешно купили постройку!";
                 }
             }
-            return "❌ Неизвестное название постройки!";
+            return "❌ Неизвестное название постройки! Доступные названия: Жилой дом, Электростанцию, Водонапорную башню, Закусочную, Энергетическиую, Бочку, Холодильник, Ангар";
         }
 
         [Attributes.Trigger("продать")]
-        public static string SellOfBuilds(LongPollVK.Models.AddNewMsg msg) 
+        public static string SellOfBuilds(Models.Message msg) 
         {
 
-            var builds = new Api.Builds(msg.PeerId);
-            var messageArray = msg.Text.Split(' ');
+            var builds = new Bot.Api.Builds(msg.from_id);
+            var messageArray = msg.body.Split(' ');
             
             Dictionary<string,int> buildsList = new Dictionary<string, int>();
             buildsList.Add("Жилой", 300);
@@ -218,11 +234,11 @@ namespace VKGame.Bot.Commands
 
             foreach(var buildL in buildsList) 
             {
-                Notifications.EnterPaymentCard(buildL.Value,msg.PeerId, "Продажа построек");
+                Notifications.EnterPaymentCard(buildL.Value,msg.from_id,"Продажа построек");
                 return "✅ Вы успешно продали постройку!";
             }
 
-            return "❌ Неизвестное название постройки! ";
+            return "❌ Неизвестное название постройки! Доступные названия: Жилой дом, Электростанцию, Водонапорную башню, Закусочную, Энергетическиую, Бочку, Холодильник, Ангар";
         } 
     }
 }

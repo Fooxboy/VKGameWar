@@ -7,14 +7,13 @@ namespace VKGame.Bot.BackgroundProcess
 {
     public class Common 
     {
-
         public static void DailyBonus() 
         {
             while(true) 
             {
+                Thread.Sleep(3600000);
                 try
                 {
-                    Thread.Sleep(3600000);
                     if (DateTime.Now.Hour == 8)
                     {
                         var listUsers = Api.UserList.GetList();
@@ -37,7 +36,6 @@ namespace VKGame.Bot.BackgroundProcess
                                 {
                                     Api.MessageSend("🎈 Привет! Я вижу, что ты давно не играл! Ваша армия Вас ждёт! НАЧИНАЙ ИГРАТЬ :)", userId);
                                 }
-
                             }
 
                         }
@@ -45,8 +43,7 @@ namespace VKGame.Bot.BackgroundProcess
                 }catch(Exception e)
                 {
                     Bot.Statistics.NewError();
-                    Logger.WriteError($"{e.Message} \n {e.StackTrace}");
-
+                    Logger.WriteError(e);
                 }
             }
         }
@@ -60,7 +57,7 @@ namespace VKGame.Bot.BackgroundProcess
             }catch(Exception e)
             {
                 Bot.Statistics.NewError();
-                Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                Logger.WriteError(e);
             }
         }
 
@@ -70,60 +67,67 @@ namespace VKGame.Bot.BackgroundProcess
             {
                 try
                 {
-                    if (DateTime.Now.Hour == 23)
+                    if(DateTime.Now.Hour == 23 || DateTime.Now.Hour == 12)
                     {
-
                         try
                         {
                             var model = new Models.MessagesCache();
                             model.Message = new System.Collections.Generic.List<Models.MessageCache>();
                             Api.CacheMessages.SetList(model);
-                        }catch(Exception e)
+                        }
+                        catch (Exception e)
                         {
                             Bot.Statistics.NewError();
-                            Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                            Logger.WriteError(e);
                         }
-                        
-
+                    }
+                    if (DateTime.Now.Hour == 23)
+                    { 
                         //обуление пользователей в квесте 1
                         var quest = new Api.Quests(1);
                         var members = quest.Users.List;
-                        if(members.Count != 0)
+                        if(members != null)
                         {
-                            foreach (var member in members)
+                            if (members.Count != 0)
                             {
-                                var user = Api.User.GetUser(member.Id);
-                                user.Quest = 0;
-                                Api.User.SetUser(user);
+                                foreach (var member in members)
+                                {
+                                    var user = Api.User.GetUser(member.Id);
+                                    user.Quest = 0;
+                                    Api.User.SetUser(user);
+                                }
+                                members = new System.Collections.Generic.List<Models.Quests.User>();
                             }
-                            members = new System.Collections.Generic.List<Models.Quests.User>();
                         }
-                            quest.Users = new Models.Quests.Users() { List = members };
+                       
+                        quest.Users = new Models.Quests.Users() { List = members };
 
                         //Обнуление пользователй в квесте 2
                         var quest2 = new Api.Quests(2);
                         var members2 = quest.Users.List;
-                        if(members2.Count != 0)
+                        if(members2 != null)
                         {
-                            foreach (var member2 in members2)
+                            if (members2.Count != 0)
                             {
-                                var user2 = Api.User.GetUser(member2.Id);
-                                user2.Quest = 0;
-                                Api.User.SetUser(user2);
+                                foreach (var member2 in members2)
+                                {
+                                    var user2 = Api.User.GetUser(member2.Id);
+                                    user2.Quest = 0;
+                                    Api.User.SetUser(user2);
+                                }
+                                members2 = new System.Collections.Generic.List<Models.Quests.User>();
                             }
-                            members2 = new System.Collections.Generic.List<Models.Quests.User>();
-                        }         
+                        }           
                         quest2.Users = new Models.Quests.Users() { List = members2 };
                     }
                 }catch(Exception e)
                 {
                     Bot.Statistics.NewError();
-                    Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                    Logger.WriteError(e);
                 }
-                
                 Thread.Sleep(3600000);
             }
-            
+
         }
 
         public static void RebootBot() 
@@ -131,7 +135,6 @@ namespace VKGame.Bot.BackgroundProcess
             if(DateTime.Now.Hour == 21)  
             {
                 Thread.Sleep(5000);
-                Logger.WriteError("ПЕРЕЗАГРУЗКА...");
                 string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
                 //это мы узнали полное имя запущенного приложения.
                 //чтоб запустить его снова сделаем так

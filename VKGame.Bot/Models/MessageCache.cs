@@ -11,7 +11,7 @@ namespace VKGame.Bot.Models
 
     public class MessageCache
     {
-        public ulong Id { get; set; }
+        public long Id { get; set; }
         public string Text { get; set; }
         public long PeerId { get; set; }
         public string Time { get; set; }

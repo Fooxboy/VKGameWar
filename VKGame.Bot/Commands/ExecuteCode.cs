@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
+using VKGame.Bot.Models;
 
 namespace VKGame.Bot.Commands
 {
@@ -13,11 +14,11 @@ namespace VKGame.Bot.Commands
         public string Arguments => "ааа";
         public TypeResponse Type => TypeResponse.Text;
 
-        public object Execute(LongPollVK.Models.AddNewMsg msg)
+        public object Execute(Message msg)
         {
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
 
-            var user = Api.User.GetUser(msg.PeerId);
+            var user = Api.User.GetUser(msg.from_id);
             if (user.Access < 4) return "Вам недоступна эта команда.";
             string code = String.Empty;
 

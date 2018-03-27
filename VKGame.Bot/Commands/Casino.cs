@@ -21,11 +21,11 @@ namespace VKGame.Bot.Commands
 
         public TypeResponse Type => TypeResponse.Text;
 
-        public object Execute(LongPollVK.Models.AddNewMsg msg)
+        public object Execute(Models.Message msg)
         {
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
-                return GetCasinoText(msg.PeerId, $"Время последнего обновления: {DateTime.Now}");
+                return GetCasinoText(msg.from_id, $"Время последнего обновления: {DateTime.Now}");
             else
             {
                 var type = typeof(Casino);
@@ -40,20 +40,15 @@ namespace VKGame.Bot.Commands
                     {
                         if (attribute.GetType() == typeof(Attributes.Trigger))
                         {
-
                             var myAtr = ((Attributes.Trigger) attribute);
-
                             if (myAtr.Name == messageArray[1])
                             {
-
                                 object result = method.Invoke(obj, new object[] {msg});
                                 return (string) result;
                             }
                         }
-                    }
-                    
+                    }         
                 }
-
                 return "❌ Неизвестная подкоманда.";
             }
         }
@@ -71,18 +66,18 @@ namespace VKGame.Bot.Commands
         }
 
         [Attributes.Trigger("карты")]
-        public string Cards(LongPollVK.Models.AddNewMsg msg)
+        public string Cards(Models.Message msg)
         {
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
 
             return "Карты в разработке. И будут там долго :)";
         }
         
 
         [Attributes.Trigger("билет")]
-        public string Ticket(LongPollVK.Models.AddNewMsg msg)
+        public string Ticket(Models.Message msg)
         {
-            var id = msg.PeerId;
+            var id = msg.from_id;
             var user = Api.User.GetUser(id);
             var resouces = new Api.Resources(id);
             if (resouces.MoneyCard < 50) return $"❌ На Вашем счету недостаточно Монет. Ваш баланс: {resouces.MoneyCard} 💳 Необходимо: 50 💳 ";
@@ -98,11 +93,11 @@ namespace VKGame.Bot.Commands
         }
 
         [Attributes.Trigger("рулетка")]
-        public static string Roulette(LongPollVK.Models.AddNewMsg msg)
+        public static string Roulette(Models.Message msg)
         {
-            var user = Api.User.GetUser(msg.PeerId);
-            var resources = new Api.Resources(msg.PeerId);
-            var messageArray = msg.Text.Split(' ');
+            var user = Api.User.GetUser(msg.from_id);
+            var resources = new Api.Resources(user.Id);
+            var messageArray = msg.body.Split(' ');
             string smile = "";
             long price = 0;
             try
@@ -130,14 +125,14 @@ namespace VKGame.Bot.Commands
             bool userUsed = false;
             foreach (var rouletteItem in roulette.Prices)
             {
-                if(msg.PeerId == rouletteItem.User)
+                if(user.Id == rouletteItem.User)
                 {
                     userUsed = true;
                     break;
                 }
             }
             if (userUsed) return "❌ Вы уже сделали ставку.";
-            Notifications.RemovePaymentCard(Convert.ToInt32(price), msg.PeerId, "Ставка в рулетке.");
+            Notifications.RemovePaymentCard(Convert.ToInt32(price), user.Id, "Ставка в рулетке.");
             if(roulette.Prices.Count == 0)
             {
                 var theadRoulette = new Thread(BackgroundProcess.Casino.TimerTriggerRoulette);
@@ -146,7 +141,7 @@ namespace VKGame.Bot.Commands
                 theadRoulette.Start();
                 roulette.Fund = 0;
             }
-            roulette.Prices.Add(new Models.RoulettePrices { User = msg.PeerId, Price = price, Smile = smile });
+            roulette.Prices.Add(new Models.RoulettePrices { User = user.Id, Price = price, Smile = smile });
             roulette.Fund = roulette.Fund + price;
             Api.Roulette.SetList(roulette);
             string users = "";
@@ -155,7 +150,7 @@ namespace VKGame.Bot.Commands
             {
                 var userModel = Api.User.GetUser(priceUser.User);
                 users += $"\n➡ {userModel.Name} поставил {priceUser.Price} на {priceUser.Smile}";
-                Api.MessageSend($"К игре присоединился новый игрок! Фонд рулетки теперь: {roulette.Fund}", userModel.Id);
+                Api.MessageSend($"❗ К игре присоединился новый игрок! Фонд рулетки теперь: {roulette.Fund}", userModel.Id);
             }
             return $"✅  Вы успешно поставили на {smile}!" +
                 $"\n" +

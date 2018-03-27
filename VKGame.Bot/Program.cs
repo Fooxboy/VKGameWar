@@ -22,13 +22,13 @@ namespace VKGame.Bot
                     Console.Title = $"War of the World  ver. {config.Version}";
 
                     Logger.WriteDebug("Создание экземпляра лонгпулла.");
-                    var starter = new LongPollVK.StarterLongPoll();
+                    var longpoll = new BotsLongPollVK();
                     Logger.WriteDebug("Создан.");
 
                     Logger.WriteDebug("Создание потока LongPoll.");
-                    Thread threadLongPoll = new Thread(new ParameterizedThreadStart(starter.Start));
+                    Thread threadLongPoll = new Thread(new ParameterizedThreadStart(longpoll.Start));
                     threadLongPoll.Name = "LongPoll";
-                    threadLongPoll.Start("группа");
+                    threadLongPoll.Start(Common.GetToken());
 
                     /* Thread threadStatus = new Thread(BackgroundProcess.Common.UpdateStatus);
                      threadStatus.Name = "Status";
@@ -69,10 +69,10 @@ namespace VKGame.Bot
                     threadResetMembers.Start();
                     Logger.WriteDebug("Старт потока threadResetMembers.");
 
-                    Thread threadServer = new Thread(BackgroundProcess.Common.StartServer);
+                  /*  Thread threadServer = new Thread(BackgroundProcess.Common.StartServer);
                     threadServer.Name = "threadServer";
                     threadServer.Start();
-                    Logger.WriteDebug("Старт потока threadServer.");
+                    Logger.WriteDebug("Старт потока threadServer.");*/
 
                     Thread threadStatistics = new Thread(BackgroundProcess.Statistics.StartAdd);
                     threadStatistics.Name = "threadStatistics";
@@ -121,16 +121,16 @@ namespace VKGame.Bot
                         catch (Exception e)
                         {
                             Statistics.NewError();
-                            Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
+                            Logger.WriteError(e);
                         }
                     }
-                    starter.AddNewMsgEvent += Core.NewMessage;
+                    longpoll.NewMesageEvent += Core.NewMessage;
 
                     var argumentsArg = Console.ReadLine();
                 }catch(Exception e)
                 {
                     Statistics.NewError();
-                    Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
+                    Logger.WriteError(e);
                 }
                 
             }

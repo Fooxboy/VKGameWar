@@ -18,14 +18,13 @@ namespace VKGame.Bot.BackgroundProcess
 
             while(true) 
             {
-                var bufferTime = 0;
+                
                 try
                 {
+                    var bufferTime = 0;
                     var resources = new Api.Resources(id);
                     var builds = new Api.Builds(id);
                     var user = Api.User.GetUser(id);
-
-
                     if (bufferTime > 60 || bufferTime == 60) bufferTime = 0;
                   
                     //Получение деняк с рефералов
@@ -57,7 +56,7 @@ namespace VKGame.Bot.BackgroundProcess
                             }else
                             {
                                 Api.MessageSend($"🎉 Вы получили с {countReferrals} рефералов: {sumCash} 💳", id);
-
+                                Notifications.EnterPaymentCard(Convert.ToInt32(sumCash), user.Id, "Рефералы");
                             }
                             Api.Referrals.SetList(referrals, id); 
                         }
@@ -90,22 +89,22 @@ namespace VKGame.Bot.BackgroundProcess
                     }
                    
                     //Пиздец говнокод, но почему-то по другому не работает :/
-                    if (energy < builds.WarehouseEnergy * 100)
+                    if (energy < Commands.Buildings.Api.MaxEnergy(builds.WarehouseEnergy))
                     {
-                        var temp = builds.PowerGenerators * 10;
-                        if((energy + temp) > builds.WarehouseEnergy * 100)
+                        var temp =  Commands.Buildings.Api.MaxEnergyGen(builds.PowerGenerators);
+                        if((energy + temp) >= Commands.Buildings.Api.MaxEnergy(builds.WarehouseEnergy))
                         {
-                            energy = builds.WarehouseEnergy * 100;
-                        }else
+                            energy = Commands.Buildings.Api.MaxEnergy(builds.WarehouseEnergy);
+                        }
+                        else
                         {
-                            energy = energy + temp;
-
+                            energy += temp;
                         }
                     }
-                    if (eat < builds.WarehouseEat * 100)
+                    if (eat < Commands.Buildings.Api.MaxFood(builds.WarehouseEat))
                     {
-                        var temp = builds.Eatery * 10;
-                        if((eat + temp) > builds.WarehouseEat * 100)
+                        var temp = Commands.Buildings.Api.MaxFoodGen(builds.Eatery);
+                        if((eat + temp) >= Commands.Buildings.Api.MaxFood(builds.WarehouseEat))
                         {
                             eat = builds.WarehouseEat * 100;
                         }else
@@ -114,16 +113,12 @@ namespace VKGame.Bot.BackgroundProcess
                         }
                     }
 
-                    if (water < builds.WarehouseWater * 100)
+                    if (water < Commands.Buildings.Api.MaxWater(builds.WarehouseWater))
                     {
-                        var temp = builds.WaterPressureStation * 10;
-                        if((water + temp) > builds.WarehouseWater * 100)
-                        {
-                            water = builds.WarehouseWater * 100;
-                        }else
-                        {
-                            water = water + temp;
-                        }
+                        var temp = Commands.Buildings.Api.MaxWaterGen(builds.WaterPressureStation);
+                        if ((water + temp) >= Commands.Buildings.Api.MaxWater(builds.WarehouseWater))
+                            water = Commands.Buildings.Api.MaxWater(builds.WarehouseWater);
+                        else water += temp;
                     }
 
                     resources.Energy = energy;
@@ -131,14 +126,12 @@ namespace VKGame.Bot.BackgroundProcess
                     resources.Water = water;
                     ++bufferTime;
                     Api.User.SetUser(user);
-                    Thread.Sleep(60000);
                 }catch(Exception e)
                 {
                     Bot.Statistics.NewError();
-                    Logger.WriteError($"{e.Message} \n {e.StackTrace}");
-
+                    Logger.WriteError(e);
                 }
-
+                Thread.Sleep(60000);
             }
         } 
     }

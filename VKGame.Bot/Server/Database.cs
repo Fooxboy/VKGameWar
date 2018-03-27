@@ -19,8 +19,7 @@ namespace VKGame.Bot.Server
                 response.Ok = true;
             }catch(Exception e)
             {
-                Logger.WriteError($"Ошибка при отправке данных с сервера: {e.Message}" +
-                    $"\n {e.Source}");
+                Logger.WriteError(e);
                 response.Error = new Error() { Code = 5, Message = $"Внутренняя ошибка сервера: {e.Message}" };
                 response.Ok = false;
             }
@@ -38,8 +37,7 @@ namespace VKGame.Bot.Server
                 response.Data = true;
             }catch(Exception e)
             {
-                Logger.WriteError($"Ошибка при отправке данных с сервера: {e.Message}" +
-                    $"\n {e.Source}");
+                Logger.WriteError(e);
                 response.Error = new Error() { Code = 5, Message = $"Внутренняя ошибка сервера: {e.Message}" };
                 response.Ok = false;
             }

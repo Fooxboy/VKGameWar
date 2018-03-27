@@ -14,19 +14,19 @@ namespace VKGame.Bot.Commands
         public TypeResponse Type => TypeResponse.Text;
 
         [NotNull]
-        public object Execute(LongPollVK.Models.AddNewMsg msg)
+        public object Execute(Models.Message msg)
         {
             string text = "";
-            string[] arrayText = msg.Text.Split(' ');
+            string[] arrayText = msg.body.Split(' ');
             for (int i = 1; arrayText.Length > i; i++) text += $"{arrayText[i]} ";
             
-            var common = new Common();
+            //var common = new Common();
 
-            var vk = common.GetVk();
+            var vk = Common.GetVk();
             var historyMessage = vk.Messages.GetHistory(new MessagesGetHistoryParams()
             {
                 Count = 10,
-                PeerId = msg.PeerId
+                PeerId = msg.from_id
             });
 
             foreach (var message in historyMessage.Messages)

@@ -18,12 +18,12 @@ namespace VKGame.Bot
         /// Получение токена
         /// </summary>
         /// <returns></returns>
-        public string GetToken()
+        public static string GetToken()
         {
             return "fdbb5fb61db9939adc73759a114ed7b45853e5f171cca4b619e3b44452beef3ace1dbc2467c5e805ac240";
         }
 
-        public static ulong LastMessage = 0;
+        public static long LastMessage = 0;
 
         public static string GetRandomHelp() 
         {
@@ -37,7 +37,7 @@ namespace VKGame.Bot
             return ListHelp[i];
         }
 
-        public VkApi GetMyVk() 
+        public static VkApi GetMyVk() 
         {
             var VkApi = new VkApi();
            
@@ -49,19 +49,15 @@ namespace VKGame.Bot
             return VkApi;
         }
         
-        public VkApi GetVk()
+        public static VkApi GetVk()
         {
-            if (VkApi != null) return VkApi;
-            else
+            var token = GetToken();
+            var VkApi = new VkApi();
+            VkApi.Authorize(new ApiAuthParams
             {
-                var token = GetToken();
-                var VkApi = new VkApi();
-                VkApi.Authorize(new ApiAuthParams
-                {
-                    AccessToken = token
-                });
-                return VkApi;
-            }
+                AccessToken = token
+            });
+            return VkApi;
         }
     }
 }

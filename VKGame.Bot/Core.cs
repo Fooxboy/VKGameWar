@@ -46,11 +46,10 @@ namespace VKGame.Bot
                 return null;
             }catch (Exception e) 
             {
-                Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
+                Logger.WriteError(e);
                 Statistics.NewError();
                 return null;
-            }
-            
+            }            
         }
         
         /// <summary>
@@ -59,10 +58,10 @@ namespace VKGame.Bot
         /// <param name="Сообщение"></param>
         public void ExecutorCommand(object msgObj)
         {
-            var msg = (LongPollVK.Models.AddNewMsg)msgObj;
+            var msg = (Models.Message)msgObj;
             try
             {
-                ICommand command = Proccesing(msg.Text.Split(' ')[0].ToLower());
+                ICommand command = Proccesing(msg.body.Split(' ')[0].ToLower());
                 if (command != null)
                 {
 
@@ -70,7 +69,7 @@ namespace VKGame.Bot
 
                     if (command.Type == TypeResponse.Text)
                     {
-                        Api.MessageSend((string)result, msg.PeerId);
+                        Api.MessageSend((string)result, msg.from_id);
                     }
                     else if (command.Type == TypeResponse.Photo)
                     {
@@ -103,17 +102,17 @@ namespace VKGame.Bot
 
                         if (e.InnerException != null)
                         {
-                            Api.MessageSend($"ОШИБКА: {e.InnerException.Message}" +
-                            $"\n Исключение: {e.InnerException.GetType().Name}" +
-                            $"\n StackTrace: {e.InnerException.StackTrace}", msg.PeerId);
+                            Api.MessageSend($"🎈 ОШИБКА: {e.InnerException.Message}" +
+                            $"\n 🎉 Исключение: {e.InnerException.GetType().Name}" +
+                            $"\n 🎠 StackTrace: {e.InnerException.StackTrace}", msg.from_id);
 
                             Statistics.NewError();
                         }
                         else
                         {
-                            Api.MessageSend($"ОШИБКА: {e.Message}" +
-                             $"\n Исключение: {e.GetType().Name}" +
-                            $"\n StackTrace: {e.StackTrace}", msg.PeerId);
+                            Api.MessageSend($"🎈  ОШИБКА: {e.Message}" +
+                             $"\n 🎈  Исключение: {e.GetType().Name}" +
+                            $"\n 🎈  StackTrace: {e.StackTrace}", msg.from_id);
                         }
 
                     }
@@ -121,23 +120,18 @@ namespace VKGame.Bot
                     {
                         Statistics.NewError();
 
-                        Api.MessageSend("😘 Что-то пошло не так. Попробуй-те ещё раз. Если будет опять эта надпись, то, скорее всего это не сейчас работает.", msg.PeerId);
-                        Logger.WriteError($"ОШИБКА: \n{e.InnerException.Message}" +
-                        $"\n Исключение: {e.InnerException.GetType().Name}" +
-                        $"\n Стек: {e.InnerException.StackTrace}");
+                        Api.MessageSend("😘 Что-то пошло не так. Попробуй-те ещё раз. Если будет опять эта надпись, то, скорее всего это не сейчас работает.", msg.from_id);
+                        Logger.WriteError(e.InnerException);
                     }
                 }catch(Exception e2)
                 {
                     Statistics.NewError();
 
-                    Api.MessageSend($"ОШИБКА: \n{e2.Message}" +
-                            $"\n Исключение: {e2.GetType().Name}" +
-                           $"\n StackTrace: {e2.StackTrace}", msg.PeerId);
-                }
-                
-                
-            }
-            
+                    Api.MessageSend($"🎈 ОШИБКА: \n{e2.Message}" +
+                            $"\n 🎉 Исключение: {e2.GetType().Name}" +
+                           $"\n 🎠 StackTrace: {e2.StackTrace}", msg.from_id);
+                }          
+            }      
         }
         
         /// <summary>
@@ -155,17 +149,18 @@ namespace VKGame.Bot
         /// Обработка нового сообщения.
         /// </summary>
         /// <param name="message"></param>
-        public static void NewMessage(LongPollVK.Models.AddNewMsg message)
+        public static void NewMessage(Models.Message message)
         {
             try
             {
-                Common.LastMessage = message.MessageId;
+                Logger.WriteDebug("Обработка сообщения...");
+                Common.LastMessage = message.id;
                 var messagesCache = Api.CacheMessages.GetList();
                 if (messagesCache == null) messagesCache = new Models.MessagesCache() { Message = new List<Models.MessageCache>() };
                 if (messagesCache.Message == null) messagesCache.Message = new List<Models.MessageCache>();
-                messagesCache.Message.Add(new Models.MessageCache { Text = message.Text, Id = message.MessageId, PeerId = message.PeerId, Time = message.Time });
+                messagesCache.Message.Add(new Models.MessageCache { Text = message.body, Id = message.id, PeerId = message.from_id, Time = message.date.ToString() });
                 Api.CacheMessages.SetList(messagesCache);
-                var user = Api.User.GetUser(message.PeerId);
+                var user = Api.User.GetUser(message.from_id);
                 if (user != null)
                 {
                     if (DateTime.Parse(user.LastMessage).Day != DateTime.Now.Day)
@@ -173,7 +168,7 @@ namespace VKGame.Bot
                         user.LastMessage = DateTime.Now.ToString();
                         Api.User.SetUser(user);
                     }
-                    Logger.NewMessage($"({message.PeerId}) -> {message.Text}");
+                    Logger.NewMessage($"({message.from_id}) -> {message.body}");
                     var core = new Core();
                     try
                     {
@@ -184,15 +179,15 @@ namespace VKGame.Bot
                     {
                         Statistics.NewError();
 
-                        Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
+                        Logger.WriteError(e);
                     }
                 }
                 else
                 {
-                    var command = message.Text.Split(' ')[0].ToLower();
+                    var command = message.body.Split(' ')[0].ToLower();
                     if (command == "старт")
                     {
-                        Logger.WriteDebug($"({message.PeerId}) -> {message.Text}");
+                        Logger.NewMessage($"({message.from_id}) -> {message.body}");
                         var core = new Core();
                         try
                         {
@@ -203,23 +198,20 @@ namespace VKGame.Bot
                         {
                             Statistics.NewError();
 
-                            Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
+                            Logger.WriteError(e);
                         }
                     }
                     else
                     {
-                        //Api.MessageSend($"Вы ещё не зарегистрированны в нашей игре! Напишите: старт", message.PeerId);
+                        Api.MessageSend($"Вы ещё не зарегистрированны в нашей игре! Напишите: старт", message.from_id);
                     }
-
                 }
-
                 Statistics.SendMessage();
                 Statistics.InMessage();
             }catch(Exception e)
             {
                 Statistics.NewError();
-
-                Logger.WriteError($"{e.Message} \n {e.StackTrace} \n{e.Source}");
+                Logger.WriteError(e);
             }          
         }
     }

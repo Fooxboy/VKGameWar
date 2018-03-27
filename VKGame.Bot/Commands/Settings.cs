@@ -11,7 +11,7 @@ namespace VKGame.Bot.Commands
         public string Caption => "Здесь можно настроить все под себя!";
         public TypeResponse Type => TypeResponse.Text;
 
-        public object Execute(LongPollVK.Models.AddNewMsg msg)
+        public object Execute(Models.Message msg)
         {
             var messageArray = msg.Text.Split(' ');
             if (messageArray.Length == 1)
@@ -30,9 +30,7 @@ namespace VKGame.Bot.Commands
                     {
                         if (attribute.GetType() == typeof(Attributes.Trigger))
                         {
-
                             var myAtr = ((Attributes.Trigger)attribute);
-
                             if (myAtr.Name == messageArray[1])
                             {
 
@@ -48,16 +46,16 @@ namespace VKGame.Bot.Commands
         }
 
         [Attributes.Trigger("имя")]
-        public static string NameEdit(LongPollVK.Models.AddNewMsg msg)
+        public static string NameEdit(Models.Message msg)
         {
-            var resources = new Api.Resources(msg.PeerId);
+            var resources = new Api.Resources(msg.from_id);
 
             if (resources.MoneyCard < 100) return $"❌ На балансе недостаточно средств. Баланс: {resources.MoneyCard}. Необходимо: 100";
             string text = "";
-            string[] arrayText = msg.Text.Split(' ');
+            string[] arrayText = msg.body.Split(' ');
             for (int i = 2; arrayText.Length > i; i++) text += $"{arrayText[i]} ";
-            if (text == "") text = $"{msg.PeerId}";
-            var user = Api.User.GetUser(msg.PeerId);
+            if (text == "") text = $"{msg.from_id}";
+            var user = Api.User.GetUser(msg.from_id);
             user.Name = text;
             Notifications.RemovePaymentCard(100, user.Id, "изменение имени");
             Api.User.SetUser(user);

@@ -18,8 +18,7 @@ namespace VKGame.Bot.BackgroundProcess
                         var user = Api.User.GetUser(userId);
                         var credit = new Api.Credit(user.Credit);
                         var creditTime = credit.Time;
-                        creditTime -= 1;
-                        credit.Time = creditTime;
+                        credit.Time = --creditTime;
                         if (creditTime == 0)
                         {
                             Notifications.RemovePaymentCard(Convert.ToInt32(credit.Price), userId, "оплата кредита.");
@@ -32,10 +31,8 @@ namespace VKGame.Bot.BackgroundProcess
                 }catch(Exception e)
                 {
                     Bot.Statistics.NewError();
-                    Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                    Logger.WriteError(e);
                 }
-
-
             }
         }
     }

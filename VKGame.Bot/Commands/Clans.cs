@@ -6,14 +6,14 @@ namespace VKGame.Bot.Commands
 {
     public class Clans : ICommand
     {
-        public string Name => "клан";
+        public string Name => "Клан";
         public string Caption => "Здесь можно управлять своим кланом!";
         public string Arguments => "(), (Вариант_выбора)";
         public TypeResponse Type => TypeResponse.Text;
 
-        public object Execute(LongPollVK.Models.AddNewMsg msg)
+        public object Execute(Models.Message msg)
         {
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
                 return GetClansText(msg);
             else
@@ -45,10 +45,10 @@ namespace VKGame.Bot.Commands
         }
 
         [Attributes.Trigger("исключить")]
-        public static string RemoveMember(LongPollVK.Models.AddNewMsg msg)
+        public static string RemoveMember(Models.Message msg)
         {
-            var messageArray = msg.Text.Split(' ');
-            var user = Api.User.GetUser(msg.PeerId);
+            var messageArray = msg.body.Split(' ');
+            var user = Api.User.GetUser(msg.from_id);
             if (user.Clan == 0) return "❌ Вы не находитесь в каком-либо клане!";
             var clan = new Api.Clans(user.Clan);
             if (clan.Creator != user.Id) return "❌ Вы не являетесь создателем этого клана, чтобы исключать людей!";
@@ -78,9 +78,9 @@ namespace VKGame.Bot.Commands
         }
 
         [Attributes.Trigger("создать")]
-        public static string Create(LongPollVK.Models.AddNewMsg msg)
+        public static string Create(Models.Message msg)
         {
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
             var name = "";
             try
             {
@@ -90,24 +90,103 @@ namespace VKGame.Bot.Commands
                 return "❌ Вы не указали название клана! Пример: Клан создать любофф";
             }
             if (name.Length > 30 || name.Length < 2) return "❌ Название клана должно быть меньше 30 символов или больше двух.";
-            var resources = new Api.Resources(msg.PeerId);
+            var user = Api.User.GetUser(msg.from_id);
+            var resources = new Api.Resources(user.Id);
             if (resources.MoneyCard < 1000) return $"❌ Для создания клана нужна сумма в размере 1000 💳 Ваш баланс: {resources.MoneyCard}";
-            var idClan = Api.Clans.New(msg.PeerId, name);
-            Notifications.RemovePaymentCard(1000, msg.PeerId, "создание клана");
-            var user = Api.User.GetUser(msg.PeerId);
+            var idClan = Api.Clans.New(user.Id, name);
+            Notifications.RemovePaymentCard(1000, user.Id, "создание клана");
+            
             user.Clan = idClan;
             Api.User.SetUser(user);
             Statistics.CreateClan();
             return $"✅ Вы успешно создали клан {name}!";
         }
 
+        [Attributes.Trigger("запрос")]
+        public static string Request(Models.Message msg)
+        {
+            var user = Api.User.GetUser(msg.from_id);
+            if (user.Clan == 0) return "❌ Вы не находитесь в каком-либо клане. Вы можете создать свой клан.";
+            var clan = new Api.Clans(user.Clan);
+            if (clan.Creator != user.Id) return "❌ Вы должны быть создателем клана!";
+            var messageArray = msg.body.Split(' ');
+
+            var access = "";
+            try
+            {
+                access = messageArray[2];
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return "❌ Вы не указали аргумент. Доспутные аргументы: принять, отклонить";
+            }
+
+            var text = "лол";
+            if (access.ToLower() == "принять")
+            {
+                //TODO: допилить создание клановых боев.
+
+            }
+            else if (access.ToLower() == "отклонить")
+            {
+
+            }
+            else return "❌ Вы указали неизвестный аргумент. Доспутные аргументы: принять, отклонить";
+            return $"{text}";
+        }
+
+        [Attributes.Trigger("бой")]
+        public static string Battle(Models.Message msg)
+        {
+            var user = Api.User.GetUser(msg.from_id);
+            if (user.Clan == 0) return "❌ Вы не находитесь в каком-либо клане. Вы можете создать свой клан.";
+            var clan = new Api.Clans(user.Clan);
+            if (clan.Creator != user.Id) return "❌ Вы должны быть создателем клана!";
+            long clanId = 0;
+            var messageArray = msg.body.Split(' ');
+            try
+            {
+                clanId = Int64.Parse(messageArray[2]);
+            }catch(FormatException)
+            {
+                return "❌ Неверное Id клана!";
+            }catch(IndexOutOfRangeException)
+            {
+                return "меню";
+            }
+            if (!Api.Clans.Check(clanId)) return "❌ Такого клана не существует!";
+
+            long price = 0;
+
+            try
+            {
+                price = Int64.Parse(messageArray[3]);
+            }catch(FormatException)
+            {
+                return "❌ Неизвестная сумма...";
+            }catch(IndexOutOfRangeException)
+            {
+                return "❌ Вы не указали сумму. Пример: клан бой id сумма";
+            }
+            if (clan.War == true) return "❌ Вы и так учавствуете в войне!";
+            if (clan.WarId != 0) return "❌ Вашему клану или Вы другому клану уже кинули запрос войны.";
+            if (clan.Fund < price) return $"❌ В фонде вашего клана недостаточно денег. Фонд клана: {clan.Fund}💳";
+            var clanWar = new Api.Clans(clanId);
+            Api.MessageSend($"😎 Привет-привет! Вам поступил запрос о создании войны от клана {clan.Name}! Победитель получает в фонд клана - {clan.Fund *2}💳" +
+                $"\n❓ Чтобы принять запрос, напишите: Клан запрос принять" +
+                $"\n❓ Чтобы отклонить запрос, напишите: Клан запрос отклонить", clanWar.Creator);
+            clan.WarId = clanId;
+            clanWar.WarId = clan.Id;
+            return "✅ Основателю клана был отправлен запрос о начале войны. Если он согласится, то Вы и Ваши соклановцы получат уведомления об этом.";
+        }
+
         [Attributes.Trigger("инфо")]
-        public static string Info(LongPollVK.Models.AddNewMsg msg)
+        public static string Info(Models.Message msg)
         {
             try
             {
-                var messageArray = msg.Text.Split(' ');
-                var user = Api.User.GetUser(msg.PeerId);
+                var messageArray = msg.body.Split(' ');
+                var user = Api.User.GetUser(msg.from_id);
                 if (user.Clan == 0) return "❌ Вы не находитесь в клане!";
                 var clan = new Api.Clans(user.Clan);
                 var members = clan.Members;
@@ -132,18 +211,15 @@ namespace VKGame.Bot.Commands
                 Console.WriteLine($"{e.Message}\n {e.StackTrace}");
                 return "Ты пидорас";
             }
-            
-
-
         }
 
         [Attributes.Trigger("распустить")]
-        public static string Delete(LongPollVK.Models.AddNewMsg msg)
+        public static string Delete(Models.Message msg)
         {
-            var user = Api.User.GetUser(msg.PeerId);
+            var user = Api.User.GetUser(msg.from_id);
             if (user.Clan == 0) return "❌ Вы не находитесь в каком-либо клане!";
             var clan = new Api.Clans(user.Clan);
-            if (clan.Creator != msg.PeerId) return "❌ Вы не являетесь создателем клана!";
+            if (clan.Creator != user.Id) return "❌ Вы не являетесь создателем клана!";
             var members = clan.Members;
             foreach(var member in members)
             {
@@ -160,14 +236,14 @@ namespace VKGame.Bot.Commands
         }
 
         [Attributes.Trigger("покинуть")]
-        public static string Leave(LongPollVK.Models.AddNewMsg msg)
+        public static string Leave(Models.Message msg)
         {
-            var user = Api.User.GetUser(msg.PeerId);
+            var user = Api.User.GetUser(msg.from_id);
             if (user.Clan == 0) return "❌ Вы не находитесь в каком-либо клане!";
             var clan = new Api.Clans(user.Clan);
-            if (msg.PeerId == clan.Creator) return "❌ Вы не можете покинуть свой же клан. Распустите его!";
+            if (user.Id == clan.Creator) return "❌ Вы не можете покинуть свой же клан. Распустите его!";
             var members = clan.Members;
-            members.Remove(msg.PeerId);
+            members.Remove(user.Id);
             var membersStr = "";
             foreach (var memeber in members) membersStr += $"{memeber},";
             clan.Members = members;
@@ -180,9 +256,9 @@ namespace VKGame.Bot.Commands
 
 
         [Attributes.Trigger("вступить")]
-        public static string Join(LongPollVK.Models.AddNewMsg msg)
+        public static string Join(Models.Message msg)
         {
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
             long id = 0;
             try
             {
@@ -195,11 +271,11 @@ namespace VKGame.Bot.Commands
                 return "❌ Вы ввели неверный id клана.";
             }
             if (!Api.Clans.Check(id)) return "❌ Клана с таким id несуществует!";
-            var user = Api.User.GetUser(msg.PeerId);
+            var user = Api.User.GetUser(msg.from_id);
             if (user.Clan != 0) return "❌ Вы уже находитесь в клане! Для начала покинте его! Напишите: Клан покинуть";
             var clan = new Api.Clans(id);
             List<long> members = clan.Members;
-            members.Add(msg.PeerId);
+            members.Add(user.Id);
             user.Clan = id;
             string membersStr = "";
             foreach (var member in members) membersStr += $"{member},";
@@ -210,7 +286,7 @@ namespace VKGame.Bot.Commands
                 
         }
 
-        private string GetClansText(LongPollVK.Models.AddNewMsg msg)
+        private string GetClansText(Models.Message msg)
         {
             return "❓ Краткая помощь по разделу кланов:" +
                  "\n❗ Информация о клане: Клан инфо" +

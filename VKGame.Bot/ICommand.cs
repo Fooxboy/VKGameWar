@@ -7,7 +7,7 @@ namespace VKGame.Bot
         string Arguments { get; }
         string Caption { get; }
         TypeResponse Type { get; }
-        object Execute(LongPollVK.Models.AddNewMsg msg);
+        object Execute(Models.Message msg);
     }
 
     public enum TypeResponse

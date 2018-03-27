@@ -6,12 +6,12 @@ namespace VKGame.Bot.Commands
 {
     public class Sections:ICommand
     {
-        public string Name => "разделы";
+        public string Name => "Разделы";
         public string Caption => "Раздел предназначен для вывода списка разделов.";
         public string Arguments => "()";
         public TypeResponse Type => TypeResponse.Text;
 
-        public object Execute(LongPollVK.Models.AddNewMsg msg)
+        public object Execute(Models.Message msg)
         {
             var listCommand = new List<ICommand>()
             {

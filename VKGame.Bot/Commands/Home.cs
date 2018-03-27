@@ -1,4 +1,5 @@
 ﻿using System;
+using VKGame.Bot.Models;
 
 namespace VKGame.Bot.Commands
 {
@@ -12,36 +13,36 @@ namespace VKGame.Bot.Commands
         public string Caption => "Возвращает на Ваш домашний экран!";
         public TypeResponse Type => TypeResponse.Text;
 
-        public object Execute(LongPollVK.Models.AddNewMsg msg)
+        public object Execute(Message msg)
         {
             var text = GetHomeText(msg, $"Последнее обновление данных: {DateTime.Now}");
             Statistics.GoToHome();
             return text;
         }
 
-        public static string GetHomeText(LongPollVK.Models.AddNewMsg msg, string notify)
+        public static string GetHomeText(Message msg, string notify)
         {
-            var user = Api.User.GetUser(msg.PeerId);
-            var builds = new Api.Builds(msg.PeerId);
-            Models.IResources resources = new Api.Resources(msg.PeerId);
-            Quests.GoToHome(msg.PeerId);
+            var user = Api.User.GetUser(msg.from_id);
+            var builds = new Api.Builds(user.Id);
+            Models.IResources resources = new Api.Resources(user.Id);
+            Quests.GoToHome(user.Id);
             return $"‼{notify}‼" +
                           $"\n➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖" +
                           $"\n" +
-                          $"\n👦 КОМАНДИР {user.Name}. 🔝Уровень: {user.Level} ({user.Experience}/ {user.Level*100})." +
+                          $"\n👦 КОМАНДИР {user.Name}. 🔝 Уровень: {user.Level} ({user.Experience}/ {user.Level*100})." +
                           $"\n" +
                           $"\nФИНАНСЫ➖➖➖➖➖➖➖➖➖➖➖➖➖" +
                           $"\n💰 Наличные монеты: {resources.Money}." +
                           $"\n💳 Банковский счёт: {resources.MoneyCard}." +
                           $"\n " +
                           $"\nРЕСУРСЫ➖➖➖➖➖➖➖➖➖➖➖➖➖➖" +
-                          $"\n⚡ Энергия: {resources.Energy}/{builds.WarehouseEnergy * 100}." +
-                          $"\n🍕 Еда: {resources.Food}/{builds.WarehouseEat * 100}." +
-                          $"\n💧 Вода: {resources.Water}/{builds.WarehouseWater * 100}." +
+                          $"\n⚡ Энергия: {resources.Energy}/{Buildings.Api.MaxEnergy(builds.WarehouseEnergy)}." +
+                          $"\n🍕 Еда: {resources.Food}/{Buildings.Api.MaxFood(builds.WarehouseEat)}." +
+                          $"\n💧 Вода: {resources.Water}/{Buildings.Api.MaxWater(builds.WarehouseWater)}." +
                           $"\n" +
                           $"\nАРМИЯ➖➖➖➖➖➖➖➖➖➖➖➖➖➖" +
-                          $"\n👨 Солдат: {resources.Soldiery}/{builds.Apartments * 10}." +
-                          $"\n💣 Танков: {resources.Tanks}/{builds.Hangars*5}." +
+                          $"\n👨 Солдат: {resources.Soldiery}/{Buildings.Api.MaxSoldiery(builds.Apartments)}." +
+                          $"\n💣 Танков: {resources.Tanks}/{Buildings.Api.MaxTanks(builds.Hangars)}." +
                           $"\n" +
                           $"\n➡ Вы можете перейти в другие разделы. В такие как:" +
                           $"\n- 🎲 Казино‍" +

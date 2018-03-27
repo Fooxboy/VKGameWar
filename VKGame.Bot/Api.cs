@@ -260,14 +260,30 @@ namespace VKGame.Bot
                     memberStr = memberStr.Remove(memberStr.Length - 1);
                     db.Edit(id, "Member", memberStr);
                 }
-            }
-
-            
+            }      
 
             public long Creator
             {
                 get => (long)db.GetFromId(id, "Creator");
                 set => db.Edit(id, "Creator", value);
+            }
+
+            public bool War
+            {
+                get => Convert.ToBoolean((long)db.GetFromId(id, "War"));
+                set => db.Edit(id, "War", Convert.ToInt64(value));
+            }
+
+            public long WarId
+            {
+                get => (long)db.GetFromId(id, "WarId");
+                set => db.Edit(id, "WarId", value);
+            }
+
+            public long Fund
+            {
+                get => (long)db.GetFromId(id, "Fund");
+                set => db.Edit(id, "Fund", value);
             }
 
         }
@@ -485,8 +501,8 @@ namespace VKGame.Bot
         {
             try
             {
-                var data = new Common();
-                var vk = data.GetVk();
+                //var data = new Common();
+                var vk = Common.GetVk();
 
                 vk.Messages.Send(new MessagesSendParams()
                 {
@@ -495,7 +511,7 @@ namespace VKGame.Bot
                 });
             }catch(Exception e)
             {
-                Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                Logger.WriteError(e);
                 Bot.Statistics.NewError();
             }
            
@@ -868,8 +884,8 @@ id = Id;
                 {
                     string fields = @"`Id`, `Name`, `TimeReg`, `LastMessage`";
                     var list = new List<long>();
-                    var common = new Common();
-                    var name = common.GetVk().Users.Get(new List<long>() {id})[0].FirstName;
+                    //var common = new Common();
+                    var name = Common.GetVk().Users.Get(new List<long>() {id})[0].FirstName;
                     string values = $@"'{id}', '{name}', '{DateTime.Now}', '{DateTime.Now}'";
                     database.Add(fields, values);
                     

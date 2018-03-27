@@ -2,24 +2,25 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Data.Sqlite;
+using VKGame.Bot.Models;
 
 
 namespace VKGame.Bot.Commands
 {
     public class Database : ICommand
     {
-        public string Name => "бд";
+        public string Name => "Бд";
         public string Arguments => "";
         public string Caption => "";
         public TypeResponse Type => TypeResponse.Text;
 
-        public object Execute(LongPollVK.Models.AddNewMsg msg)
+        public object Execute(Message msg)
         {
-            var user = Api.User.GetUser(msg.PeerId);
+            var user = Api.User.GetUser(msg.from_id);
 
             if (user.Access < 4)
             {
-                var messageArray = msg.Text.Split(' ');
+                var messageArray = msg.body.Split(' ');
                 if (messageArray.Length == 1)
                     return "не указаны аргументы";
                 else
@@ -53,11 +54,11 @@ namespace VKGame.Bot.Commands
         }
 
         [Attributes.Trigger("изменить")]
-        public static string Edit(LongPollVK.Models.AddNewMsg msg)
+        public static string Edit(Message msg)
         {
             try
             {
-                var messageArray = msg.Text.Split(' ');
+                var messageArray = msg.body.Split(' ');
 
                 var database = messageArray[2];
                 var clumn = messageArray[3];
@@ -86,11 +87,11 @@ namespace VKGame.Bot.Commands
         }
 
         [Attributes.Trigger("получить")]
-        public static string Get(LongPollVK.Models.AddNewMsg msg)
+        public static string Get(Message msg)
         {
             try
             {
-                var messageArray = msg.Text.Split(' ');
+                var messageArray = msg.body.Split(' ');
                 var database = messageArray[2];
                 var clumn = messageArray[3];
                 var id = messageArray[4];
@@ -107,11 +108,11 @@ namespace VKGame.Bot.Commands
         }
 
         [Attributes.Trigger("sql")]
-        public static string Sql(LongPollVK.Models.AddNewMsg msg)
+        public static string Sql(Message msg)
         {
             try
             {
-                var messageArray = msg.Text.Split(' ');
+                var messageArray = msg.body.Split(' ');
                 var database = messageArray[2];
                 var column = messageArray[3];
                 var connectString = $@"Filename=Files/{database}.db;";

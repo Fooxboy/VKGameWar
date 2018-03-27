@@ -6,14 +6,14 @@ namespace VKGame.Bot.Commands
 {
     public class Boxes : ICommand
     {
-        public string Name => "кейсы";
+        public string Name => "Кейсы";
         public string Caption => "Здесь Вы можете посмотреть и управлять вашими кейсами!";
         public string Arguments => "(), (Вариант_выбора)";
         public TypeResponse Type => TypeResponse.Text;
 
-        public object Execute(LongPollVK.Models.AddNewMsg msg)
+        public object Execute(Models.Message msg)
         {
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
                 return GetBoxesText(msg);
             else
@@ -30,12 +30,9 @@ namespace VKGame.Bot.Commands
                     {
                         if (attribute.GetType() == typeof(Attributes.Trigger))
                         {
-
                             var myAtr = ((Attributes.Trigger)attribute);
-
                             if (myAtr.Name == messageArray[1])
                             {
-
                                 object result = method.Invoke(obj, new object[] { msg });
                                 return (string)result;
                             }
@@ -50,10 +47,10 @@ namespace VKGame.Bot.Commands
        
 
         [Attributes.Trigger("купить")]
-        public static string Buy(LongPollVK.Models.AddNewMsg msg)
+        public static string Buy(Models.Message msg)
         {
-            var boxes = new Api.Boxes(msg.PeerId);
-            var messageArray = msg.Text.Split(' ');
+            var boxes = new Api.Boxes(msg.from_id);
+            var messageArray = msg.body.Split(' ');
             string boxName = "";
             try
             {
@@ -68,7 +65,7 @@ namespace VKGame.Bot.Commands
                 case "битвенный":
 
                     var battleList = boxes.BattleBox;
-                    Notifications.RemovePaymentCard(50, msg.PeerId, "покупка кейсов");
+                    Notifications.RemovePaymentCard(50, msg.from_id, "покупка кейсов");
                     battleList.Add(new Models.BattleBox());
                     boxes.BattleBox = battleList;
                     Statistics.BuyBox();
@@ -76,7 +73,7 @@ namespace VKGame.Bot.Commands
                     return "🎉 Вы купили битвенный кейс!";
                 case "строительный":
                     var battleList1 = boxes.BuildBox;
-                    Notifications.RemovePaymentCard(100, msg.PeerId, "покупка кейсов");
+                    Notifications.RemovePaymentCard(100, msg.from_id, "покупка кейсов");
                     battleList1.Add(new Models.BuildBox());
                     boxes.BuildBox = battleList1;
                     Statistics.BuyBox();
@@ -88,9 +85,9 @@ namespace VKGame.Bot.Commands
         }
 
         [Attributes.Trigger("открыть")]
-        public static string Onen(LongPollVK.Models.AddNewMsg msg)
+        public static string Onen(Models.Message msg)
         {
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
             string boxName = "";
             try
             {
@@ -99,8 +96,8 @@ namespace VKGame.Bot.Commands
             {
                 return "❌ Вы не указали название кейса!";
             }
-            var boxes = new Api.Boxes(msg.PeerId);
-            var resources = new Api.Resources(msg.PeerId);
+            var boxes = new Api.Boxes(msg.from_id);
+            var resources = new Api.Resources(msg.from_id);
             switch(boxName.ToLower())
             {
                 case "битвенный":
@@ -124,7 +121,7 @@ namespace VKGame.Bot.Commands
                             $"\n ✨ Поздравляем!";
                 case "строительный":
                     if (boxes.BuildBox.Count == 0) return "❌ У Вас нет таких боксов";
-                    var builds = new Api.Builds(msg.PeerId);
+                    var builds = new Api.Builds(msg.from_id);
                     var r = new Random();
                     var box1 = boxes.BuildBox[0];
                     var boxesList1 = boxes.BuildBox;
@@ -194,9 +191,9 @@ namespace VKGame.Bot.Commands
             }
         }
 
-        private string GetBoxesText(LongPollVK.Models.AddNewMsg msg)
+        private string GetBoxesText(Models.Message msg)
         {
-            var boxes = new Api.Boxes(msg.PeerId);
+            var boxes = new Api.Boxes(msg.from_id);
             return $"" +
                 $"\n➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖" +
                 $"\n📦 Раздел для управления Вашими кейсами." +

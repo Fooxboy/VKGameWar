@@ -12,9 +12,9 @@ namespace VKGame.Bot.Commands
         public string Caption => "Здесь можно узнать о новых соревнованиях и поучаствовать в них!";
         public TypeResponse Type => TypeResponse.Text;
 
-        public object Execute(LongPollVK.Models.AddNewMsg msg)
+        public object Execute(Models.Message msg)
         {
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
                 return GetCompetitionsText(msg);
             else
@@ -32,7 +32,6 @@ namespace VKGame.Bot.Commands
                         if (attribute.GetType() == typeof(Attributes.Trigger))
                         {
                             var myAtr = ((Attributes.Trigger)attribute);
-
                             if (myAtr.Name == messageArray[1])
                             {
                                 object result = method.Invoke(obj, new object[] { msg });
@@ -73,14 +72,12 @@ namespace VKGame.Bot.Commands
             }catch(Exception e)
             {
                 Statistics.NewError();
-                Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                Logger.WriteError(e);
             }
-
-
         }
 
         [Attributes.Trigger("список")]
-        public static string List(LongPollVK.Models.AddNewMsg msg)
+        public static string List(Models.Message msg)
         {
             string competitionsStr = String.Empty;
             var listCompetitions = Api.Competitions.GetList();
@@ -152,10 +149,10 @@ namespace VKGame.Bot.Commands
         }
 
         [Attributes.Trigger("бой")]
-        public static string Battle(LongPollVK.Models.AddNewMsg msg)
+        public static string Battle(Models.Message msg)
         {
-            var resources = new Api.Resources(msg.PeerId);
-            var user = Api.User.GetUser(msg.PeerId);
+            var resources = new Api.Resources(msg.from_id);
+            var user = Api.User.GetUser(msg.from_id);
             if (user.Competition == 0) return "❌ Вы не участвуете в соревновании. Для того, чтобы участвовать, напишите: Соревнование участвовать";
             var competition = new Api.Competitions(user.Competition);
 
@@ -168,12 +165,9 @@ namespace VKGame.Bot.Commands
                 if (user.IdBattle != 0) return "❌ Вы уже находитесь в другой битве.";
                 long userHp = 0;
                 var price = 0;
-                var builds = new Api.Builds(msg.PeerId);
-                userHp = (builds.Apartments * 10) + (builds.Eatery * 10) + (builds.Hangars * 50) +
-                (builds.Mine * 10) + (builds.PowerGenerators * 50) + (builds.WarehouseEat * 30) +
-                (builds.WarehouseEnergy * 20) + (builds.WarehouseWater * 10) +
-                (builds.WaterPressureStation * 50) + (user.Level * 100);
-                battleId = Api.Battles.NewBattle(msg.PeerId, $"соревнование {competition.Name}", userHp, price);
+                var builds = new Api.Builds(user.Id);
+                userHp = Commands.Battle.Api.HpUser(user.Id, user, builds);
+                battleId = Api.Battles.NewBattle(user.Id, $"соревнование {competition.Name}", userHp, price);
                 user.IdBattle = battleId;
                 competition.FreeBattle = battleId;
                 Api.User.SetUser(user);
@@ -183,16 +177,12 @@ namespace VKGame.Bot.Commands
             else
             {
                 var battle = new Api.Battles(competition.FreeBattle);
-                var builds = new Api.Builds(msg.PeerId);
+                var builds = new Api.Builds(user.Id);
                 if (user.IdBattle != 0) return "❌ Вы уже находитесь в другой битве.";
 
                 user.IdBattle = battle.Id;
-                var userHp = (builds.Apartments * 10) + (builds.Eatery * 10) +
-                (builds.Hangars * 50) + (builds.Mine * 10) + (builds.PowerGenerators * 50) +
-                (builds.WarehouseEat * 30) + (builds.WarehouseEnergy * 20) +
-                (builds.WarehouseWater * 10) + (builds.WaterPressureStation * 50) +
-                (user.Level * 100);
-                battle.UserTwo = msg.PeerId;
+                var userHp = Commands.Battle.Api.HpUser(user.Id, user, builds);
+                battle.UserTwo = user.Id;
                 battle.HpTwo = userHp;
                 battle.IsStart = true;
                 competition.FreeBattle = battleId;
@@ -203,12 +193,12 @@ namespace VKGame.Bot.Commands
         }
 
         [Attributes.Trigger("участвовать")]
-        public static string Join(LongPollVK.Models.AddNewMsg msg)
+        public static string Join(Models.Message msg)
         {
-            var resources = new Api.Resources(msg.PeerId);
+            var resources = new Api.Resources(msg.from_id);
             if (resources.TicketsCompetition == 0) return "❌ У тебя нет билетов!";
             resources.TicketsCompetition = resources.TicketsCompetition - 1;
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
             long idComp = 0;
             try
             {
@@ -226,7 +216,7 @@ namespace VKGame.Bot.Commands
             var competition = new Api.Competitions(idComp);
             if (competition.isEnd) return "❌ Это соревнование уже закончилось!";
             var members = competition.Members;
-            var user = Api.User.GetUser(msg.PeerId);
+            var user = Api.User.GetUser(msg.from_id);
             if(user.Competition != 0) return "❌ Вы уже учавствуете в соревновании!";
             var member = new Models.CompetitionsList.Member();
             member.Id = user.Id;
@@ -241,11 +231,11 @@ namespace VKGame.Bot.Commands
         }
 
         [Attributes.Trigger("создать")]
-        public static string Create(LongPollVK.Models.AddNewMsg msg)
+        public static string Create(Models.Message msg)
         {
-            var user = Api.User.GetUser(msg.PeerId);
+            var user = Api.User.GetUser(msg.from_id);
             if (user.Access < 4) return "❌ Вам недоступна подкоманда.";
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
             string name = messageArray[2];
             long price = Int64.Parse(messageArray[3]);
             long time = Int64.Parse(messageArray[4]);
@@ -257,7 +247,7 @@ namespace VKGame.Bot.Commands
             return $"Вы создали соревнование с ID - {idComp}";
         }
 
-        private string GetCompetitionsText(LongPollVK.Models.AddNewMsg msg)
+        private string GetCompetitionsText(Models.Message msg)
         {
             return "❓ КРАТКАЯ ПОМОЩЬ:" +
                    "\n➡ Соревнования список - выводит текущий список соревнований." +

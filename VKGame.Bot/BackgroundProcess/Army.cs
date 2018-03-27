@@ -26,7 +26,7 @@ namespace VKGame.Bot.BackgroundProcess
                  resources = new Api.Resources(userId);
             }catch(Exception e)
             {
-                Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                Logger.WriteError(e);
                 Bot.Statistics.NewError();
             }
             var builds = new Api.Builds(userId);
@@ -42,11 +42,11 @@ namespace VKGame.Bot.BackgroundProcess
                     var soldiery = resources.Soldiery;
                     soldiery++;
                     resources.Soldiery = soldiery;
-                    if (resources.Soldiery > builds.Apartments *10) resources.Soldiery = builds.Apartments * 10;
-                    count -= 1;
+                    if (resources.Soldiery > Commands.Buildings.Api.MaxSoldiery(builds.Apartments)) resources.Soldiery = Commands.Buildings.Api.MaxSoldiery(builds.Apartments);
+                    --count;
                 }catch(Exception e)
                 {
-                    Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                    Logger.WriteError(e);
                     Bot.Statistics.NewError();
                 }
                 
@@ -72,11 +72,9 @@ namespace VKGame.Bot.BackgroundProcess
                 
             }catch(Exception e)
             {
-                Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                Logger.WriteError(e);
                 Bot.Statistics.NewError();
-
             }
-
             Bot.Statistics.CreateTanks(count);
             var builds = new Api.Builds(userId);
 
@@ -91,18 +89,14 @@ namespace VKGame.Bot.BackgroundProcess
                     var tanks = resources.Tanks;
                     tanks++;
                     resources.Tanks = tanks;
-                    if (resources.Tanks > builds.Hangars * 5) resources.Tanks = builds.Hangars * 5;
-
-                    count -= 1;
-
+                    if (resources.Tanks > Commands.Buildings.Api.MaxTanks(builds.Hangars)) resources.Tanks = Commands.Buildings.Api.MaxTanks(builds.Hangars);
+                    --count;
                 }
                 catch (Exception e)
                 {
-                    Logger.WriteError($"{e.Message} \n {e.StackTrace}");
+                    Logger.WriteError(e);
                     Bot.Statistics.NewError();
-
                 }
-
             }
 
             Api.MessageSend("✅ Танки были сделаны. Вы можете идти в бой!", userId);
