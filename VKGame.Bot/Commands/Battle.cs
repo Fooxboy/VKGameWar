@@ -114,14 +114,16 @@ namespace VKGame.Bot.Commands
                 return "❌ Вы указали неверную сумму";
             }
             var user = Bot.Api.User.GetUser(msg.from_id);
+            var registry = Bot.Api.Registry.GetRegistry(user.Id);
             var resources = new Bot.Api.Resources(user.Id);
             if (resources.MoneyCard < price) return $"❌ Вы указали сумму больше, чем у вас есть! Ваш баланс: {resources.MoneyCard}";
-            user.CountCreateBattles = user.CountCreateBattles + 1;
+            ++registry.CountCreateBattles;
             if(resources.MoneyCard < price)
             if (user.IdBattle != 0) return $"❌ Вы уже находитесь в другой битве. Id битвы, в которой Вы находитесь: {user.IdBattle}. Чтобы покинуть ту битву, напишите: бой покинуть";
             var idBattle = Api.CreateBattle(user.Id, "Бой с ботом", price, user);
             user.IdBattle = idBattle;
             Bot.Api.User.SetUser(user);
+            Bot.Api.Registry.SetRegistry(registry);
 
             //Бот присоединяется к битве
             var battle = new Bot.Api.Battles(idBattle);
@@ -249,16 +251,20 @@ namespace VKGame.Bot.Commands
                     if (user.Competition == 0)
                         Notifications.EnterPaymentCard(Convert.ToInt32(battle.Price * 2), user.Id, "победа в битве");
                     user.IdBattle = 0;
-                    user.CountWinBattles = user.CountWinBattles + 1;
-                    user.CountBattles = user.CountBattles + 1;
+                    var registry = Bot.Api.Registry.GetRegistry(user.Id);
+                    ++registry.CountWinBattles;
+                    ++registry.CountBattles;
                     user.Experience = user.Experience + 10;
+                    Bot.Api.Registry.SetRegistry(registry);
                     Bot.Api.User.SetUser(user);
                     if (enemy != 16101)
                     {
-                        var userTwo = Bot.Api.User.GetUser(battle.UserTwo);
+                    var refistryTwo = Bot.Api.Registry.GetRegistry(enemy);
+                        var userTwo = Bot.Api.User.GetUser(enemy);
                         userTwo.IdBattle = 0;
-                        userTwo.CountBattles = userTwo.CountBattles + 1;
+                        ++refistryTwo.CountBattles;
                         Bot.Api.User.SetUser(userTwo);
+                        Bot.Api.Registry.SetRegistry(refistryTwo);
                     }
                     int shance = r.Next(1, 4);
                     Quests.WinBattle(user.Id);
@@ -439,9 +445,11 @@ namespace VKGame.Bot.Commands
             if (user.IdBattle != 0) return $"❌ Вы уже находитесь в другой битве c ID - {user.IdBattle}.";
             if (resources.MoneyCard < price) return $"❌ Вы ставите денег больше, чем у Вас на балансе. Ваш баланс: {resources.MoneyCard} 💳 Вы можете получить деньги, например, в казино";
             var battleId = Api.CreateBattle(user.Id, body, price, user);
-            user.CountCreateBattles = user.CountCreateBattles + 1;
+            var registry = Bot.Api.Registry.GetRegistry(user.Id);
+            ++registry.CountCreateBattles;
             user.IdBattle = battleId;
             Api.AddToListBattles(battleId);
+            Bot.Api.Registry.SetRegistry(registry);
             if (!VKGame.Bot.Api.User.SetUser(user)) return "Ошибка при добавлении пользователя в БД. Но битва создалась наверное. Но Вы не вошли в битву.";
             return "✅ Вы успешно создали новую битву! Теперь осталось подождать противника.";
         }

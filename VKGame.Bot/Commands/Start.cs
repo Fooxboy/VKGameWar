@@ -37,13 +37,13 @@ namespace VKGame.Bot.Commands
             var user = Api.User.GetUser(msg.from_id);
             if (user != null) return "❌ Вы уже зарегистрированы в игре.";
             Api.User.NewUser(msg.from_id);
+            var registry = Api.Registry.Register(msg.from_id);
             Api.Resources.Register(msg.from_id);
             Api.Builds.Register(msg.from_id);
             var listusers = Api.UserList.GetList();
             listusers.Users.Add(msg.from_id);
             Api.UserList.SetList(listusers);
             user = Api.User.GetUser(msg.from_id);
-            user.isSetup = true;
             using (File.Create($@"Files/ReferralsFiles/Refferals_{msg.from_id}.json"))
             {
 
@@ -57,6 +57,12 @@ namespace VKGame.Bot.Commands
                 writer.Write(json);
             }
 
+            registry.isSetup = true;
+            registry.LastMessage = DateTime.Now.ToString();
+            registry.StartThread = true;
+            registry.DateReg = DateTime.Now.ToString();
+            
+
             //старт потока добавления ресурсов.
             Thread threadAddingResource = new Thread(new ParameterizedThreadStart(BackgroundProcess.Buildings.AddingResources));
             Logger.WriteDebug($"Старт потока AddResource_{user.Id}");
@@ -66,6 +72,7 @@ namespace VKGame.Bot.Commands
             if (referral != 0)
             {
                 Statistics.NewReferral();
+                registry.isReferal = true;
                 var userRef = Api.User.GetUser(referral);
                 if (userRef != null)
                 {
@@ -97,12 +104,15 @@ namespace VKGame.Bot.Commands
         public static string SetNick(Models.Message msg, string nick)
         {
             var user = Api.User.GetUser(msg.from_id);
-            if (user.isSetup) return "❌ Вы уже прошли этап установки.!";
+            var registry = Api.Registry.GetRegistry(user.Id);
+            if (registry.isSetup) return "❌ Вы уже прошли этап установки.!";
                 
             user.Name = nick;
             if (Api.User.SetUser(user))
             {
                 OneRunGame(user.Id);
+                registry.isHelp = true;
+                Api.Registry.SetRegistry(registry);
                 return $"✅ Так точно! Мы теперь будем называть Вас - {nick}! Вы всегда сможете изменить своё имя в настройках.";
             }
                 

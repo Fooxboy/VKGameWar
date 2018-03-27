@@ -161,7 +161,8 @@ namespace VKGame.Bot.Commands
             Statistics.BattleCompetition();
             if (competition.FreeBattle == 0)
             {
-                user.CountCreateBattles = user.CountCreateBattles + 1;
+                var registry = Api.Registry.GetRegistry(user.Id);
+                ++registry.CountCreateBattles;
                 if (user.IdBattle != 0) return "❌ Вы уже находитесь в другой битве.";
                 long userHp = 0;
                 var price = 0;
@@ -171,6 +172,7 @@ namespace VKGame.Bot.Commands
                 user.IdBattle = battleId;
                 competition.FreeBattle = battleId;
                 Api.User.SetUser(user);
+                Api.Registry.SetRegistry(registry);
                 return "‼ Вы создали битву! Подождите пока кто-либо вступит!";
 
             }

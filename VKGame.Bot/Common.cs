@@ -10,10 +10,7 @@ namespace VKGame.Bot
     /// Глобальные методы.
     /// </summary>
     public class Common
-    {
-        //string Token = null;
-        VkApi VkApi = null;
-
+    { 
         /// <summary>
         /// Получение токена
         /// </summary>
@@ -24,6 +21,8 @@ namespace VKGame.Bot
         }
 
         public static long LastMessage = 0;
+
+        public static Dictionary<long, ICommand> LastCommand = new Dictionary<long, ICommand>();
 
         public static string GetRandomHelp() 
         {

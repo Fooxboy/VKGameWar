@@ -13,7 +13,7 @@ namespace VKGame.Bot.Commands
 
         public object Execute(Models.Message msg)
         {
-            var messageArray = msg.Text.Split(' ');
+            var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
                 return GetSettingsText();
             else

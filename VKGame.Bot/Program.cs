@@ -92,19 +92,20 @@ namespace VKGame.Bot
                     var listUser = Api.UserList.GetList();
                     foreach (var user in listUser.Users)
                     {
-                        var userModel = Api.User.GetUser(user);
+                        var registry = Api.Registry.GetRegistry(user);
+                        //var userModel = Api.User.GetUser(user);
                         try
                         {
                             DateTime lastMessage;
                             try
                             {
-                                lastMessage = DateTime.Parse(userModel.LastMessage);
+                                lastMessage = DateTime.Parse(registry.LastMessage);
 
                             }catch(FormatException)
                             {
                                 lastMessage = DateTime.Now;
-                                userModel.LastMessage = lastMessage.ToString();
-                                Api.User.SetUser(userModel);
+                                registry.LastMessage = lastMessage.ToString();
+                                Api.Registry.SetRegistry(registry);
                             }
                             int day = lastMessage.Day;
                             int nowDay = 0;

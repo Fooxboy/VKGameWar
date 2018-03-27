@@ -15,17 +15,17 @@ namespace VKGame.Bot.BackgroundProcess
                     var listCredits = Api.CreditList.GetList();
                     foreach (var userId in listCredits.Credits)
                     {
-                        var user = Api.User.GetUser(userId);
-                        var credit = new Api.Credit(user.Credit);
+                        var registry = Api.Registry.GetRegistry(userId);
+                        var credit = new Api.Credit(registry.Credit);
                         var creditTime = credit.Time;
                         credit.Time = --creditTime;
                         if (creditTime == 0)
                         {
                             Notifications.RemovePaymentCard(Convert.ToInt32(credit.Price), userId, "оплата кредита.");
-                            user.Credit = 0;
+                            registry.Credit = 0;
                             listCredits.Credits.Remove(userId);
                             Api.CreditList.SetList(listCredits);
-                            Api.User.SetUser(user);
+                            Api.Registry.SetRegistry(registry);
                         }
                     }
                 }catch(Exception e)

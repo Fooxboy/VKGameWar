@@ -12,6 +12,50 @@ namespace VKGame.Bot
  /// </summary>
     public class Api
     {
+        public class Registry
+        {
+            public static Models.Registry GetRegistry(long userId)
+            {
+                var json = "";
+                using (var reader = new StreamReader($@"Files/Registry/{userId}.json"))
+                {
+                    json = reader.ReadToEnd();
+                }
+                return JsonConvert.DeserializeObject<Models.Registry>(json);
+            }
+
+            public static void SetRegistry(Models.Registry model)
+            {
+                var json = JsonConvert.SerializeObject(model);
+                using (var writer = new StreamWriter($@"Files/Registry{model.Id}.json", false, System.Text.Encoding.Default))
+                {
+                    writer.Write(json);
+                }
+            }
+
+            public static Models.Registry Register(long userId)
+            {
+                var model = new Models.Registry()
+                {
+                    Id = userId,
+                    CountMessage = 0,
+                    CountBattles = 0,
+                    CountWinBattles = 0,
+                    CountCreateBattles = 0,
+                    LastMessage = String.Empty,
+                    StartThread = false,
+                    Credit = 0,
+                    DateReg = String.Empty,
+                    isSetup = false,
+                    isHelp = false,
+                    isReferal = false
+                };
+
+                SetRegistry(model);
+                return model;
+            }
+        }
+
         public class CacheMessages
         {
             public static Models.MessagesCache GetList()
@@ -796,10 +840,7 @@ id = Id;
                 set => db.Edit(Id, "TicketsCompetitions", value);
             }
         }
-        
-        /// <summary>
-        /// Класс для работы с пользователем.
-        /// </summary>
+       
         public static class User
         {
 
@@ -809,15 +850,8 @@ id = Id;
                 try
                 {
                     database.Edit(user.Id, "Name", user.Name);
-                    database.Edit(user.Id, "Setup", Convert.ToInt32(user.isSetup));
                     database.Edit(user.Id, "Level", user.Level);
-                    database.Edit(user.Id, "CountBattles", user.CountBattles);
-                    database.Edit(user.Id, "CountWinBattles", user.CountWinBattles);
-                    database.Edit(user.Id, "CountCreateBattles", user.CountCreateBattles);
                     database.Edit(user.Id, "IdBattle", user.IdBattle);
-                    database.Edit(user.Id, "LastMessage", user.LastMessage);
-                    database.Edit(user.Id, "StartThread", Convert.ToInt64(user.StartThread));
-                    database.Edit(user.Id, "Credit", user.Credit);
                     database.Edit(user.Id, "Experience", user.Experience);
                     database.Edit(user.Id, "Clan", user.Clan);
                     database.Edit(user.Id, "Competition", user.Competition);
@@ -851,15 +885,8 @@ id = Id;
                     {
                         Id = id,
                         Name = (string)database.GetFromId(id, "Name"),
-                        DateReg = (string)database.GetFromId(id, "TimeReg"),
                         Level = (long)database.GetFromId(id, "Level"),
-                        CountBattles = (long)database.GetFromId(id, "CountBattles"),
-                        CountWinBattles = (long)database.GetFromId(id, "CountWinBattles"),
-                        CountCreateBattles = (long)database.GetFromId(id, "CountCreateBattles"),
                         IdBattle = (long)database.GetFromId(id, "IdBattle"),
-                        LastMessage = (string)database.GetFromId(id, "LastMessage"),
-                        StartThread = Convert.ToBoolean((long)database.GetFromId(id, "StartThread")),
-                        Credit = (long)database.GetFromId(id, "Credit"),
                         Experience = (long)database.GetFromId(id, "Experience"),
                         Clan = (long)database.GetFromId(id, "Clan"),
                         Competition = (long)database.GetFromId(id, "Competition"),
@@ -882,11 +909,11 @@ id = Id;
                 if (database.Check(id)) return false;
                 else
                 {
-                    string fields = @"`Id`, `Name`, `TimeReg`, `LastMessage`";
+                    string fields = @"`Id`, `Name`";
                     var list = new List<long>();
                     //var common = new Common();
                     var name = Common.GetVk().Users.Get(new List<long>() {id})[0].FirstName;
-                    string values = $@"'{id}', '{name}', '{DateTime.Now}', '{DateTime.Now}'";
+                    string values = $@"'{id}', '{name}'";
                     database.Add(fields, values);
                     
                     Statistics.NewRegistation();

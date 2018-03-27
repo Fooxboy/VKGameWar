@@ -19,8 +19,8 @@ namespace VKGame.Bot.BackgroundProcess
                         var listUsers = Api.UserList.GetList();
                         foreach (var userId in listUsers.Users)
                         {
-                            var user = Api.User.GetUser(userId);
-                            var lastMessage = DateTime.Parse(user.LastMessage);
+                            var registry = Api.Registry.GetRegistry(userId);
+                            var lastMessage = DateTime.Parse(registry.LastMessage);
                             int day = lastMessage.Day;
                             int nowDay = 0;
                             if (lastMessage.Month == DateTime.Now.Month) nowDay = DateTime.Now.Day;

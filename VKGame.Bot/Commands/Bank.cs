@@ -47,17 +47,17 @@ namespace VKGame.Bot.Commands
         public static class Api
         {
             public static long SumCredit(long userLvl) => userLvl * 500;
-            public static bool NewCredit(long userId, long price, Models.User user = null)
+            public static bool NewCredit(long userId, long price)
             {
-                if (user == null) user = Bot.Api.User.GetUser(userId);
                 var idCredit = Bot.Api.Credit.New(userId, price);
-                user.Credit = idCredit;
+                var registry = Bot.Api.Registry.GetRegistry(userId);
+                registry.Credit = idCredit;
                 var listCredit = Bot.Api.CreditList.GetList();
-                listCredit.Credits.Add(user.Id);
+                listCredit.Credits.Add(userId);
                 Statistics.NewCredit();
                 Bot.Api.CreditList.SetList(listCredit);
-                Notifications.EnterPaymentCard(Convert.ToInt32(price), user.Id, "кредит");
-                Bot.Api.User.SetUser(user);
+                Notifications.EnterPaymentCard(Convert.ToInt32(price), userId, "кредит");
+                Bot.Api.Registry.SetRegistry(registry);
                 return true;
             }
         }
@@ -88,6 +88,7 @@ namespace VKGame.Bot.Commands
         public static string Loan(Models.Message msg) 
         {
             var user = Bot.Api.User.GetUser(msg.from_id);
+            var registry = Bot.Api.Registry.GetRegistry(msg.from_id);
             var messageArray = msg.body.Split(' ');
             long count = 0;
             try
@@ -103,9 +104,9 @@ namespace VKGame.Bot.Commands
                 return $"❌ {messageArray[2]} не является числом!";
             }
             if(count > (Api.SumCredit(user.Level))) return $"❌ Ваша сумма слишком большая. Вам доступно: {Api.SumCredit(user.Level)}. Чем больше уровень, тем больше размер кредита!";
-            if(user.Credit != 0) return "❌ На Вас ещё числится кредит!";
+            if(registry.Credit != 0) return "❌ На Вас ещё числится кредит!";
 
-            Api.NewCredit(user.Id, count, user);
+            Api.NewCredit(msg.from_id, count);
             
             return $"✅ Вы успешно взяли кредит в размере {count}, сумма снимется через 10 часов!";
         }

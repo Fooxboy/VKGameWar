@@ -1,4 +1,5 @@
 ﻿using VkNet.Model.RequestParams;
+using System.Collections.Generic;
 
 namespace VKGame.Bot.Commands
 {
@@ -9,7 +10,17 @@ namespace VKGame.Bot.Commands
     {
         public static void Execute(Models.Message msg)
         {
-            //ничего не делать..
+            try
+            {
+                var lastcommand = Common.LastCommand;
+                var command = lastcommand[msg.from_id];
+                var response = command.Execute(msg);
+                Api.MessageSend((string)response, msg.from_id);
+            }catch(KeyNotFoundException)
+            {
+                Api.MessageSend("Неизвестная команда!", msg.from_id);
+
+            }
         }
     }
 }

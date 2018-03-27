@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Net;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Threading;
 
 namespace VKGame.Bot
 {
@@ -25,84 +28,107 @@ namespace VKGame.Bot
 
         public void Start(object token)
         {
-            while(true)
+            while (true)
             {
-                if (Token == String.Empty) Token = (string)token;
-                if(Server== String.Empty || Key== String.Empty || Ts==0)
-                {
-                    Logger.WriteDebug("Получение Key, Server, Ts...");
-                    var modelKeyAndTs = GetKeyAndTs();
-                    var response = modelKeyAndTs.response;
-                    Key = response.key;
-                    Ts = response.ts;
-                    Server = response.server;
-                }
-
-                var json = Request();
-                Models.RootBotsLongPollVK responseLongPoll = null;
                 try
                 {
-                    responseLongPoll = JsonConvert.DeserializeObject<Models.RootBotsLongPollVK>(json);
-                    Ts = responseLongPoll.ts;
-                }
-                catch
-                {
-                    Logger.WriteDebug("Получение Key, Server, Ts...");
-                    var modelKeyAndTs = GetKeyAndTs();
-                    var response = modelKeyAndTs.response;
-                    Key = response.key;
-                    Ts = response.ts;
-                    Server = response.server;
-                    var newJson = Request();
-                    responseLongPoll = JsonConvert.DeserializeObject<Models.RootBotsLongPollVK>(newJson);
-                }
-
-                if(responseLongPoll.updates == null)
-                {
-                    Logger.WriteDebug("Получение Key, Server, Ts...");
-                    var modelKeyAndTs = GetKeyAndTs();
-                    var response = modelKeyAndTs.response;
-                    Key = response.key;
-                    Ts = response.ts;
-                    Server = response.server;
-                    var newJson = Request();
-                    responseLongPoll = JsonConvert.DeserializeObject<Models.RootBotsLongPollVK>(newJson);
-                }
-
-                var updates = responseLongPoll.updates;
-                foreach(var update in updates)
-                {
-                    var type = update.type;
-                    if(type == "message_new")
+                    if (Token == String.Empty) Token = (string)token;
+                    if (Server == String.Empty || Key == String.Empty || Ts == 0)
                     {
-                        var model = (Models.Message)update.@object;
-                        NewMesageEvent?.Invoke(model);
-                    }else if(type == "group_join")
-                    {
-                        var model = (Models.UserJoin)update.@object;
-                        UserJoinEvent?.Invoke(model);
+                        Logger.WriteDebug("Получение Key, Server, Ts...");
+                        var modelKeyAndTs = GetKeyAndTs();
+                        var response = modelKeyAndTs.response;
+                        Key = response.key;
+                        Ts = response.ts;
+                        Server = response.server;
                     }
-                    else if(type == "group_leave")
-                    {
-                        var model = (Models.UserLeave)update.@object;
-                        UserLeaveEvent?.Invoke(model);
-                    }else
-                    {
 
+                    var json = Request();
+                    Logger.WriteDebug(json);
+                    Models.RootBotsLongPollVK responseLongPoll = null;
+                    try
+                    {
+                        responseLongPoll = JsonConvert.DeserializeObject<Models.RootBotsLongPollVK>(json);
+                        Ts = responseLongPoll.ts;
                     }
-                } 
-            }
+                    catch
+                    {
+                        Logger.WriteDebug("Получение Key, Server, Ts...");
+                        var modelKeyAndTs = GetKeyAndTs();
+                        var response = modelKeyAndTs.response;
+                        Key = response.key;
+                        Ts = response.ts;
+                        Server = response.server;
+                        var newJson = Request();
+                        responseLongPoll = JsonConvert.DeserializeObject<Models.RootBotsLongPollVK>(newJson);
+                    }
+
+                    if (responseLongPoll.updates == null)
+                    {
+                        Logger.WriteDebug("Получение Key, Server, Ts...");
+                        var modelKeyAndTs = GetKeyAndTs();
+                        var response = modelKeyAndTs.response;
+                        Key = response.key;
+                        Ts = response.ts;
+                        Server = response.server;
+                        var newJson = Request();
+                        responseLongPoll = JsonConvert.DeserializeObject<Models.RootBotsLongPollVK>(newJson);
+                    }
+
+                    var updates = responseLongPoll.updates;
+                    foreach (var update in updates)
+                    {
+                        var type = update.type;
+                        if (type == "message_new")
+                        {
+                            var jobj = (JObject)update.@object;
+                            var model = jobj.ToObject<Models.Message>();
+                            model.from_id = model.user_id;
+                            NewMesageEvent?.Invoke(model);
+                        }
+                        else if (type == "group_join")
+                        {
+                            var model = (Models.UserJoin)update.@object;
+                            UserJoinEvent?.Invoke(model);
+                        }
+                        else if (type == "group_leave")
+                        {
+                            var model = (Models.UserLeave)update.@object;
+                            UserLeaveEvent?.Invoke(model);
+                        }
+                        else
+                        {
+
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Statistics.NewError();
+                    Logger.WriteError(e);
+                }
+            }    
         }
 
         private string Request()
-        {
-            var url = $"{Server}?act=a_check&key={Key}&ts={Ts}&wait=25";
-            var json = String.Empty;
-            using(var web = new WebClient())
+        {       
+            try
             {
-                json = web.DownloadString(url);
+                var url = $"{Server}?act=a_check&key={Key}&ts={Ts}&wait=25";
+                var json = String.Empty;
+                using (var web = new WebClient())
+                {
+                    json = web.DownloadString(url);
+                }
+                return json;
             }
-            return json;
+            catch(WebException e)
+            {
+                Logger.WriteError(e);
+                Statistics.NewError();
+                Thread.Sleep(5000);
+                 return Request();
+            }       
         }
 
         private Models.TsAndKey.ResponseModel GetKeyAndTs()

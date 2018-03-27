@@ -62,8 +62,18 @@ namespace VKGame.Bot
             try
             {
                 ICommand command = Proccesing(msg.body.Split(' ')[0].ToLower());
+                
                 if (command != null)
                 {
+                    var lastCommands = Common.LastCommand;
+                    try
+                    {
+                        var buffer = lastCommands[msg.from_id];
+                        lastCommands[msg.from_id] = command;
+                    }catch(KeyNotFoundException)
+                    {
+                        lastCommands.Add(msg.from_id, command);
+                    }
 
                     object result = command.Execute(msg);
 
@@ -163,10 +173,12 @@ namespace VKGame.Bot
                 var user = Api.User.GetUser(message.from_id);
                 if (user != null)
                 {
-                    if (DateTime.Parse(user.LastMessage).Day != DateTime.Now.Day)
+                    var registry = Api.Registry.GetRegistry(user.Id);
+                    if (DateTime.Parse(registry.LastMessage).Day != DateTime.Now.Day)
                     {
-                        user.LastMessage = DateTime.Now.ToString();
-                        Api.User.SetUser(user);
+                        registry.LastMessage = DateTime.Now.ToString();
+                        //Api.User.SetUser(user);
+                        Api.Registry.SetRegistry(registry);
                     }
                     Logger.NewMessage($"({message.from_id}) -> {message.body}");
                     var core = new Core();
