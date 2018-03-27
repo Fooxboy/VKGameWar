@@ -88,17 +88,15 @@ namespace VKGame.Bot
                         }
                         else if (type == "group_join")
                         {
-                            var model = (Models.UserJoin)update.@object;
+                            var jobj = (JObject)update.@object;
+                            var model = jobj.ToObject<Models.UserJoin>();
                             UserJoinEvent?.Invoke(model);
                         }
                         else if (type == "group_leave")
                         {
-                            var model = (Models.UserLeave)update.@object;
+                            var jobj = (JObject)update.@object;
+                            var model = jobj.ToObject<Models.UserLeave>();
                             UserLeaveEvent?.Invoke(model);
-                        }
-                        else
-                        {
-
                         }
                     }
                 }
@@ -115,6 +113,8 @@ namespace VKGame.Bot
             try
             {
                 var url = $"{Server}?act=a_check&key={Key}&ts={Ts}&wait=25";
+                Logger.WriteDebug($"Запрос на сервер {url}...");
+
                 var json = String.Empty;
                 using (var web = new WebClient())
                 {
@@ -127,7 +127,7 @@ namespace VKGame.Bot
                 Logger.WriteError(e);
                 Statistics.NewError();
                 Thread.Sleep(5000);
-                 return Request();
+                return Request();
             }       
         }
 

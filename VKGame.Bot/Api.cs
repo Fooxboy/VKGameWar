@@ -27,7 +27,7 @@ namespace VKGame.Bot
             public static void SetRegistry(Models.Registry model)
             {
                 var json = JsonConvert.SerializeObject(model);
-                using (var writer = new StreamWriter($@"Files/Registry{model.Id}.json", false, System.Text.Encoding.Default))
+                using (var writer = new StreamWriter($@"Files/Registry/{model.Id}.json", false, System.Text.Encoding.Default))
                 {
                     writer.Write(json);
                 }
@@ -50,6 +50,11 @@ namespace VKGame.Bot
                     isHelp = false,
                     isReferal = false
                 };
+
+                using(File.Create($@"Files/Registry/{model.Id}.json"))
+                {
+
+                }
 
                 SetRegistry(model);
                 return model;
@@ -356,7 +361,7 @@ namespace VKGame.Bot
                 {
                     var json = (string)db.GetFromId(id, "Users");
                     Models.Quests.Users model;
-                    if (json == "")
+                    if (json == " ")
                     {
                         model = new Models.Quests.Users() { List = new List<Models.Quests.User>() };
                     }else

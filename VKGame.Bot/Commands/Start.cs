@@ -57,7 +57,6 @@ namespace VKGame.Bot.Commands
                 writer.Write(json);
             }
 
-            registry.isSetup = true;
             registry.LastMessage = DateTime.Now.ToString();
             registry.StartThread = true;
             registry.DateReg = DateTime.Now.ToString();
@@ -86,6 +85,7 @@ namespace VKGame.Bot.Commands
             }
 
             Api.User.SetUser(user);
+            Api.Registry.SetRegistry(registry);
             Api.Boxes.Register(msg.from_id);
 
             string resultStr =
@@ -110,6 +110,7 @@ namespace VKGame.Bot.Commands
             user.Name = nick;
             if (Api.User.SetUser(user))
             {
+                registry.isSetup = true;
                 OneRunGame(user.Id);
                 registry.isHelp = true;
                 Api.Registry.SetRegistry(registry);
