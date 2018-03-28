@@ -10,6 +10,7 @@ namespace VKGame.Bot.Commands
         public string Arguments => "()";
         public string Caption => "Раздел для вывода информации о Вашем балансе.";
         public TypeResponse Type => TypeResponse.Text;
+        public List<string> Commands => new List<string> { "отнять", "прибавить", "узнать"};
 
         public object Execute(Models.Message msg)
         {
@@ -38,7 +39,9 @@ namespace VKGame.Bot.Commands
                     }
                 }
             }
-            return "❌ Неизвестная подкоманда.";
+            var word = Common.SimilarWord(messageArray[0], Commands);
+            return $"❌ Неизвестная подкоманда." +
+                    $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
         }
 
         [Attributes.Trigger("отнять")]

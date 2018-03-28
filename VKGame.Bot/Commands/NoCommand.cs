@@ -29,7 +29,6 @@ namespace VKGame.Bot.Commands
                     {
                         if (attribute.GetType() == typeof(Attributes.Trigger))
                         {
-
                             var myAtr = ((Attributes.Trigger)attribute);
 
                             if (myAtr.Name == messageArray[0])
@@ -41,7 +40,13 @@ namespace VKGame.Bot.Commands
                                 }
                                 msg.body = text;
                                 object result = method.Invoke(obj, new object[] { msg });
-                                response = (string)result;
+                                if ((string)result != null) response = (string)result;
+                                else
+                                {
+                                    var word = Common.SimilarWord(messageArray[0], command.Commands);
+                                    response = $"❌ Неизвестная подкоманда." +
+                                            $"\n ❓ Возможно, Вы имели в виду - {word}";
+                                }
                             }
                         }
                     }
@@ -50,7 +55,7 @@ namespace VKGame.Bot.Commands
                 Api.MessageSend(response, msg.from_id);
             }catch(KeyNotFoundException)
             {
-                Api.MessageSend("Неизвестная команда!", msg.from_id);
+                Api.MessageSend("❌ Неизвестная команда!", msg.from_id);
 
             }
         }

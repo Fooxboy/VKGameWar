@@ -1,5 +1,6 @@
 ﻿using System;
 using VKGame.Bot.Models;
+using System.Collections.Generic;
 
 namespace VKGame.Bot.Commands
 {
@@ -12,6 +13,7 @@ namespace VKGame.Bot.Commands
         public string Arguments => "()";
         public string Caption => "Возвращает на Ваш домашний экран!";
         public TypeResponse Type => TypeResponse.Text;
+        public List<string> Commands => new List<string>();
 
         public object Execute(Message msg)
         {
@@ -29,7 +31,8 @@ namespace VKGame.Bot.Commands
             return $"‼{notify}‼" +
                           $"\n➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖" +
                           $"\n" +
-                          $"\n👦 КОМАНДИР {user.Name}. 🔝 Уровень: {user.Level} ({user.Experience}/ {user.Level*100})." +
+                          $"\n👦 КОМАНДИР {user.Name}. " +
+                          $"\n🔝 Уровень: {user.Level} ({user.Experience}/ {user.Level*100})." +
                           $"\n" +
                           $"\nФИНАНСЫ➖➖➖➖➖➖➖➖➖➖➖➖➖" +
                           $"\n💰 Наличные монеты: {resources.Money}." +
@@ -53,7 +56,7 @@ namespace VKGame.Bot.Commands
                           $"\n- ⚙ Настройки" +
                           $"\n➡ Чтобы увидеть все разделы, напишите: Разделы" +
                           $"\n➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖" +
-                          $"\n⚠ Нет денег? Возмите кредит!";
+                          $"\n⚠ {Common.GetRandomHelp()}";
         }
     }
 }

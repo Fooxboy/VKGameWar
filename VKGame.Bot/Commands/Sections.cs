@@ -10,6 +10,7 @@ namespace VKGame.Bot.Commands
         public string Caption => "Раздел предназначен для вывода списка разделов.";
         public string Arguments => "()";
         public TypeResponse Type => TypeResponse.Text;
+        public List<string> Commands => new List<string>();
 
         public object Execute(Models.Message msg)
         {
@@ -40,11 +41,18 @@ namespace VKGame.Bot.Commands
 
             foreach(var command in listCommand)
             {
+                string commandsInCommand = String.Empty;
+
+                foreach(var commandInCommand in command.Commands)
+                {
+                    commandsInCommand += $"{commandInCommand}, ";
+                }
+
                 text += $"\n 😀 Название: {command.Name}" +
                     $"\n 🎉 Аргументы: {command.Arguments}" +
+                    $"\n ➡ Доступные подкоманды: {commandsInCommand}" +
                     $"\n ❓ Описание: {command.Caption}" +
                     $"\n";
-
             }
 
             text += "\n➖➖➖➖➖➖➖➖➖➖➖➖";

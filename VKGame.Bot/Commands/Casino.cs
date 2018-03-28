@@ -21,6 +21,8 @@ namespace VKGame.Bot.Commands
 
         public TypeResponse Type => TypeResponse.Text;
 
+        public List<string> Commands => new List<string>() { "карты", "билет", "рулетка"};
+
         public object Execute(Models.Message msg)
         {
             var messageArray = msg.body.Split(' ');
@@ -49,7 +51,9 @@ namespace VKGame.Bot.Commands
                         }
                     }         
                 }
-                return "❌ Неизвестная подкоманда.";
+                var word = Common.SimilarWord(messageArray[0], Commands);
+                return $"❌ Неизвестная подкоманда." +
+                        $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
             }
         }
         
@@ -189,7 +193,7 @@ namespace VKGame.Bot.Commands
                           $"\n ➡➡Лицо -- 😀" +
                           $"\n ➡❓ Чтобы поставить нужно писать НАЗВАНИЕ смайла, а не сам смайл." +
                           $"\n ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖" +
-                          $"\n ⚠ Сегодня можно все :)";
+                          $"\n ⚠ {Common.GetRandomHelp()}";
         }
     }
 }

@@ -173,21 +173,42 @@ namespace VKGame.Bot
         public static void SetStat(Models.Statistics model)
         {
             var json = JsonConvert.SerializeObject(model);
-            using (var writer = new StreamWriter(@"Files/Statistics.json", false, System.Text.Encoding.Default))
+            try
             {
-                writer.Write(json);
+                using (var writer = new StreamWriter(@"Files/Statistics.json", false, System.Text.Encoding.Default))
+                {
+                    writer.Write(json);
+                }
+            }catch(IOException)
+            {
+                System.Threading.Thread.Sleep(2000);
+                using (var writer = new StreamWriter(@"Files/Statistics.json", false, System.Text.Encoding.Default))
+                {
+                    writer.Write(json);
+                }
             }
+           
         }
 
         public static Models.Statistics GetStat()
         {
             var json = String.Empty;
 
-            using(var reader = new StreamReader(@"Files/Statistics.json"))
+            try
             {
-                json = reader.ReadToEnd();
+                using (var reader = new StreamReader(@"Files/Statistics.json"))
+                {
+                    json = reader.ReadToEnd();
+                }
+            }catch(IOException)
+            {
+                System.Threading.Thread.Sleep(2000);
+                using (var reader = new StreamReader(@"Files/Statistics.json"))
+                {
+                    json = reader.ReadToEnd();
+                }
             }
-
+          
             return JsonConvert.DeserializeObject < Models.Statistics>(json);
         }
      }

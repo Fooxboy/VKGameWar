@@ -79,7 +79,19 @@ namespace VKGame.Bot
 
                     if (command.Type == TypeResponse.Text)
                     {
+
                         Api.MessageSend((string)result, msg.from_id);
+                        /* string wait = "🔁 Подождите. Команда выполняется 🔁";
+                         var messageId = Api.MessageSend(wait, msg.from_id);
+                         if(messageId != 0)
+                         {
+                             string text = (string)result;
+                             var resultEdit = Api.MessageEdit(text, messageId, msg.from_id);
+                             if(!resultEdit)
+                             {
+                                Api.MessageSend("❌ Ошибка. Команда не смогла быть выполнена.", msg.from_id);
+                             }
+                         }*/
                     }
                     else if (command.Type == TypeResponse.Photo)
                     {
@@ -121,10 +133,9 @@ namespace VKGame.Bot
                         else
                         {
                             Api.MessageSend($"🎈  ОШИБКА: {e.Message}" +
-                             $"\n 🎈  Исключение: {e.GetType().Name}" +
-                            $"\n 🎈  StackTrace: {e.StackTrace}", msg.from_id);
+                             $"\n 🎉  Исключение: {e.GetType().Name}" +
+                            $"\n 🎠  StackTrace: {e.StackTrace}", msg.from_id);
                         }
-
                     }
                     else
                     {
@@ -152,6 +163,37 @@ namespace VKGame.Bot
         {
             if (Commands != null) Commands.Add(command);
             else Commands = new List<ICommand>() {command};
+        }
+
+        public static void LeaveInGroup(Models.UserLeave userId)
+        {
+            var user = Api.User.GetUser(userId.user_id);
+            if (user != null)
+            {
+                var registry = Api.Registry.GetRegistry(user.Id);
+                registry.isLeaveIsGroup = true;
+                Api.MessageSend("😭 Постооой... Ну куда же ты??? Что тебе не понравилось? Ботом можно пользоваться даже, когда ты не подписан на группу, но все же... Имей уважение..." +
+                    "\n ❓ Хочешь написать положительный или отрицательный отзыв? Напиши: Отзыв <текст> ", user.Id);
+                Api.Registry.SetRegistry(registry);
+            }
+        }
+
+        public static void JoinInGroup(Models.UserJoin userId)
+        {
+            var user = Api.User.GetUser(userId.user_id);
+            if (user != null)
+            {
+                var registry = Api.Registry.GetRegistry(user.Id);
+                if(registry.isBonusInGroupJoin)
+                {
+                    Api.MessageSend("❤ Спасибо, что подписался на группу! Здесь будут публиковаться разные новости и промо акции!" +
+                        "\n ➡ Вот тебе бонус за подписку в размере 100 💳", user.Id);
+                    Notifications.EnterPaymentCard(100, user.Id, "бонус за подписку");
+                }else
+                {
+                    Api.MessageSend("❤ Спасибо, что подписался на группу!", user.Id);
+                }
+            }
         }
         
         

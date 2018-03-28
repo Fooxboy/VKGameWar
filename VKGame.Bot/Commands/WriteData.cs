@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using VkNet.Model.RequestParams;
+using System.Collections.Generic;
 
 namespace VKGame.Bot.Commands
 {
@@ -12,6 +13,7 @@ namespace VKGame.Bot.Commands
         public string Caption => "Используется для ввода данных. Например, при смени имени.";
         public string Arguments => "(данные)";
         public TypeResponse Type => TypeResponse.Text;
+        public List<string> Commands => new List<string>();
 
         [NotNull]
         public object Execute(Models.Message msg)

@@ -10,6 +10,7 @@ namespace VKGame.Bot.Commands
         public string Caption => "Здесь Вы можете посмотреть и управлять вашими кейсами!";
         public string Arguments => "(), (Вариант_выбора)";
         public TypeResponse Type => TypeResponse.Text;
+        public List<string> Commands => new List<string>() {"купить", "открыть"};
 
         public object Execute(Models.Message msg)
         {
@@ -42,7 +43,9 @@ namespace VKGame.Bot.Commands
                 }
             }
 
-                return "❌ Неизвестная подкоманда.";
+            var word = Common.SimilarWord(messageArray[0], Commands);
+            return $"❌ Неизвестная подкоманда." +
+                    $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
         }
        
 

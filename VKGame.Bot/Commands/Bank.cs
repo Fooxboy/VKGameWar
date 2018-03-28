@@ -1,5 +1,6 @@
 using System;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.IO;
 
 namespace VKGame.Bot.Commands
@@ -10,6 +11,8 @@ namespace VKGame.Bot.Commands
         public string Caption => "Этот раздел предназначан для работы с банком";
         public string Arguments => "(), (Вариант_Выбора)";
         public TypeResponse Type => TypeResponse.Text;
+        public List<string> Commands => new List<string>() { "обмен", "кредит"};
+
         public object Execute(Models.Message msg) 
         {
             var messageArray = msg.body.Split(' ');
@@ -41,7 +44,9 @@ namespace VKGame.Bot.Commands
                     }
                 }
             }
-            return "❌ Неизвестная подкоманда";
+            var word = Common.SimilarWord(messageArray[0], Commands);
+            return $"❌ Неизвестная подкоманда." +
+                    $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
         }
 
         public static class Api

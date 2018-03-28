@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
-using System.Reflection;
+using System.Collections.Generic;
 using System;
 
 namespace VKGame.Bot.Commands
@@ -8,12 +8,13 @@ namespace VKGame.Bot.Commands
     /// <summary>
     /// Класс для работы с разделом Армия.
     /// </summary>
-    public class Army:ICommand
+    public class Army : ICommand
     {
         public string Name => "Армия";
         public string Caption => "Этот раздел предназначен для управления Вашей армией.";
         public string Arguments => "(), (вариант_выбора)";
         public TypeResponse Type => TypeResponse.Text;
+        public List<string> Commands => new List<string>() {"создать", "обучить"};
 
         public object Execute(Models.Message msg)
         {
@@ -45,8 +46,9 @@ namespace VKGame.Bot.Commands
                     }
                     
                 }
-
-            return "❌ Неизвестная подкоманда.";
+            var word = Common.SimilarWord(messageArray[0], Commands);
+            return $"❌ Неизвестная подкоманда." +
+                    $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
         }
 
         public static class Api

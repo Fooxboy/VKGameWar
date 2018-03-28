@@ -6,10 +6,12 @@ namespace VKGame.Bot.Commands
 {
     public class Referrals :ICommand
     {
-        public string Name => "рефералы";
+        public string Name => "Рефералы";
         public string Caption => "Здесь можно посмотреть кто у Вас реферал и сколько вы получаете с него прибыли.";
         public string Arguments => "()";
         public TypeResponse Type => TypeResponse.Text;
+        public List<string> Commands => new List<string>();
+
         public object Execute(Models.Message msg)
         {
             return GetReferralsText(msg.from_id);

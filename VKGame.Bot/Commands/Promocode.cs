@@ -14,6 +14,8 @@ namespace VKGame.Bot.Commands
         public string Caption =>"Раздел предназначен для работы с промокодами.";
         public string Arguments => "(промокод)";
         public TypeResponse Type => TypeResponse.Text;
+        public List<string> Commands => new List<string>();
+
         public object Execute(Models.Message msg) 
         {
             var messageArray = msg.body.Split(' ');

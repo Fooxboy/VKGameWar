@@ -12,6 +12,7 @@ namespace VKGame.Bot.Commands
         public string Caption => "Здесь можно получить специальные задания!";
         public string Arguments => "(), (Вариант выбора)";
         public TypeResponse Type => TypeResponse.Text;
+        public List<string> Commands => new List<string>() {"старт", "покинуть", "прогресс" };
 
         public object Execute(Message msg)
         {
@@ -42,7 +43,9 @@ namespace VKGame.Bot.Commands
                         }
                     }
                 }
-                return "❌ Неизвестная подкоманда.";
+                var word = Common.SimilarWord(messageArray[0], Commands);
+                return $"❌ Неизвестная подкоманда." +
+                        $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
             }
         }
 
@@ -193,7 +196,7 @@ namespace VKGame.Bot.Commands
             }
         }
 
-        [Attributes.Trigger("Покинуть")]
+        [Attributes.Trigger("покинуть")]
         public static string Leave(Message msg)
         {
             return "возможность покинуть квест пока что недоступна :/";

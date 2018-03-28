@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using VkNet;
 using System.Net;
+using System.Linq;
 
 namespace VKGame.Bot
 {
@@ -14,7 +15,7 @@ namespace VKGame.Bot
         
         public static string GetToken()
         {
-            return "fdbb5fb61db9939adc73759a114ed7b45853e5f171cca4b619e3b44452beef3ace1dbc2467c5e805ac240";
+            return "89d513f60f1f26a711a376720a9dba0149ab2a283941b83fc1753c0a9fd54b2350be6ada97a44ee083de1";
         }
 
         public static long LastMessage = 0;
@@ -25,12 +26,47 @@ namespace VKGame.Bot
         public static VkApi VkM = null;
 
 
+        public static string SimilarWord(string word, List<string> commands)
+        {
+            Dictionary<string, int> commandTop = new Dictionary<string, int>();
+            if (commands.Count == 0) return "В команде нет подкоманд.";
+            foreach(var command in commands)
+            {
+                var charsCommand = command.ToCharArray();
+                var charsWord = word.ToCharArray();
+                int count = 0;
+                foreach(var charCommand in charsCommand)
+                {
+                    foreach(var charWord in charsWord)
+                    {
+                        if (charCommand == charWord) ++count;
+                    }
+                }
+                commandTop.Add(command, count);
+            }
+
+            var modelcommandReturn = commandTop.OrderBy(u => u.Value);
+
+            string commandRetun = String.Empty;
+            foreach(var commandModel in modelcommandReturn)
+            {
+                commandRetun = commandModel.Key;
+            }
+
+            return commandRetun;
+        }
+
         public static string GetRandomHelp() 
         {
-            string[] ListHelp =  
+            string[] ListHelp =
             {
-                "Тут",
-                ""
+                "Нет денег? Возьми кредит! Напиши: Банк кредит <сумма>",
+                "Чем больше солдат у Вас в казарме, тем больше они кушают еды!",
+                "Чтобы победить, нужно продумать каждый ход!",
+                "Не с кем повоевать? Воюй с ботом! Напиши: Бой бот <сумма>",
+                "Вы азартны? Попробуйте нашу рулетку! Напишите: Казино рулетка",
+                "Приглашайте в игру рефералов! При регистрации пользователь должен указать Ваш id. Подробнее: Рефералы",
+                "В соревнованиях можно хорошо заработать! Напиши: Соревнования"
             };
             var r = new Random();
             var i = r.Next(0, (ListHelp.Length -1));
@@ -43,10 +79,11 @@ namespace VKGame.Bot
             {
                 var VkApi = new VkApi();
 
-                string tokenMy = "dc9cb591241f4ac1e81415fd4c98cd396891ec690f4aa9798a846c5e8e39c04196e972dc7d2214859b2e3";
+                string tokenMy = "ff9843ac13585ffc0ee35fd9ccbeae504187bf07e5e9b2a47490f2e9c1fdfd6c0664aeb4b3c2016878cb5";
                 VkApi.Authorize(new ApiAuthParams
                 {
-                    AccessToken = tokenMy
+                    AccessToken = tokenMy,
+                    UserId = 308764786
                 });
 
                 VkM = VkApi;
@@ -62,7 +99,9 @@ namespace VKGame.Bot
                 var VkApi = new VkApi();
                 VkApi.Authorize(new ApiAuthParams
                 {
-                    AccessToken = token
+                    AccessToken = token,
+                    UserId = 308764786,
+                    Settings = VkNet.Enums.Filters.Settings.All
                 });
 
                 VkG = VkApi;

@@ -1,6 +1,7 @@
 using System;
 using Newtonsoft.Json;
 using System.IO;
+using System.Collections.Generic;
 using VKGame.Bot.Models;
 
 namespace VKGame.Bot.Commands
@@ -11,6 +12,8 @@ namespace VKGame.Bot.Commands
         public string Caption => "Эта команда предназначена для работы с разделом магазина";
         public string Arguments => "(), (Вариант_выбора)";
         public TypeResponse Type => TypeResponse.Text;
+        public List<string> Commands => new List<string>() { "ресурс", "опыт"};
+
         public object Execute(Message msg) 
         {
             var messageArray = msg.body.Split(' ');
@@ -40,7 +43,9 @@ namespace VKGame.Bot.Commands
                     }
 
                 }
-                return "❌ Неизвестная подкоманда.";
+                var word = Common.SimilarWord(messageArray[0], Commands);
+                return $"❌ Неизвестная подкоманда." +
+                        $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
             }
         }
 

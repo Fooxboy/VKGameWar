@@ -16,6 +16,7 @@ namespace VKGame.Bot.Commands
         public string Arguments => "";
         public string Caption => "Команда для регистрации игры.";
         public TypeResponse Type => TypeResponse.Text;
+        public List<string> Commands => new List<string>();
         
         [Attributes.Trigger("Старт")]
         public object Execute(Models.Message msg)
@@ -96,7 +97,13 @@ namespace VKGame.Bot.Commands
             var vk = Common.GetVk();
             var uservkdata = vk.Groups.IsMember("161965172", msg.from_id, new List<long>() {msg.from_id}, true)[0];
 
-            if (uservkdata.Member) return resultStr;
+            if (uservkdata.Member)
+            {
+                Api.MessageSend("♥ Спасибо, что ты подписан на нашу группу, вот тебе бонус за это :)", user.Id);
+                Notifications.EnterPaymentCard(100, user.Id, "бонус за группу.");
+                registry.isBonusInGroupJoin = true;
+                return resultStr;
+            }  
             else resultStr += "\n \n❗ Ого ого! Я заметил, что ты не подписан на группу! ⚠ Играть можно и не подписавшись на группу, но подписчикам дают разные плюшки :) Так что советую подписаться! 😉 \n И за подписку ты можешь получить бонус :)";
             return resultStr;
         }

@@ -4,6 +4,7 @@ using VkNet.Model.RequestParams;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
+using System.Threading;
 
 namespace VKGame.Bot
 {
@@ -17,20 +18,42 @@ namespace VKGame.Bot
             public static Models.Registry GetRegistry(long userId)
             {
                 var json = "";
-                using (var reader = new StreamReader($@"Files/Registry/{userId}.json"))
+                try
                 {
-                    json = reader.ReadToEnd();
+                    using (var reader = new StreamReader($@"Files/Registry/{userId}.json"))
+                    {
+                        json = reader.ReadToEnd();
+                    }
+                }catch(System.IO.IOException)
+                {
+                    Thread.Sleep(1500);
+                    using (var reader = new StreamReader($@"Files/Registry/{userId}.json"))
+                    {
+                        json = reader.ReadToEnd();
+                    }
                 }
+               
                 return JsonConvert.DeserializeObject<Models.Registry>(json);
             }
 
             public static void SetRegistry(Models.Registry model)
             {
                 var json = JsonConvert.SerializeObject(model);
-                using (var writer = new StreamWriter($@"Files/Registry/{model.Id}.json", false, System.Text.Encoding.Default))
+                try
                 {
-                    writer.Write(json);
+                    using (var writer = new StreamWriter($@"Files/Registry/{model.Id}.json", false, System.Text.Encoding.Default))
+                    {
+                        writer.Write(json);
+                    }
+                }catch(IOException)
+                {
+                    Thread.Sleep(1500);
+                    using (var writer = new StreamWriter($@"Files/Registry/{model.Id}.json", false, System.Text.Encoding.Default))
+                    {
+                        writer.Write(json);
+                    }
                 }
+                
             }
 
             public static Models.Registry Register(long userId)
@@ -48,13 +71,26 @@ namespace VKGame.Bot
                     DateReg = String.Empty,
                     isSetup = false,
                     isHelp = false,
-                    isReferal = false
+                    isReferal = false,
+                    isBonusInGroupJoin = false,
+                    isLeaveIsGroup = false
                 };
 
-                using(File.Create($@"Files/Registry/{model.Id}.json"))
+                try
                 {
+                    using (File.Create($@"Files/Registry/{model.Id}.json"))
+                    {
 
+                    }
+                }catch(IOException)
+                {
+                    Thread.Sleep(1500);
+                    using (File.Create($@"Files/Registry/{model.Id}.json"))
+                    {
+
+                    }
                 }
+                
 
                 SetRegistry(model);
                 return model;
@@ -66,20 +102,42 @@ namespace VKGame.Bot
             public static Models.MessagesCache GetList()
             {
                 var json = "";
-                using (var reader = new StreamReader(@"Files/CacheMessage.json"))
+                try
                 {
-                    json = reader.ReadToEnd();
+                    using (var reader = new StreamReader(@"Files/CacheMessage.json"))
+                    {
+                        json = reader.ReadToEnd();
+                    }
+                }catch(IOException)
+                {
+                    Thread.Sleep(2000);
+                    using (var reader = new StreamReader(@"Files/CacheMessage.json"))
+                    {
+                        json = reader.ReadToEnd();
+                    }
                 }
+               
                 return JsonConvert.DeserializeObject<Models.MessagesCache>(json);
             }
 
             public static void SetList(Models.MessagesCache model)
             {
                 var json = JsonConvert.SerializeObject(model);
-                using (var writer = new StreamWriter(@"Files/CacheMessage.json", false, System.Text.Encoding.Default))
+                try
                 {
-                    writer.Write(json);
+                    using (var writer = new StreamWriter(@"Files/CacheMessage.json", false, System.Text.Encoding.Default))
+                    {
+                        writer.Write(json);
+                    }
+                }catch(IOException)
+                {
+                    Thread.Sleep(2000);
+                    using (var writer = new StreamWriter(@"Files/CacheMessage.json", false, System.Text.Encoding.Default))
+                    {
+                        writer.Write(json);
+                    }
                 }
+               
             }
         }
 
@@ -209,20 +267,42 @@ namespace VKGame.Bot
             public static Models.Referrals GetList(long userId)
             {
                 var json = "";
-                using (var reader = new StreamReader($@"Files/ReferralsFiles/Refferals_{userId}.json"))
+                try
                 {
-                    json = reader.ReadToEnd();
+                    using (var reader = new StreamReader($@"Files/ReferralsFiles/Refferals_{userId}.json"))
+                    {
+                        json = reader.ReadToEnd();
+                    }
+                }catch(IOException)
+                {
+                    Thread.Sleep(1500);
+                    using (var reader = new StreamReader($@"Files/ReferralsFiles/Refferals_{userId}.json"))
+                    {
+                        json = reader.ReadToEnd();
+                    }
                 }
+                
                 return JsonConvert.DeserializeObject<Models.Referrals>(json);
             }
 
             public static void SetList(Models.Referrals model, long userId)
             {
                 var json = JsonConvert.SerializeObject(model);
-                using (var writer = new StreamWriter($@"Files/ReferralsFiles/Refferals_{userId}.json", false, System.Text.Encoding.Default))
+                try
                 {
-                    writer.Write(json);
+                    using (var writer = new StreamWriter($@"Files/ReferralsFiles/Refferals_{userId}.json", false, System.Text.Encoding.Default))
+                    {
+                        writer.Write(json);
+                    }
+                }catch(IOException)
+                {
+                    Thread.Sleep(1500);
+                    using (var writer = new StreamWriter($@"Files/ReferralsFiles/Refferals_{userId}.json", false, System.Text.Encoding.Default))
+                    {
+                        writer.Write(json);
+                    }
                 }
+                
             }
         }
 
@@ -231,20 +311,42 @@ namespace VKGame.Bot
             public static Models.Roulette GetList()
             {
                 var json = "";
-                using (var reader = new StreamReader(@"Files/Roultettes.json"))
+                try
                 {
-                    json = reader.ReadToEnd();
+                    using (var reader = new StreamReader(@"Files/Roultettes.json"))
+                    {
+                        json = reader.ReadToEnd();
+                    }
+                }catch(IOException)
+                {
+                    Thread.Sleep(1500);
+                    using (var reader = new StreamReader(@"Files/Roultettes.json"))
+                    {
+                        json = reader.ReadToEnd();
+                    }
                 }
+                
                 return JsonConvert.DeserializeObject<Models.Roulette>(json);
             }
 
             public static void SetList(Models.Roulette model)
             {
                 var json = JsonConvert.SerializeObject(model);
-                using (var writer = new StreamWriter(@"Files/Roultettes.json", false, System.Text.Encoding.Default))
+                try
                 {
-                    writer.Write(json);
+                    using (var writer = new StreamWriter(@"Files/Roultettes.json", false, System.Text.Encoding.Default))
+                    {
+                        writer.Write(json);
+                    }
+                }catch(IOException)
+                {
+                    Thread.Sleep(1500);
+                    using (var writer = new StreamWriter(@"Files/Roultettes.json", false, System.Text.Encoding.Default))
+                    {
+                        writer.Write(json);
+                    }
                 }
+                
             }
         }
 
@@ -507,20 +609,42 @@ namespace VKGame.Bot
             public static Models.CreditList GetList()
             {
                 var json = "";
-                using (var reader = new StreamReader(@"Files/Credits.json"))
+                try
                 {
-                    json = reader.ReadToEnd();
+                    using (var reader = new StreamReader(@"Files/Credits.json"))
+                    {
+                        json = reader.ReadToEnd();
+                    }
+                }catch(IOException)
+                {
+                    Thread.Sleep(1500);
+                    using (var reader = new StreamReader(@"Files/Credits.json"))
+                    {
+                        json = reader.ReadToEnd();
+                    }
                 }
+                
                 return JsonConvert.DeserializeObject<Models.CreditList>(json);
             }
 
             public static void SetList(Models.CreditList model)
             {
                 var json = JsonConvert.SerializeObject(model);
-                using (var writer = new StreamWriter(@"Files/Credits.json", false, System.Text.Encoding.Default))
+                try
                 {
-                    writer.Write(json);
+                    using (var writer = new StreamWriter(@"Files/Credits.json", false, System.Text.Encoding.Default))
+                    {
+                        writer.Write(json);
+                    }
+                }catch(IOException)
+                {
+                    Thread.Sleep(1500);
+                    using (var writer = new StreamWriter(@"Files/Credits.json", false, System.Text.Encoding.Default))
+                    {
+                        writer.Write(json);
+                    }
                 }
+                
             }
         }
 
@@ -529,39 +653,87 @@ namespace VKGame.Bot
             public static Models.UsersList GetList()
             {
                 var json = "";
-                using(var reader = new StreamReader(@"Files/Users.json")) 
+                try
                 {
-                    json = reader.ReadToEnd();
+                    using (var reader = new StreamReader(@"Files/Users.json"))
+                    {
+                        json = reader.ReadToEnd();
+                    }
+                }catch(IOException)
+                {
+                    Thread.Sleep(1500);
+                    using (var reader = new StreamReader(@"Files/Users.json"))
+                    {
+                        json = reader.ReadToEnd();
+                    }
                 }
+                
                 return JsonConvert.DeserializeObject<Models.UsersList>(json);
             }
 
             public static void SetList(Models.UsersList model) 
             {
                 var json = JsonConvert.SerializeObject(model);
-                using (var writer = new StreamWriter(@"Files/Users.json", false, System.Text.Encoding.Default))
+                try
                 {
-                    writer.Write(json);
+                    using (var writer = new StreamWriter(@"Files/Users.json", false, System.Text.Encoding.Default))
+                    {
+                        writer.Write(json);
+                    }
+                }catch(IOException)
+                {
+                    Thread.Sleep(1500);
+                    using (var writer = new StreamWriter(@"Files/Users.json", false, System.Text.Encoding.Default))
+                    {
+                        writer.Write(json);
+                    }
                 }
+                
             }
         }
 
-        public static void MessageSend(string text, long peerId)
+        public static bool MessageEdit(string text, long messageId, long peerId)
+        {
+            var vk = Common.GetVk();
+
+            try
+            {
+                var result = vk.Messages.Edit(new MessageEditParams
+                {
+                    Message = text,
+                    PeerId = peerId,
+                    MessageId = messageId,
+                    KeepForwardMessages = true,
+                    KeepSnippets = true
+                });
+                return result;
+            }
+            catch(Exception e)
+            {
+                Logger.WriteError(e);
+                Bot.Statistics.NewError();
+                return false;
+            }         
+        }
+
+        public static long MessageSend(string text, long peerId)
         {
             try
             {
                 //var data = new Common();
                 var vk = Common.GetVk();
 
-                vk.Messages.Send(new MessagesSendParams()
+                var idMessage = vk.Messages.Send(new MessagesSendParams()
                 {
                     UserId = peerId,
                     Message = text
                 });
+                return idMessage;
             }catch(Exception e)
             {
                 Logger.WriteError(e);
                 Bot.Statistics.NewError();
+                return 0;
             }
            
         }

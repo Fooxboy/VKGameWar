@@ -11,6 +11,7 @@ namespace VKGame.Bot.Commands
         public string Arguments => "(), (Вариант_выбора)";
         public string Caption => "Здесь можно узнать о новых соревнованиях и поучаствовать в них!";
         public TypeResponse Type => TypeResponse.Text;
+        public List<string> Commands => new List<string>() {"список","бой", "участвовать", "создать" };
 
         public object Execute(Models.Message msg)
         {
@@ -40,7 +41,9 @@ namespace VKGame.Bot.Commands
                         }
                     }
                 }
-                return "❌ Неизвестная подкоманда.";
+                var word = Common.SimilarWord(messageArray[0], Commands);
+                return $"❌ Неизвестная подкоманда." +
+                        $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
             }
         }
 
@@ -167,7 +170,7 @@ namespace VKGame.Bot.Commands
                 long userHp = 0;
                 var price = 0;
                 var builds = new Api.Builds(user.Id);
-                userHp = Commands.Battle.Api.HpUser(user.Id, user, builds);
+                userHp = Bot.Commands.Battle.Api.HpUser(user.Id, user, builds);
                 battleId = Api.Battles.NewBattle(user.Id, $"соревнование {competition.Name}", userHp, price);
                 user.IdBattle = battleId;
                 competition.FreeBattle = battleId;
@@ -183,7 +186,7 @@ namespace VKGame.Bot.Commands
                 if (user.IdBattle != 0) return "❌ Вы уже находитесь в другой битве.";
 
                 user.IdBattle = battle.Id;
-                var userHp = Commands.Battle.Api.HpUser(user.Id, user, builds);
+                var userHp = Bot.Commands.Battle.Api.HpUser(user.Id, user, builds);
                 battle.UserTwo = user.Id;
                 battle.HpTwo = userHp;
                 battle.IsStart = true;

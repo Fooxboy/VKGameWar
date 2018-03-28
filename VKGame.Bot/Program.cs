@@ -126,6 +126,7 @@ namespace VKGame.Bot
                         }
                     }
                     longpoll.NewMesageEvent += Core.NewMessage;
+                    longpoll.UserJoinEvent += Core.JoinInGroup;
 
                     var argumentsArg = Console.ReadLine();
                 }catch(Exception e)

@@ -13,6 +13,7 @@ namespace VKGame.Bot.Commands
         public string Caption => "ааа";
         public string Arguments => "ааа";
         public TypeResponse Type => TypeResponse.Text;
+        public List<string> Commands => new List<string>();
 
         public object Execute(Message msg)
         {
@@ -28,7 +29,7 @@ namespace VKGame.Bot.Commands
             code = code.Replace("&lt;", "<");
             code = code.Replace("&gt;", ">");
 
-            Logger.WriteDebug($"ВЫПОЛНЕНИЕ КОДА: {code}");
+            Logger.WriteDebug($">>>>>ВЫПОЛНЕНИЕ КОДА: {code}");
             try
             {
                 var result = CSharpScript.EvaluateAsync(code,
