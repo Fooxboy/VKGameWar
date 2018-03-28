@@ -33,7 +33,7 @@ namespace VKGame.Bot.Commands
                         {
                             var myAtr = ((Attributes.Trigger)attribute);
 
-                            if (myAtr.Name == messageArray[1])
+                            if (myAtr.Name.ToLower() == messageArray[1].ToLower())
                             {
                                 object result = method.Invoke(obj, new object[] { msg });
                                 return (string)result;

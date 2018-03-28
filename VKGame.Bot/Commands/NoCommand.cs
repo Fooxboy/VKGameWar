@@ -31,7 +31,7 @@ namespace VKGame.Bot.Commands
                         {
                             var myAtr = ((Attributes.Trigger)attribute);
 
-                            if (myAtr.Name == messageArray[0])
+                            if (myAtr.Name.ToLower() == messageArray[0].ToLower())
                             {
                                 var text = $"{command.Name} ";
                                 foreach(var word in messageArray)
