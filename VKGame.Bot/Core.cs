@@ -11,7 +11,7 @@ namespace VKGame.Bot
     /// </summary>
     public class Core
     {
-        private List<ICommand> Commands = new List<ICommand>()
+        public static List<ICommand> Commands = new List<ICommand>()
         {
             new Bot.Commands.Start(),
             new Bot.Commands.WriteData(),

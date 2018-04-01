@@ -18,6 +18,8 @@ namespace VKGame.Bot
             return "89d513f60f1f26a711a376720a9dba0149ab2a283941b83fc1753c0a9fd54b2350be6ada97a44ee083de1";
         }
 
+        public static string Notification = null;
+
         public static long LastMessage = 0;
 
         public static Dictionary<long, ICommand> LastCommand = new Dictionary<long, ICommand>();
@@ -39,21 +41,31 @@ namespace VKGame.Bot
                 {
                     foreach(var charWord in charsWord)
                     {
-                        if (charCommand == charWord) ++count;
+                        if (charCommand == charWord)
+                        {
+                            count = count + 1;
+                        }
                     }
                 }
                 commandTop.Add(command, count);
             }
 
-            var modelcommandReturn = commandTop.OrderBy(u => u.Value);
+            //var modelcommandReturn = commandTop.OrderByDescending(u => u.Value);
 
-            string commandRetun = String.Empty;
-            foreach(var commandModel in modelcommandReturn)
+            string valueReturn = String.Empty;
+
+            int lastValue = 0;
+
+            foreach (var commandModel in commandTop)
             {
-                commandRetun = commandModel.Key;
+                if (commandModel.Value > lastValue)
+                {
+                    lastValue = commandModel.Value;
+                    valueReturn = commandModel.Key;
+                }
             }
 
-            return commandRetun;
+            return valueReturn;
         }
 
         public static string GetRandomHelp() 

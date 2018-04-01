@@ -21,7 +21,9 @@ namespace VKGame.Bot.BackgroundProcess
                         credit.Time = --creditTime;
                         if (creditTime == 0)
                         {
-                            Notifications.RemovePaymentCard(Convert.ToInt32(credit.Price), userId, "оплата кредита.");
+                            var resources = new Api.Resources(userId);
+                            resources.MoneyCard = resources.MoneyCard - credit.Price;
+                            Api.MessageSend($"✨ С Вашего счёта был снята сумма за кредит. Баланс: {resources.MoneyCard}", userId);
                             registry.Credit = 0;
                             listCredits.Credits.Remove(userId);
                             Api.CreditList.SetList(listCredits);

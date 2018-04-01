@@ -41,7 +41,7 @@ namespace VKGame.Bot.Commands
                         }
                     }
                 }
-                var word = Common.SimilarWord(messageArray[0], Commands);
+                var word = Common.SimilarWord(messageArray[1], Commands);
                 return $"❌ Неизвестная подкоманда." +
                         $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
             }
@@ -91,6 +91,7 @@ namespace VKGame.Bot.Commands
                 string topUsers = String.Empty;
                 var competition = new Api.Competitions(idCompetitions);
                 
+
                 foreach (var top in competition.Top)
                 {
                     topUsers += $"😲 {top.Top}-- [id{top.Id}|{top.Name}]\n ⚔ Побед: {top.WinBattles}\n";
@@ -141,7 +142,7 @@ namespace VKGame.Bot.Commands
                     {
                         Id = memberTop.Id,
                         Name = memberTop.Name,
-                        Top = i+1,
+                        Top = ++i,
                         WinBattles = memberTop.WinBattles
                     };
                     listTopMembers.Add(memberTopModel);

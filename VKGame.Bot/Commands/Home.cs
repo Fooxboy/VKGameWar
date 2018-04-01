@@ -17,7 +17,11 @@ namespace VKGame.Bot.Commands
 
         public object Execute(Message msg)
         {
-            var text = GetHomeText(msg, $"Последнее обновление данных: {DateTime.Now}");
+            var notify = String.Empty;
+            if (Common.Notification == null) notify = $"Последнее обновление данных: {DateTime.Now}";
+            else notify = Common.Notification;
+
+            var text = GetHomeText(msg, notify);
             Statistics.GoToHome();
             return text;
         }
@@ -32,7 +36,7 @@ namespace VKGame.Bot.Commands
                           $"\n➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖" +
                           $"\n" +
                           $"\n👦 КОМАНДИР {user.Name}. " +
-                          $"\n🔝 Уровень: {user.Level} ({user.Experience}/ {user.Level*100})." +
+                          $"\n🔝 Уровень: {user.Level} ({user.Experience}/{user.Level*100})." +
                           $"\n" +
                           $"\nФИНАНСЫ➖➖➖➖➖➖➖➖➖➖➖➖➖" +
                           $"\n💰 Наличные монеты: {resources.Money}." +

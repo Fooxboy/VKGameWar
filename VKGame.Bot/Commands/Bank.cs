@@ -44,9 +44,9 @@ namespace VKGame.Bot.Commands
                     }
                 }
             }
-            var word = Common.SimilarWord(messageArray[0], Commands);
+            var word = Common.SimilarWord(messageArray[1], Commands);
             return $"❌ Неизвестная подкоманда." +
-                    $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
+                    $"\n ❓ Возможно, Вы имели в виду - {Name} {word}"; 
         }
 
         public static class Api

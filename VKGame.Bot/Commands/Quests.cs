@@ -43,7 +43,7 @@ namespace VKGame.Bot.Commands
                         }
                     }
                 }
-                var word = Common.SimilarWord(messageArray[0], Commands);
+                var word = Common.SimilarWord(messageArray[1], Commands);
                 return $"❌ Неизвестная подкоманда." +
                         $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
             }
@@ -65,7 +65,7 @@ namespace VKGame.Bot.Commands
                 return "❌ Вы указали неверный ID квеста! Чтобы посмотреть список: Квесты";
             }
 
-            if (Api.Quests.Check(choise)) return "❌ Вы указали неверный ID квеста! Чтобы посмотреть список: Квесты";
+            if (!Api.Quests.Check(choise)) return "❌ Вы указали несуществующий ID квеста! Чтобы посмотреть список: Квесты";
             var quest = new Api.Quests(choise);
             var members = quest.Users;
             if (members.List.Any(u => u.Id == msg.from_id)) return "❌ Вы и так учавствуете в квесте!";
@@ -103,6 +103,7 @@ namespace VKGame.Bot.Commands
             }
            
             quest.Users = members;
+            user.Quest = choise;
             Api.User.SetUser(user);
 
             return "✅ Вы успешно начали выполнять квест! Чтобы узнать прогресс, напишите: квесты прогресс";
@@ -111,95 +112,163 @@ namespace VKGame.Bot.Commands
         public static void WinBattle(long id)
         {
             var user = Api.User.GetUser(id);
-
             var quest = new Api.Quests(user.Quest);
             if (user.Quest == 1)
             {
-                
                 Models.Quests.User member = null;
                 var membersList = quest.Users.List;
                 var membersWhere = membersList.Where(u => u.Id == id);
-
-                if(membersWhere != null)
+                if (membersWhere != null)
                 {
                     foreach (Models.Quests.User memberfor in membersWhere)
                     {
                         member = memberfor;
                     }
-                }       
+                }
 
-                if(member != null)
+                if (member != null)
                 {
-                    if(member.Status == 1)
+                    membersList.Remove(member);
+
+                    if (member.Status == 1)
                     {
-                        member.Progress += 1; 
+                        member.Progress += 1;
                     }
-                }
-               
-                if(member.Progress > 10 || member.Progress == 10)
-                {
-                    member.Status = 3;
-                    user.Quest = 0;
 
-                    Api.MessageSend($"💥 Вы выполнили квест! Вы получаете {quest.Price}", user.Id);
-                    Notifications.EnterPaymentCard(Convert.ToInt32(quest.Price), user.Id, "выполнение квеста");
+                    if (member.Progress > 5 || member.Progress == 5)
+                    {
+                        member.Status = 3;
+                        user.Quest = 0;
+                        user.Level += 10;
+
+                        Api.MessageSend($"💥 Вы выполнили квест! Вы получаете {quest.Price}", user.Id);
+                        Notifications.EnterPaymentCard(Convert.ToInt32(quest.Price), user.Id, "выполнение квеста");
+                    }
+                    membersList.Add(member);
+
+                    var model = new Models.Quests.Users();
+                    model.List = membersList;
+                    quest.Users = model;
+                    Api.User.SetUser(user);
                 }
-                membersList.Remove(member);
-                membersList.Add(member);
-                Api.User.SetUser(user);
             }
         }
 
         public static void JoinBattle(long id)
         {
-
-        }
-
-        public static void GoToHome(long id)
-        {
             var user = Api.User.GetUser(id);
-
             var quest = new Api.Quests(user.Quest);
-            if (user.Quest == 3)
+            if (user.Quest == 2)
             {
-
                 Models.Quests.User member = null;
                 var membersList = quest.Users.List;
                 var membersWhere = membersList.Where(u => u.Id == id);
-                if(membersWhere != null)
+                if (membersWhere != null)
                 {
                     foreach (Models.Quests.User memberfor in membersWhere)
                     {
                         member = memberfor;
                     }
                 }
-               
+
                 if (member != null)
                 {
+                    membersList.Remove(member);
+
                     if (member.Status == 1)
                     {
                         member.Progress += 1;
                     }
-                }
 
-                if (member.Progress > 5 || member.Progress == 5)
+                    if (member.Progress > 5 || member.Progress == 5)
+                    {
+                        member.Status = 3;
+                        user.Quest = 0;
+                        user.Level += 10;
+
+                        Api.MessageSend($"💥 Вы выполнили квест! Вы получаете {quest.Price}", user.Id);
+                        Notifications.EnterPaymentCard(Convert.ToInt32(quest.Price), user.Id, "выполнение квеста");
+                    }
+                    membersList.Add(member);
+
+                    var model = new Models.Quests.Users();
+                    model.List = membersList;
+                    quest.Users = model;
+                    Api.User.SetUser(user);
+                }
+            }
+        }
+
+        public static void GoToHome(long id)
+        {
+            var user = Api.User.GetUser(id);
+            var quest = new Api.Quests(user.Quest);
+            if (user.Quest == 3)
+            {
+                Models.Quests.User member = null;
+                var membersList = quest.Users.List;
+                var membersWhere = membersList.Where(u => u.Id == id);
+                if (membersWhere != null)
                 {
-                    member.Status = 3;
-                    user.Quest = 0;
-
-                    Api.MessageSend($"💥 Вы выполнили квест! Вы получаете {quest.Price}", user.Id);
-                    Notifications.EnterPaymentCard(Convert.ToInt32(quest.Price), user.Id, "выполнение квеста");
+                    foreach (Models.Quests.User memberfor in membersWhere)
+                    {
+                        member = memberfor;
+                    }
                 }
-                membersList.Remove(member);
-                membersList.Add(member);
-                Api.User.SetUser(user);
+
+                if (member != null)
+                {
+                    membersList.Remove(member);
+
+                    if (member.Status == 1)
+                    {
+                        member.Progress += 1;
+                    }
+
+                    if (member.Progress > 5 || member.Progress == 5)
+                    {
+                        member.Status = 3;
+                        user.Quest = 0;
+                        user.Level += 10;
+
+
+                        Api.MessageSend($"💥 Вы выполнили квест! Вы получаете {quest.Price}", user.Id);
+                        Notifications.EnterPaymentCard(Convert.ToInt32(quest.Price), user.Id, "выполнение квеста");
+                    }
+                    membersList.Add(member);
+
+                    var model = new Models.Quests.Users();
+                    model.List = membersList;
+                    quest.Users = model;
+                    Api.User.SetUser(user);
+                }
             }
         }
 
         [Attributes.Trigger("покинуть")]
         public static string Leave(Message msg)
         {
-            return "возможность покинуть квест пока что недоступна :/";
+            var user = Api.User.GetUser(msg.from_id);
+            if (user.Quest == 0) return "❌ Вы у не учавствуете ни в каком квесте! Посмотрите список квестов, написав: квесты";
+            var quest = new Api.Quests(user.Quest);
+
+            user.Quest = 0;
+
+            Models.Quests.User member = null;
+            var membersWhere = quest.Users.List.Where(u => u.Id == user.Id);
+            foreach (Models.Quests.User memberfor in membersWhere)
+            {
+                member = memberfor;
+            }
+            if (member == null) return "❌ Вас нет в списке участников! Скорее, произошла ошибка, напишите [fooxboy|разработчику] об ошибке.";
+
+            var listMembers = quest.Users.List;
+            listMembers.Remove(member);
+            var model = new Models.Quests.Users();
+            model.List = listMembers;
+            quest.Users = model;
+            Api.User.SetUser(user);
+            return "✅ Вы покинули квест! ";
         }
 
         [Attributes.Trigger("прогресс")]
@@ -240,17 +309,17 @@ namespace VKGame.Bot.Commands
                         $"\nСПИСОК КВЕСТОВ➖➖➖➖➖➖➖➖➖➖" +
                         $"\n➡ 1 - Победить в 10 битвах до 23:00(мск)" +
                         $"\n➡❓ Для того, чтобы начать выполнять, напишите: Квест старт 1." +
-                        $"\n➡💰 Вознаграждение: price" +
+                        $"\n➡💰 Вознаграждение: 200" +
                         $"\n➡❓ Квест можно выполнять ежедневно, начиная с 23:02 по мск" +
                         $"\n" +
                         $"\n➡ 2 - Поучаствовать в 15 битвах до 23:00(мск)" +
                         $"\n➡❓ Для того, чтобы начать выполнять, напишите: Квест старт 2." +
-                        $"\n➡💰 Вознаграждение: price" +
+                        $"\n➡💰 Вознаграждение: 250" +
                         $"\n➡❓ Квест можно выполнять ежедневно, начиная с 23:02 по мск" +
                         $"\n" +
                         $"\n➡ 3 - (only for testers) Написать домой 5 раз" +
                         $"\n➡❓ Для того, чтобы начать выполнять, напишите: Квест старт 3." +
-                        $"\n➡💰 Вознаграждение: price";
+                        $"\n➡💰 Вознаграждение: 300";
             return text;
         }
     }

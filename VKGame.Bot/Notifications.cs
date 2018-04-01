@@ -14,8 +14,32 @@ namespace VKGame.Bot
             resources.MoneyCard = balance;
             Api.MessageSend($"✨ Платёжное уведомление!✨" +
                 $"\n" +
-                $"\n Вам поступил платёж в размере {count} 💳 от: {name}" +
-                $"\n Ваш баланс: {resources.MoneyCard}", id);
+                $"\n ➡ Вам поступил платёж в размере {count} 💳 от: {name}" +
+                $"\n 💳 Ваш баланс: {resources.MoneyCard}", id);
+            return true;
+        }
+
+        public static bool MainNotify(string notify)
+        {
+            Common.Notification = notify;
+            return true;
+        }
+
+        public static bool SendAllMessage(string text, int count)
+        {
+            var vk = Common.GetVk();
+            var dialogs = vk.Messages.GetDialogs(new VkNet.Model.RequestParams.MessagesDialogsGetParams
+            {
+                Count = Convert.ToUInt32(count),
+                Offset = 0
+            }).Messages;
+
+            foreach(var dialog in dialogs)
+            {
+                var userId = dialog.UserId;
+
+                Api.MessageSend(text, userId.Value);
+            }
             return true;
         }
 
@@ -30,8 +54,8 @@ namespace VKGame.Bot
             resources.MoneyCard = balance;
             Api.MessageSend($"✨ Платёжное уведомление!✨" +
                 $"\n" +
-                $"\n С Вашего банковского счёта было снято {count} 💳 на счёт: {name}" +
-                $"\n Ваш баланс: {resources.MoneyCard}", id);
+                $"\n ➡ С Вашего банковского счёта было снято {count} 💳 на счёт: {name}" +
+                $"\n 💳 Ваш баланс: {resources.MoneyCard}", id);
             return true;
         }
     }

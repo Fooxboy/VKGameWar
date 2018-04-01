@@ -28,7 +28,7 @@ namespace VKGame.Bot.BackgroundProcess
                     if (bufferTime > 60 || bufferTime == 60) bufferTime = 0;
                   
                     //Получение деняк с рефералов
-                    if ((DateTime.Now.Day == 15) && (bufferTime == 30))
+                    if ((DateTime.Now.Day == 15) && (DateTime.Now.Hour == 8))
                     {
                         bufferTime = 0;
                         var referrals = Api.Referrals.GetList(id);
@@ -92,6 +92,9 @@ namespace VKGame.Bot.BackgroundProcess
                     if (energy < Commands.Buildings.Api.MaxEnergy(builds.WarehouseEnergy))
                     {
                         var temp =  Commands.Buildings.Api.MaxEnergyGen(builds.PowerGenerators);
+
+                        if (energy < 0) energy = 0;
+
                         if((energy + temp) >= Commands.Buildings.Api.MaxEnergy(builds.WarehouseEnergy))
                         {
                             energy = Commands.Buildings.Api.MaxEnergy(builds.WarehouseEnergy);
@@ -100,7 +103,13 @@ namespace VKGame.Bot.BackgroundProcess
                         {
                             energy += temp;
                         }
+
+                        if (energy > Commands.Buildings.Api.MaxEnergy(builds.WarehouseEnergy))
+                            energy = Commands.Buildings.Api.MaxEnergy(builds.WarehouseEnergy);
                     }
+
+                    if (eat < 0) eat = 0;
+
                     if (eat < Commands.Buildings.Api.MaxFood(builds.WarehouseEat))
                     {
                         var temp = Commands.Buildings.Api.MaxFoodGen(builds.Eatery);
@@ -113,6 +122,11 @@ namespace VKGame.Bot.BackgroundProcess
                         }
                     }
 
+                    if (eat > Commands.Buildings.Api.MaxFood(builds.WarehouseEat))
+                        eat = Commands.Buildings.Api.MaxFood(builds.WarehouseEat);
+
+                    if (water < 0) water = 0;
+
                     if (water < Commands.Buildings.Api.MaxWater(builds.WarehouseWater))
                     {
                         var temp = Commands.Buildings.Api.MaxWaterGen(builds.WaterPressureStation);
@@ -121,10 +135,17 @@ namespace VKGame.Bot.BackgroundProcess
                         else water += temp;
                     }
 
+                    if (water > Commands.Buildings.Api.MaxWater(builds.WarehouseWater))
+                        water = Commands.Buildings.Api.MaxWater(builds.WarehouseWater);
+
                     resources.Energy = energy;
+                    Thread.Sleep(333);
                     resources.Food = eat;
+                    Thread.Sleep(333);
                     resources.Water = water;
-                    ++bufferTime;
+                    Thread.Sleep(333);
+
+                    bufferTime += 2;
                     Api.User.SetUser(user);
                 }catch(Exception e)
                 {

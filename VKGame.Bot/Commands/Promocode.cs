@@ -19,6 +19,9 @@ namespace VKGame.Bot.Commands
         public object Execute(Models.Message msg) 
         {
             var messageArray = msg.body.Split(' ');
+
+            if (messageArray[1] == "ген") return Gen(msg.from_id, messageArray[2], messageArray[3]);
+
             long promocode = 0;
             try 
             {
@@ -45,6 +48,28 @@ namespace VKGame.Bot.Commands
             promo.Count = promo.Count -1;
             Statistics.ActivatePromo();
             return $"✅ Вы успешно активировали промокод {promocode}.";
+        }
+
+        public static string Gen(long userId, string price, string count)
+        {
+            var user = Api.User.GetUser(userId);
+            if (user.Access < 4) return "Вам недоступна ента подкоманда.";
+
+            var r = new Random();
+
+            var promo = r.Next(10, 754358634);
+            if(Api.Promocode.Check(promo))
+            {
+                promo = r.Next(10, 754358634);
+                if (Api.Promocode.Check(promo))
+                {
+                    promo = r.Next(10, 754358634);
+                }
+            }
+
+            Api.Promocode.Create(promo, Int32.Parse(count), Int32.Parse(price));
+
+            return $"Вы успешно создали промокод {promo}";
         }
     }
 }

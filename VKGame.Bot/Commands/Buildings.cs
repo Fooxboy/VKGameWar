@@ -13,10 +13,13 @@ namespace VKGame.Bot.Commands
 
         public object Execute(Models.Message msg)
         {
+            var notify = String.Empty;
+            if (Common.Notification == null) notify = $"Последнее обновление: {DateTime.Now}";
+            else notify = Common.Notification;
 
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
-                return GetBuildingsText(msg, $"Время последнего обновления: {DateTime.Now}");
+                return GetBuildingsText(msg, notify);
             else
             {
                 var type = typeof(Buildings);
@@ -42,7 +45,7 @@ namespace VKGame.Bot.Commands
                     
                 }
             }
-            var word = Common.SimilarWord(messageArray[0], Commands);
+            var word = Common.SimilarWord(messageArray[1], Commands);
             return $"❌ Неизвестная подкоманда." +
                     $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
         }

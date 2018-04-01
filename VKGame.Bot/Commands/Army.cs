@@ -19,7 +19,10 @@ namespace VKGame.Bot.Commands
         public object Execute(Models.Message msg)
         {
             var messageArray = msg.body.Split(' ');
-            if (messageArray.Length == 1) return GetArmyText(msg, "Бета тест.");
+            var notify = String.Empty;
+            if (Common.Notification == null) notify = $"Последнее обновление: {DateTime.Now}";
+            else notify = Common.Notification;
+            if (messageArray.Length == 1) return GetArmyText(msg, notify);
             
             var type = typeof(Army);
                 object obj = Activator.CreateInstance(type);
@@ -46,7 +49,7 @@ namespace VKGame.Bot.Commands
                     }
                     
                 }
-            var word = Common.SimilarWord(messageArray[0], Commands);
+            var word = Common.SimilarWord(messageArray[1], Commands);
             return $"❌ Неизвестная подкоманда." +
                     $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
         }
@@ -55,12 +58,12 @@ namespace VKGame.Bot.Commands
         {
             public static int PriceSoldiery(int count)
             {
-                return 5 * count;
+                return 7 * count;
             }
 
             public static int PriceTanks(int count)
             {
-                return 40 * count;
+                return 50 * count;
             }
             public static bool CreateSoldiery(int count, long userId)
             {

@@ -15,7 +15,7 @@ namespace VKGame.Bot
             {
                 try
                 {
-                    Logger.WriteWaring("Старт бота...");
+                    Logger.WriteDebug("Старт бота...");
 
                     var config = Config.Get();
 

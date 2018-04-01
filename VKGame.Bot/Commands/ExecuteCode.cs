@@ -29,7 +29,7 @@ namespace VKGame.Bot.Commands
             code = code.Replace("&lt;", "<");
             code = code.Replace("&gt;", ">");
 
-            Logger.WriteDebug($">>>>>ВЫПОЛНЕНИЕ КОДА: {code}");
+            Logger.WriteWaring($">>>>>ВЫПОЛНЕНИЕ КОДА: {code}");
             try
             {
                 var result = CSharpScript.EvaluateAsync(code,

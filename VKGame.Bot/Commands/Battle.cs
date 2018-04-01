@@ -40,7 +40,7 @@ namespace VKGame.Bot.Commands
                     }
                 }
             }
-            var word = Common.SimilarWord(messageArray[0], Commands);
+            var word = Common.SimilarWord(messageArray[1], Commands);
             return $"❌ Неизвестная подкоманда." +
                     $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
         }
@@ -145,7 +145,7 @@ namespace VKGame.Bot.Commands
             var battle = new Bot.Api.Battles(BattleId);
             long[] HpArray =
             {
-                40, 50,60, 80, 90, 100,140, 160, 200,210
+               10, 40, 50,60, 80, 90, 100,140, 160, 200,210
             };
             var r = new Random();
             long Hp = HpArray[r.Next(0, HpArray.Length - 1)];
@@ -155,7 +155,7 @@ namespace VKGame.Bot.Commands
             userHp = userHp - Hp;
             battle.HpOne = userHp;
             battle.UserCourse = battle.UserOne;
-            Bot.Api.MessageSend($"🤔 Вам нанесли {Hp} урона! Срочно отвечайте!" +
+            Bot.Api.MessageSend($"🤔 Вам нанесли {Hp} урона! У Вас осталось хп: {battle.HpOne} Срочно отвечайте!" +
                 $"\n❓ Как атаковать: бой атака кол-во тип_войска" +
                 $"\n❗ Пример: бой атака 10 солдат" +
                 $"\n❗ Доступные типы войск: солдат и танков", battle.UserOne);
@@ -205,13 +205,13 @@ namespace VKGame.Bot.Commands
             {
                 if(countArmy > resources.Soldiery) return $"❌ У Вас недостаточно солдат. У Вас осталось солдат: {resources.Soldiery}. Вы можете прямо сейчас обучить новых!";
 
-                countHP = countArmy * 10;
+                countHP = countArmy * 15;
                 if (countHP > 300) return "Вы не можете наносить больше 300 урона за раз!";
                 var food = resources.Food;
                 var soldiery = resources.Soldiery;
-                resources.Soldiery = soldiery - countArmy;
-                var countFoodForSoldiery = countArmy * 5;
+                var countFoodForSoldiery = countArmy * 2;
                 if (countFoodForSoldiery > food) return $"❌ У Вас недостаточно еды, чтобы прокормить армию! Ваши запасы: {food}. Необходимо еды: {countFoodForSoldiery}. Вы можете купить еды в магазине или подождать пока она появится сама.";
+                resources.Soldiery = soldiery - countArmy;
                 food -= countFoodForSoldiery;
                 resources.Food = food;
             }else if( type == "танков") 
@@ -221,9 +221,9 @@ namespace VKGame.Bot.Commands
                 if (countHP > 500) return "Вы не можете наносить больше 500 урона за раз!";
                 var tanks = resources.Tanks;
                 var water = resources.Water;
-                resources.Tanks = tanks - countArmy;
                 var countWaterForTanks = countArmy * 5;
                 if (countWaterForTanks > resources.Water) return $"❌ ОГО! У Вас кончилась вода! Осталось: {resources.Water}. Необходимо: {countWaterForTanks} А как танки будут ездить без топлива-то??? Вы можете купить воды в магазине или подождать пока она появится сама.";
+                resources.Tanks = tanks - countArmy;
                 water = water - countWaterForTanks;
                 resources.Water = water;
 
@@ -283,10 +283,10 @@ namespace VKGame.Bot.Commands
                         boxes.BattleBox = battleList;
                     }
                     Statistics.WinBattle();
-                    if (battle.UserTwo != 16101) Bot.Api.MessageSend("❌ПОРАЖЕНИЕ! ВАС УНИЧТОЖИЛИ! В следующем бою Вам повезёт больше!", battle.UserTwo);
+                    if (battle.UserTwo != 16101) Bot.Api.MessageSend("❌ПОРАЖЕНИЕ! ВАС УНИЧТОЖИЛИ! В следующем бою Вам повезёт больше!", enemy);
                     if (user.Competition != 0)
                     {
-                        Competitions.EndBattle(user.Id, battle.UserTwo, user.Competition, battle.Id);
+                        Competitions.EndBattle(user.Id, enemy, user.Competition, battle.Id);
                     }
                     return WinText;
                 }
@@ -300,13 +300,13 @@ namespace VKGame.Bot.Commands
                     battle.HpTwo = hpEnemy;
                 }
                    
-                    battle.UserCourse = battle.UserTwo;
+                    battle.UserCourse = enemy;
                     if (battle.UserTwo == 16101)
                     {
                         BotAttack(battle.Id);
                     }else
                     {
-                        Bot.Api.MessageSend($"❌ Вам нанесли {countHP} урона! Осталось хп: {battle.HpTwo}. Теперь Ваша очередь атаковать!" +
+                        Bot.Api.MessageSend($"❌ Вам нанесли {countHP} урона! Осталось хп: {hpMy}. Теперь Ваша очередь атаковать!" +
                             $"\n❓ Как атаковать: бой атака кол-во тип_войска" +
                             $"\n❗ Пример: бой атака 10 солдат" +
                             $"\n❗ Доступные типы войск: солдат и танков", enemy);
@@ -410,11 +410,15 @@ namespace VKGame.Bot.Commands
                 userCreator = user;
             }
 
+            long hpEnemy = 0;
+            if (battle.UserOne == user.Id) hpEnemy = battle.HpTwo;
+            else if (battle.UserTwo == user.Id) hpEnemy = battle.HpOne;
+
             string result = $"⚔ Битва №{battle.Id}.\n ➡ Название: {battle.Body}." +
                           $"\n😀 Создатель: [id{userCreator.Id}|{userCreator.Name}]" +
                           $"\n🔝 Уровень противника: {userCreator.Level}" +
                           $"\n🛡 HP противника: {battle.HpOne}" +
-                          $"\n💰 Ставка: {battle.Price}";
+                          $"\n💰 Фонд: {battle.Price}";
 
             return result;
         }

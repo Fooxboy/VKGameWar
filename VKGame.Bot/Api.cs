@@ -184,10 +184,20 @@ namespace VKGame.Bot
                 get
                 {
                     string membersStr = (string)db.GetFromId(id, "Members");
-                    string[] membersArray = membersStr.Split(',');
-                    var members = new List<Models.CompetitionsList.Member>();
-                    foreach (var member in membersArray) members.Add(JsonConvert.DeserializeObject<Models.CompetitionsList.Member>(member));
-                    return members;
+
+                    if(membersStr == "[]")
+                    {
+                        var members = new List<Models.CompetitionsList.Member>();
+                        return members;
+                    }
+                    else
+                    {
+                        string[] membersArray = membersStr.Split(',');
+                        var members = new List<Models.CompetitionsList.Member>();
+                        foreach (var member in membersArray) members.Add(JsonConvert.DeserializeObject<Models.CompetitionsList.Member>(member));
+                        return members;
+                    }
+                    
                 }set
                 {
                     var members = value;
@@ -203,10 +213,18 @@ namespace VKGame.Bot
                 get
                 {
                     string membersStr = (string)db.GetFromId(id, "Top");
-                    string[] membersArray = membersStr.Split(',');
-                    var members = new List<Models.CompetitionsList.TopMember>();
-                    foreach (var member in membersArray) members.Add(JsonConvert.DeserializeObject<Models.CompetitionsList.TopMember>(member));
-                    return members;
+                    if(membersStr == "[]")
+                    {
+                        var members = new List<Models.CompetitionsList.TopMember>();
+                        return members;
+                    }
+                    else
+                    {
+                        string[] membersArray = membersStr.Split(',');
+                        var members = new List<Models.CompetitionsList.TopMember>();
+                        foreach (var member in membersArray) members.Add(JsonConvert.DeserializeObject<Models.CompetitionsList.TopMember>(member));
+                        return members;
+                    }         
                 }
                 set
                 {
@@ -453,8 +471,8 @@ namespace VKGame.Bot
 
             public bool IsOnline
             {
-                get => Convert.ToBoolean((long)db.GetFromId(id, "DayKill"));
-                set => db.Edit(id, "DayKill", Convert.ToInt32(value));
+                get => Convert.ToBoolean((long)db.GetFromId(id, "isOnline"));
+                set => db.Edit(id, "isOnline", Convert.ToInt32(value));
             }
 
             public Models.Quests.Users Users
@@ -479,14 +497,7 @@ namespace VKGame.Bot
                     db.Edit(id, "Users", json);
                 }
             }
-
-            public long Status
-            {
-                get => (long)db.GetFromId(id, "Status");
-                set => db.Edit(id, "Status", value);
-            }
             
-
             public static bool Check(long id)
             {
                Database.Methods db = new Database.Methods("Quests");
@@ -555,6 +566,14 @@ namespace VKGame.Bot
             public Promocode(long promo)
             {
                 id = promo;
+            }
+
+            public static void Create(int Id, int Count, int money)
+            {
+                Database.Methods db = new Database.Methods("Promocodes");
+                var fields = $"`Id`, `MoneyCard`, `Count`";
+                var value = $"'{Id}', '{money}', '{Count}'";
+                db.Add(fields, value);
             }
 
             public long Id 
@@ -720,6 +739,8 @@ namespace VKGame.Bot
         {
             try
             {
+                if (text == null) text = "❌ Выполнение кода ничего не вернуло.";
+
                 //var data = new Common();
                 var vk = Common.GetVk();
 

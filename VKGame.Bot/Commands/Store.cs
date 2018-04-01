@@ -12,7 +12,7 @@ namespace VKGame.Bot.Commands
         public string Caption => "Эта команда предназначена для работы с разделом магазина";
         public string Arguments => "(), (Вариант_выбора)";
         public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string>() { "ресурс", "опыт"};
+        public List<string> Commands => new List<string>() { "ресурс", "опыт", "билет"};
 
         public object Execute(Message msg) 
         {
@@ -43,7 +43,7 @@ namespace VKGame.Bot.Commands
                     }
 
                 }
-                var word = Common.SimilarWord(messageArray[0], Commands);
+                var word = Common.SimilarWord(messageArray[1], Commands);
                 return $"❌ Неизвестная подкоманда." +
                         $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
             }
@@ -75,8 +75,23 @@ namespace VKGame.Bot.Commands
                    $"\n❓ Вы можете купить элитный, вип, стальной кейсы." +
                    $"\n❓ Описание кейсов Вы можете найти в группе." +
                    $"\n❓ Для покупки обращаться к [fooxboy|адмену] (Да-да, автоматической покупки нет)." +
+                   $"\n" +
+                   $"\n🎟 Покупка билета на соревнование." +
+                   $"\n➡ Цена: 1 билет 300 монет" +
+                   $"\n❓ Билеты нужны, чтобы учавствовать в соревнованиях." +
+                   $"\n❓ ❓ Для покупки написать: Магазин билет" +
 
                    $"\n➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖" ;
+        }
+
+        [Attributes.Trigger("билет")]
+        public static string Ticket(Message msg)
+        {
+            var resources = new Api.Resources(msg.from_id);
+            if (!Notifications.RemovePaymentCard(200,msg.from_id, "магазин")) return $"❌ У Вас недосточно монет для покупки. Ваш баланс: {resources.MoneyCard}. Необходимо: 200";
+            resources.TicketsCompetition = resources.TicketsCompetition + 1;
+
+            return "✅ Вы успешно купили билет на соревнование!";
         }
         
 
