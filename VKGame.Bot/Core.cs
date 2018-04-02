@@ -37,7 +37,9 @@ namespace VKGame.Bot
             new Commands.Admin.NotifyAll(),
             new Commands.Admin.Reboot(),
             new Commands.Feedback(),
-            new Commands.Bug()
+            new Commands.Bug(),
+            new Commands.Admin.Stat(),
+            new Commands.Admin.System()
         };
         
         private ICommand Proccesing(string text)
