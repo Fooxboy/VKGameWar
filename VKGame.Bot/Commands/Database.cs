@@ -14,46 +14,42 @@ namespace VKGame.Bot.Commands
         public string Caption => "";
         public TypeResponse Type => TypeResponse.Text;
         public List<string> Commands => new List<string>() { "изменить", "получить", "sql" };
+        public Access Access => Access.Admin;
+
 
         public object Execute(Message msg)
         {
-            var user = Api.User.GetUser(msg.from_id);
-
-            if (user.Access < 4)
+            var messageArray = msg.body.Split(' ');
+            if (messageArray.Length == 1)
+                return "не указаны аргументы";
+            else
             {
-                var messageArray = msg.body.Split(' ');
-                if (messageArray.Length == 1)
-                    return "не указаны аргументы";
-                else
+                var type = typeof(Database);
+                object obj = Activator.CreateInstance(type);
+                var methods = type.GetMethods();
+
+                foreach (var method in methods)
                 {
-                    var type = typeof(Database);
-                    object obj = Activator.CreateInstance(type);
-                    var methods = type.GetMethods();
+                    var attributesCustom = Attribute.GetCustomAttributes(method);
 
-                    foreach (var method in methods)
+                    foreach (var attribute in attributesCustom)
                     {
-                        var attributesCustom = Attribute.GetCustomAttributes(method);
-
-                        foreach (var attribute in attributesCustom)
+                        if (attribute.GetType() == typeof(Attributes.Trigger))
                         {
-                            if (attribute.GetType() == typeof(Attributes.Trigger))
-                            {
-                                var myAtr = ((Attributes.Trigger)attribute);
+                            var myAtr = ((Attributes.Trigger)attribute);
 
-                                if (myAtr.Name.ToLower() == messageArray[1].ToLower())
-                                {
-                                    object result = method.Invoke(obj, new object[] { msg });
-                                    return (string)result;
-                                }
+                            if (myAtr.Name.ToLower() == messageArray[1].ToLower())
+                            {
+                                object result = method.Invoke(obj, new object[] { msg });
+                                return (string)result;
                             }
                         }
                     }
-                    var word = Common.SimilarWord(messageArray[1], Commands);
-                    return $"❌ Неизвестная подкоманда." +
-                            $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
                 }
+                var word = Common.SimilarWord(messageArray[1], Commands);
+                return $"❌ Неизвестная подкоманда." +
+                        $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
             }
-            else return "Вам недоступна команда!";     
         }
 
         [Attributes.Trigger("изменить")]

@@ -14,6 +14,8 @@ namespace VKGame.Bot.Commands
         public string Arguments => "(данные)";
         public TypeResponse Type => TypeResponse.Text;
         public List<string> Commands => new List<string>();
+        public Access Access => Access.User;
+
 
         [NotNull]
         public object Execute(Models.Message msg)

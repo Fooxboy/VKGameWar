@@ -11,6 +11,8 @@ namespace VKGame.Bot.Commands
         public string Arguments => "()";
         public TypeResponse Type => TypeResponse.Text;
         public List<string> Commands => new List<string>();
+        public Access Access => Access.User;
+
 
         public object Execute(Models.Message msg)
         {
@@ -32,7 +34,9 @@ namespace VKGame.Bot.Commands
             new Bot.Commands.Competitions(),
             new Bot.Commands.Settings(),
             new Bot.Commands.Sections(),
-            new Bot.Commands.Balance()
+            new Bot.Commands.Balance(),
+            new Bot.Commands.Feedback(),
+            new Bot.Commands.Bug()
             };
 
             string text = $"➖➖➖➖➖➖➖➖➖➖➖➖" +

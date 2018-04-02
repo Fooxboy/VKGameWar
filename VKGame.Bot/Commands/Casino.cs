@@ -22,6 +22,8 @@ namespace VKGame.Bot.Commands
         public TypeResponse Type => TypeResponse.Text;
 
         public List<string> Commands => new List<string>() { "карты", "билет", "рулетка"};
+        public Access Access => Access.User;
+
 
         public object Execute(Models.Message msg)
         {

@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System;
+using System.Linq;
 
 namespace VKGame.Bot.BackgroundProcess
 {
@@ -33,10 +34,15 @@ namespace VKGame.Bot.BackgroundProcess
 
             Bot.Statistics.CreateSol(count);
             Api.MessageSend($"➡ Они будут обучаться:  {count * 20} секунд", userId);
+            var turn = Bot.Common.TurnCreateSoildery;
+
             while (count > 0)
             {
                 try
                 {
+                    if (!turn.Any(u => u.Id == userId))
+                        turn.Add(new Models.UserTurnCreate() { Id = userId, Count = count });
+                    else turn.Find(u => u.Id == userId).Count = count;  
                     if (count < 0) break;
                     Thread.Sleep(20000);
                     var soldiery = resources.Soldiery;
@@ -51,6 +57,8 @@ namespace VKGame.Bot.BackgroundProcess
                 }
                 
             }
+            var user = turn.Find(u => u.Id == userId);
+            turn.Remove(user);
             Api.MessageSend($"✅ Солдаты были обучены. Вы можете идти в бой! ", userId);
         }
 
@@ -79,11 +87,15 @@ namespace VKGame.Bot.BackgroundProcess
             var builds = new Api.Builds(userId);
 
             Api.MessageSend($"➡ Они будут создаваться:  {count} минут", userId);
+            var turn = Bot.Common.TurnCreateTanks;
 
             while (count > 0)
             {             
                 try
                 {
+                    if (!turn.Any(u => u.Id == userId))
+                        turn.Add(new Models.UserTurnCreate() { Id = userId, Count = count });
+                    else turn.Find(u => u.Id == userId).Count = count;
                     if (count < 0) break;
                     Thread.Sleep(60000);
                     var tanks = resources.Tanks;
@@ -99,6 +111,8 @@ namespace VKGame.Bot.BackgroundProcess
                 }
             }
 
+            var user = turn.Find(u => u.Id == userId);
+            turn.Remove(user);
             Api.MessageSend("✅ Танки были сделаны. Вы можете идти в бой!", userId);
         }
     }

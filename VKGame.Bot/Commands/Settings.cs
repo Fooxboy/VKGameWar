@@ -11,6 +11,8 @@ namespace VKGame.Bot.Commands
         public string Caption => "Здесь можно настроить все под себя!";
         public TypeResponse Type => TypeResponse.Text;
         public List<string> Commands => new List<string>() {"имя"};
+        public Access Access => Access.User;
+
 
         public object Execute(Models.Message msg)
         {

@@ -15,6 +15,8 @@ namespace VKGame.Bot.Commands
         public string Arguments => "(промокод)";
         public TypeResponse Type => TypeResponse.Text;
         public List<string> Commands => new List<string>();
+        public Access Access => Access.User;
+
 
         public object Execute(Models.Message msg) 
         {

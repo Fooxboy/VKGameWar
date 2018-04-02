@@ -13,6 +13,104 @@ namespace VKGame.Bot
  /// </summary>
     public class Api
     {
+        public class Bug
+        {
+            public static Models.Bugs GetBugs()
+            {
+                var json = "";
+                try
+                {
+                    using (var reader = new StreamReader($@"Files/Bugs.json"))
+                    {
+                        json = reader.ReadToEnd();
+                    }
+                }
+                catch (System.IO.IOException e)
+                {
+                    Logger.WriteError(e);
+
+                    Thread.Sleep(1500);
+                    using (var reader = new StreamReader($@"Files/Bugs.json"))
+                    {
+                        json = reader.ReadToEnd();
+                    }
+                }
+
+                return JsonConvert.DeserializeObject<Models.Bugs>(json);
+            }
+
+            public static void SetBug(Models.Bugs model)
+            {
+                var json = JsonConvert.SerializeObject(model);
+                try
+                {
+                    using (var writer = new StreamWriter($@"Files/Bugs.json", false, System.Text.Encoding.Default))
+                    {
+                        writer.Write(json);
+                    }
+                }
+                catch (IOException e)
+                {
+                    Logger.WriteError(e);
+                    Thread.Sleep(1500);
+                    using (var writer = new StreamWriter($@"Files/Bugs.json", false, System.Text.Encoding.Default))
+                    {
+                        writer.Write(json);
+                    }
+                }
+
+            }
+        }
+
+        public class Feedback
+        {
+            public static Models.Feedbacks GetFeedback()
+            {
+                var json = "";
+                try
+                {
+                    using (var reader = new StreamReader($@"Files/Feedbacks.json"))
+                    {
+                        json = reader.ReadToEnd();
+                    }
+                }
+                catch (System.IO.IOException e)
+                {
+                    Logger.WriteError(e);
+
+                    Thread.Sleep(1500);
+                    using (var reader = new StreamReader($@"Files/Feedbacks.json"))
+                    {
+                        json = reader.ReadToEnd();
+                    }
+                }
+
+                return JsonConvert.DeserializeObject<Models.Feedbacks>(json);
+            }
+
+            public static void SetFeedback(Models.Feedbacks model)
+            {
+                var json = JsonConvert.SerializeObject(model);
+                try
+                {
+                    using (var writer = new StreamWriter($@"Files/Feedbacks.json", false, System.Text.Encoding.Default))
+                    {
+                        writer.Write(json);
+                    }
+                }
+                catch (IOException e)
+                {
+                    Logger.WriteError(e);
+                    Thread.Sleep(1500);
+                    using (var writer = new StreamWriter($@"Files/Feedbacks.json", false, System.Text.Encoding.Default))
+                    {
+                        writer.Write(json);
+                    }
+                }
+
+            }
+        }
+
         public class Registry
         {
             public static Models.Registry GetRegistry(long userId)
@@ -24,8 +122,10 @@ namespace VKGame.Bot
                     {
                         json = reader.ReadToEnd();
                     }
-                }catch(System.IO.IOException)
+                }catch(System.IO.IOException e)
                 {
+                    Logger.WriteError(e);
+
                     Thread.Sleep(1500);
                     using (var reader = new StreamReader($@"Files/Registry/{userId}.json"))
                     {
@@ -45,15 +145,15 @@ namespace VKGame.Bot
                     {
                         writer.Write(json);
                     }
-                }catch(IOException)
+                }catch(IOException e)
                 {
+                    Logger.WriteError(e);
                     Thread.Sleep(1500);
                     using (var writer = new StreamWriter($@"Files/Registry/{model.Id}.json", false, System.Text.Encoding.Default))
                     {
                         writer.Write(json);
                     }
-                }
-                
+                }            
             }
 
             public static Models.Registry Register(long userId)

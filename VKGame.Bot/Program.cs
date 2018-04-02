@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+using Newtonsoft.Json;
+using System.Diagnostics;
 using System.Threading;
 
 
@@ -89,6 +92,42 @@ namespace VKGame.Bot
                     threadDailyBonus.Name = $"threadDailyBonus";
                     threadDailyBonus.Start();
 
+                    var registryBot = new RegistryBot();
+                    if(registryBot.RunForReboot)
+                    {
+                        var turnTankJson = String.Empty;
+                        using(var reader = new StreamReader(@"Files/Temp/tempTanks.json"))
+                        {
+                            turnTankJson = reader.ReadToEnd();
+                        }
+                        var turnSolJson = String.Empty;
+                        using (var reader = new StreamReader(@"Files/Temp/tempSol.json"))
+                        {
+                            turnTankJson = reader.ReadToEnd();
+                        }
+
+                        File.Delete(@"Files/Temp/tempTanks.json");
+                        File.Delete(@"Files/Temp/tempSol.json");
+                        var turnTank = JsonConvert.DeserializeObject<List<Models.UserTurnCreate>>(turnTankJson);
+                        var turnSol = JsonConvert.DeserializeObject<List<Models.UserTurnCreate>>(turnSolJson);
+
+                        foreach(var turnT in turnTank)
+                        {
+                            Thread threadStartTank = new Thread(new ParameterizedThreadStart(BackgroundProcess.Army.CreateTanks));
+                            threadStartTank.Name = $"создание танков {turnT.Id}";
+                            threadStartTank.Start(new Models.DataCreateSoldiery() { UserId = turnT.Id, Count = Convert.ToInt32(turnT.Count) });
+                        }
+
+                        foreach(var turnS in turnSol)
+                        {
+                            Thread threadStartTank = new Thread(new ParameterizedThreadStart(BackgroundProcess.Army.CreateSoldiery));
+                            threadStartTank.Name = $"создание войнов {turnS.Id}";
+                            threadStartTank.Start(new Models.DataCreateSoldiery() { UserId = turnS.Id, Count = Convert.ToInt32(turnS.Count) });
+                        }
+
+                        registryBot.RunForReboot = false;
+                    }
+
                     var listUser = Api.UserList.GetList();
                     foreach (var user in listUser.Users)
                     {
@@ -127,6 +166,7 @@ namespace VKGame.Bot
                     }
                     longpoll.NewMesageEvent += Core.NewMessage;
                     longpoll.UserJoinEvent += Core.JoinInGroup;
+                    Process.GetCurrentProcess().Exited += Core.BotOffline;
 
                     var argumentsArg = Console.ReadLine();
                 }catch(Exception e)
@@ -138,5 +178,7 @@ namespace VKGame.Bot
             }
            
         }
+
+        
     }
 }

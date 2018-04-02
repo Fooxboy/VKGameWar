@@ -9,7 +9,9 @@ namespace VKGame.Bot.Commands
         public string Arguments => "(), (Вариант_выбора)";
         public string Caption => "Раздел для управления Вашими зданиями.";
         public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string> {"цены", "купить", "продать" }; 
+        public List<string> Commands => new List<string> {"цены", "купить", "продать" };
+        public Access Access => Access.User;
+
 
         public object Execute(Models.Message msg)
         {

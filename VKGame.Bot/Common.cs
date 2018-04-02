@@ -24,6 +24,9 @@ namespace VKGame.Bot
 
         public static Dictionary<long, ICommand> LastCommand = new Dictionary<long, ICommand>();
 
+        public static List<Models.UserTurnCreate> TurnCreateSoildery = new List<Models.UserTurnCreate>();
+        public static List<Models.UserTurnCreate> TurnCreateTanks = new List<Models.UserTurnCreate>();
+
         public static VkApi VkG = null;
         public static VkApi VkM = null;
 
@@ -50,7 +53,6 @@ namespace VKGame.Bot
                 commandTop.Add(command, count);
             }
 
-            //var modelcommandReturn = commandTop.OrderByDescending(u => u.Value);
 
             string valueReturn = String.Empty;
 

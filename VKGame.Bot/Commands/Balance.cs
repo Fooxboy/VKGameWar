@@ -11,6 +11,8 @@ namespace VKGame.Bot.Commands
         public string Caption => "Раздел для вывода информации о Вашем балансе.";
         public TypeResponse Type => TypeResponse.Text;
         public List<string> Commands => new List<string> { "отнять", "прибавить", "узнать"};
+        public Access Access => Access.User;
+
 
         public object Execute(Models.Message msg)
         {

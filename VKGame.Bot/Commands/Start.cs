@@ -17,7 +17,9 @@ namespace VKGame.Bot.Commands
         public string Caption => "Команда для регистрации игры.";
         public TypeResponse Type => TypeResponse.Text;
         public List<string> Commands => new List<string>();
-        
+        public Access Access => Access.User;
+
+
         [Attributes.Trigger("Старт")]
         public object Execute(Models.Message msg)
         {

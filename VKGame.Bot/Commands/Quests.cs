@@ -13,6 +13,8 @@ namespace VKGame.Bot.Commands
         public string Arguments => "(), (Вариант выбора)";
         public TypeResponse Type => TypeResponse.Text;
         public List<string> Commands => new List<string>() {"старт", "покинуть", "прогресс" };
+        public Access Access => Access.User;
+
 
         public object Execute(Message msg)
         {

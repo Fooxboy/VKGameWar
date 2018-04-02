@@ -32,7 +32,12 @@ namespace VKGame.Bot
             new Bot.Commands.ExecuteCode(),
             new Bot.Commands.Settings(),
             new Bot.Commands.Sections(),
-            new Bot.Commands.Balance()
+            new Bot.Commands.Balance(),
+            new Commands.Admin.News(),
+            new Commands.Admin.NotifyAll(),
+            new Commands.Admin.Reboot(),
+            new Commands.Feedback(),
+            new Commands.Bug()
         };
         
         private ICommand Proccesing(string text)
@@ -172,7 +177,7 @@ namespace VKGame.Bot
             {
                 var registry = Api.Registry.GetRegistry(user.Id);
                 registry.isLeaveIsGroup = true;
-                Api.MessageSend("😭 Постооой... Ну куда же ты??? Что тебе не понравилось? Ботом можно пользоваться даже, когда ты не подписан на группу, но все же... Имей уважение..." +
+                Api.MessageSend("😭 Постооой... Ну куда же ты??? Что тебе не понравилось? Ботом можно пользоваться даже, когда ты не подписан на группу, но все же..." +
                     "\n ❓ Хочешь написать положительный или отрицательный отзыв? Напиши: Отзыв <текст> ", user.Id);
                 Api.Registry.SetRegistry(registry);
             }
@@ -195,8 +200,13 @@ namespace VKGame.Bot
                 }
             }
         }
-        
-        
+
+
+        public static void BotOffline(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Обработка нового сообщения.
         /// </summary>
@@ -205,7 +215,6 @@ namespace VKGame.Bot
         {
             try
             {
-                Logger.WriteDebug("Обработка сообщения...");
                 Common.LastMessage = message.id;
                 var messagesCache = Api.CacheMessages.GetList();
                 if (messagesCache == null) messagesCache = new Models.MessagesCache() { Message = new List<Models.MessageCache>() };
@@ -257,7 +266,7 @@ namespace VKGame.Bot
                     }
                     else
                     {
-                        Api.MessageSend($"Вы ещё не зарегистрированны в нашей игре! Напишите: старт", message.from_id);
+                        Api.MessageSend($"💙 Вы ещё не зарегистрированны в нашей игре! Напишите: старт", message.from_id);
                     }
                 }
                 Statistics.SendMessage();

@@ -15,6 +15,7 @@
   <ItemGroup>
     <Folder Include="Files\ReferralsFiles\" />
     <Folder Include="Files\Registry\" />
+    <Folder Include="Files\Temp\" />
   </ItemGroup>
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 </Project>

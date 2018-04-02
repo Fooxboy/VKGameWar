@@ -12,6 +12,8 @@ namespace VKGame.Bot.Commands
         public string Caption => "Здесь можно узнать о новых соревнованиях и поучаствовать в них!";
         public TypeResponse Type => TypeResponse.Text;
         public List<string> Commands => new List<string>() {"список","бой", "участвовать", "создать" };
+        public Access Access => Access.User;
+
 
         public object Execute(Models.Message msg)
         {

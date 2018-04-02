@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using VKGame.Bot;
 
 namespace VKGame.Bot 
@@ -28,6 +29,9 @@ namespace VKGame.Bot
         public static bool SendAllMessage(string text, int count)
         {
             var vk = Common.GetVk();
+            int wait = 100;
+
+            if (count > 15) wait = 1500;
             var dialogs = vk.Messages.GetDialogs(new VkNet.Model.RequestParams.MessagesDialogsGetParams
             {
                 Count = Convert.ToUInt32(count),
@@ -38,7 +42,9 @@ namespace VKGame.Bot
             {
                 var userId = dialog.UserId;
 
-                Api.MessageSend(text, userId.Value);
+                Api.MessageSend($"❤ Уведомление от администрации!❤" +
+                                "\n{text}", userId.Value);
+                Thread.Sleep(wait);
             }
             return true;
         }

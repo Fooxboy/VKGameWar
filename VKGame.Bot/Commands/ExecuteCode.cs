@@ -14,6 +14,8 @@ namespace VKGame.Bot.Commands
         public string Arguments => "ааа";
         public TypeResponse Type => TypeResponse.Text;
         public List<string> Commands => new List<string>();
+        public Access Access => Access.Admin;
+
 
         public object Execute(Message msg)
         {
@@ -32,9 +34,14 @@ namespace VKGame.Bot.Commands
             Logger.WriteWaring($">>>>>ВЫПОЛНЕНИЕ КОДА: {code}");
             try
             {
-                var result = CSharpScript.EvaluateAsync(code,
+                var result = CSharpScript.EvaluateAsync($"using System; using VKGame.Bot;" +
+                    $" using System.Collections.Generic; using System.Threading; " +
+                    $"using System.IO; using System.Net; using Newtosoft.Json;" +
+                    $"using System.Text; using VNet; {code}",
                 ScriptOptions.Default.WithReferences(typeof(Program).Assembly));
-                return result.Result.ToString();
+                var resultA = result.Result.ToString();
+                if (resultA == null) resultA = "Результат выполнения кода равен null";
+                return resultA;
             }catch(CompilationErrorException e)
             {
                 return e.Message;

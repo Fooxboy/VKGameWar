@@ -10,6 +10,7 @@ namespace VKGame.Bot
         TypeResponse Type { get; }
         object Execute(Models.Message msg);
         List<string> Commands { get; }
+        Access Access { get; }
     }
 
     public enum TypeResponse

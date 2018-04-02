@@ -5,6 +5,7 @@ using System.Net;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.IO;
 using System.Threading;
 
 namespace VKGame.Bot
@@ -115,11 +116,17 @@ namespace VKGame.Bot
 
         private string Request()
         {
-            var url = $"{Server}?act=a_check&key={Key}&ts={Ts}&wait=20";
+            var url = $"{Server}?act=a_check&key={Key}&ts={Ts}&wait=10";
             var json = String.Empty;
-            using (var web = new WebClient())
+            var request = HttpWebRequest.Create(url);
+            request.Timeout = 15000;
+            var response = request.GetResponse();
+            using (var stream = response.GetResponseStream())
             {
-                json = web.DownloadString(url);
+                using (var reader = new StreamReader(stream))
+                {
+                    json = reader.ReadToEnd();
+                }
             }
             return json;
         }

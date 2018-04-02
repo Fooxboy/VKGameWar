@@ -12,6 +12,8 @@ namespace VKGame.Bot.Commands
         public string Caption => "Раздел предназначен для проведения боёв.";
         public TypeResponse Type => TypeResponse.Text;
         public List<string> Commands => new List<string>() { "бот", "атака", "вступить", "покинуть", "мой", "создать", "список" };
+        public Access Access => Access.User;
+
 
         public object Execute(Models.Message msg) 
         {
