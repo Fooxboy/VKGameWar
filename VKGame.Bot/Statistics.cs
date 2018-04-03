@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace VKGame.Bot
 {
@@ -13,7 +14,8 @@ namespace VKGame.Bot
         {
             var stat = GetStat();
             stat.OutMessageDay += 1;
-            SetStat(stat);
+            var task = new Task(() => SetStat(stat));
+            task.Start();
         }
 
         /*public static void SendPhoto()
@@ -27,7 +29,9 @@ namespace VKGame.Bot
         {
             var stat = GetStat();
             stat.InMessageDay += 1;
-            SetStat(stat);
+            var task = new Task(() => SetStat(stat));
+            task.Start();
+
         }
 
         public static void NewError()
@@ -36,8 +40,11 @@ namespace VKGame.Bot
             {
                 var stat = GetStat();
                 stat.Errors.Day += 1;
-                SetStat(stat);
-            }catch(Exception e)
+                var task = new Task(() => SetStat(stat));
+                task.Start();
+
+            }
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
@@ -48,126 +55,157 @@ namespace VKGame.Bot
         {
             var stat = GetStat();
             stat.Registrations.Day += 1;
-            SetStat(stat);
+            var task = new Task(() => SetStat(stat));
+            task.Start();
+
         }
 
         public static void CreateBattle()
         {
             var stat = GetStat();
             stat.Battles.Day += 1;
-            SetStat(stat);
+            var task = new Task(() => SetStat(stat));
+            task.Start();
+
         }
 
         public static void WinCasino(long count)
         {
             var stat = GetStat();
             stat.WinCasino.Day += count;
-            SetStat(stat);
+            var task = new Task(() => SetStat(stat));
+            task.Start();
+
         }
 
         public static void CreateSol(long count)
         {
             var stat = GetStat();
             stat.CreateArmy.DaySol += count;
-            SetStat(stat);
+            var task = new Task(() => SetStat(stat));
+            task.Start();
+
         }
 
         public static void CreateTanks(long count)
         {
             var stat = GetStat();
             stat.CreateArmy.DayTanks += count;
-            SetStat(stat);
+            var task = new Task(() => SetStat(stat));
+            task.Start();
+
         }
 
         public static void BuyBox()
         {
             var stat = GetStat();
             stat.Boxs.BuyStoreDay += 1;
-            SetStat(stat);
+            var task = new Task(() => SetStat(stat));
+            task.Start();
+
         }
 
         public static void WinBox()
         {
             var stat = GetStat();
             stat.Boxs.WinBattleDay += 1;
-            SetStat(stat);
+            var task = new Task(() => SetStat(stat));
+            task.Start();
+
         }
 
         public static void CreateClan()
         {
             var stat = GetStat();
             stat.CreateClans.Day += 1;
-            SetStat(stat);
+            var task = new Task(() => SetStat(stat));
+            task.Start();
+
         }
 
         public static void ActivatePromo()
         {
             var stat = GetStat();
             stat.PromocodesAll += 1;
-            SetStat(stat);
+            var task = new Task(() => SetStat(stat));
+            task.Start();
+
         }
 
         public static void NewCredit()
         {
             var stat = GetStat();
             stat.KreditsAll += 1;
-            SetStat(stat);
-        } 
+            var task = new Task(() => SetStat(stat));
+            task.Start();
+
+        }
 
         public static void GoToHome()
         {
             var stat = GetStat();
             stat.GoHomeDay += 1;
-            SetStat(stat);
+            var task = new Task(() => SetStat(stat));
+            task.Start();
+
         }
 
         public static void NewCompetition()
         {
             var stat = GetStat();
             stat.OutMessageDay += 1;
-            SetStat(stat);
+            var task = new Task(() => SetStat(stat));
+            task.Start();
+
         }
 
         public static void JoinCompetition()
         {
             var stat = GetStat();
             stat.Competitions.JoinPeopleDay += 1;
-            SetStat(stat);
+            var task = new Task(() => SetStat(stat));
+            task.Start();
+
         }
 
         public static void CreateCompetition()
         {
             var stat = GetStat();
             stat.Competitions.All += 1;
-            SetStat(stat);
+            var task = new Task(() => SetStat(stat));
+            task.Start();
         }
 
         public static void BattleCompetition()
         {
             var stat = GetStat();
             stat.Competitions.BattleCompetitionDay += 1;
-            SetStat(stat);
+            var task = new Task(() => SetStat(stat));
+            task.Start();
         }
 
         public static void NewReferral()
         {
             var stat = GetStat();
             stat.RefferalAll += 1;
-            SetStat(stat);
+            var task = new Task(() => SetStat(stat));
+            task.Start();
         }
 
         public static void WinBattle()
         {
             var stat = GetStat();
             stat.WinBattleDay += 1;
-            SetStat(stat);
+            var task = new Task(() => SetStat(stat));
+            task.Start();
         }
 
         public static void JoinBattle()
         {
             var stat = GetStat();
             stat.Battles.Day += 1;
-            SetStat(stat);
+            var task = new Task(() => SetStat(stat));
+            task.Start();
         }
 
         public static void SetStat(Models.Statistics model)

@@ -29,7 +29,6 @@ namespace VKGame.Bot.BackgroundProcess
                 {
                     Bot.Statistics.NewError();
                     Logger.WriteError(e);
-
                 }
             }
         }

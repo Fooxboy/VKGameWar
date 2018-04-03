@@ -14,7 +14,7 @@ namespace VKGame.Bot.Commands
     {
         public string Name => "Старт";
         public string Arguments => "";
-        public string Caption => "Команда для регистрации игры.";
+        public string Caption => "Команда для регистрации в игре.";
         public TypeResponse Type => TypeResponse.Text;
         public List<string> Commands => new List<string>();
         public Access Access => Access.User;
@@ -65,7 +65,7 @@ namespace VKGame.Bot.Commands
             registry.DateReg = DateTime.Now.ToString();
             
 
-            //старт потока добавления ресурсов.
+            //Старт потока добавления ресурсов.
             Thread threadAddingResource = new Thread(new ParameterizedThreadStart(BackgroundProcess.Buildings.AddingResources));
             Logger.WriteDebug($"Старт потока AddResource_{user.Id}");
             threadAddingResource.Name = $"AddResource_{user.Id}";

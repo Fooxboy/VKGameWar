@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Collections.Generic;
 using System;
+using System.Threading.Tasks;
 
 namespace VKGame.Bot.Commands
 {
@@ -68,15 +69,13 @@ namespace VKGame.Bot.Commands
             }
             public static bool CreateSoldiery(int count, long userId)
             {
-                var thread = new Thread(new ParameterizedThreadStart(BackgroundProcess.Army.CreateSoldiery));
-                thread.Start(new Models.DataCreateSoldiery() { UserId = userId, Count = count });
+                new Task(() => BackgroundProcess.Army.CreateSoldiery(new Models.DataCreateSoldiery() { UserId = userId, Count = count })).Start();
                 return true;
             }
 
             public static bool CreateTanks(int count, long userId)
             {
-                var thread = new Thread(new ParameterizedThreadStart(BackgroundProcess.Army.CreateTanks));
-                thread.Start(new Models.DataCreateSoldiery() { UserId = userId, Count = count });
+                new Task(() => BackgroundProcess.Army.CreateTanks(new Models.DataCreateSoldiery() { UserId = userId, Count = count })).Start();
                 return true;
             }
         }
@@ -106,7 +105,7 @@ namespace VKGame.Bot.Commands
             if( (resources.Tanks + count) > Buildings.Api.MaxTanks(builds.Hangars))
                 return $"❌ Вы не можете создать больше, чем у Вас вмещается. Ваша вместимость: [{resources.Tanks}/{Buildings.Api.MaxTanks(builds.Hangars)}]";
             Api.CreateTanks(count, user.Id);
-            return $"✅ Вы успешно создаёте {count} новых танков. По окончанию создания, Вам прийдёт уведомление.";
+            return $"✅ Вы успешно создаёте {count} новых танков. По окончанию создания, Вам придёт уведомление.";
         }
         
         [Attributes.Trigger("обучить")]

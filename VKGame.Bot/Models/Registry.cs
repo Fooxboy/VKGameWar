@@ -20,5 +20,6 @@ namespace VKGame.Bot.Models
         public bool isReferal { get; set; }
         public bool isBonusInGroupJoin { get; set; }
         public bool isLeaveIsGroup { get; set; }
+        public bool isTodaySendMessageLast { get; set; } = false;
     }
 }

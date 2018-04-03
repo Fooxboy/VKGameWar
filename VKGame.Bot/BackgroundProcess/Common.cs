@@ -25,19 +25,18 @@ namespace VKGame.Bot.BackgroundProcess
                             int nowDay = 0;
                             if (lastMessage.Month == DateTime.Now.Month) nowDay = DateTime.Now.Day;
                             else nowDay = DateTime.Now.Day + 31;
-                            if (DateTime.Now.Day - day < 2)
+                            if (nowDay - day < 2)
                             {
-                                Api.MessageSend("🎉 Ежедневный бонус! Спасибо, что Вы играете каждый день! Вот Ваш маленький бонус сегодня! 300 монет!", userId);
-                                Notifications.EnterPaymentCard(500, userId, "ежедненый бонус");
+                                Api.MessageSend("🎉 Ежедневный бонус! Спасибо, что Вы играли вчера! Вот Ваш маленький бонус сегодня! 300 монет!", userId);
+                                Notifications.EnterPaymentCard(300, userId, "ежедненый бонус");
                             }
                             else
                             {
-                                if ((DateTime.Now.Day - day > 5) && (DateTime.Now.Day - day < 20))
+                                if ((nowDay - day > 5) && (nowDay - day < 20))
                                 {
                                     Api.MessageSend("🎈 Привет! Я вижу, что ты давно не играл! Ваша армия Вас ждёт! НАЧИНАЙ ИГРАТЬ :)", userId);
                                 }
                             }
-
                         }
                     }
                 }catch(Exception e)

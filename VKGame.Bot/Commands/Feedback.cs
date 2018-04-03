@@ -16,6 +16,9 @@ namespace VKGame.Bot.Commands
         public object Execute(Models.Message msg)
         {
             var messageArray = msg.body.Split(' ');
+
+            if (messageArray.Length == 1) return NoFeedBack();
+
             if (messageArray[1] == "+список")
             {
                 var user = Api.User.GetUser(msg.from_id);
@@ -30,6 +33,7 @@ namespace VKGame.Bot.Commands
                     feedbackText += $"🆔 *id{feedbacks.Feedback[i].UserId}" +
                         $"\n⏰ {feedbacks.Feedback[i].Time}" +
                         $"\n🔥 {feedbacks.Feedback[i].Text}" +
+                        $"\n" +
                         $"\n";
                 }
 
@@ -54,5 +58,11 @@ namespace VKGame.Bot.Commands
                 return "😎 Ваш отзыв будет обязательно прочтён!";
             }
         }
+
+        private string NoFeedBack()
+        {
+            return "😀 Здесь можно написать свой отызыв о боте и он будет отправлен администрации! Использование: Отзыв <Ваш любой отзыв>";
+
+        } 
     }
 }

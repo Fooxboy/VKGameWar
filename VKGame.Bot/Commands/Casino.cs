@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 using System.Threading;
 
 namespace VKGame.Bot.Commands
@@ -67,8 +68,7 @@ namespace VKGame.Bot.Commands
         private void AddTicket(long id, string ticket)
         {
             var model = new Models.Tickets.Ticket {User = id, Number = ticket};
-            var thread = new Thread(new ParameterizedThreadStart(BackgroundProcess.Casino.TimerTriggerEndGame));
-            thread.Start(model);
+            new Task(() => BackgroundProcess.Casino.TimerTriggerEndGame(model));
         }
 
         [Attributes.Trigger("карты")]
@@ -141,10 +141,7 @@ namespace VKGame.Bot.Commands
             Notifications.RemovePaymentCard(Convert.ToInt32(price), user.Id, "Ставка в рулетке.");
             if(roulette.Prices.Count == 0)
             {
-                var theadRoulette = new Thread(BackgroundProcess.Casino.TimerTriggerRoulette);
-                theadRoulette.Name = "theadRoulette";
-                Logger.WriteDebug("старт потока theadRoulette");
-                theadRoulette.Start();
+                new Task(() => BackgroundProcess.Casino.TimerTriggerRoulette()).Start();
                 roulette.Fund = 0;
             }
             roulette.Prices.Add(new Models.RoulettePrices { User = user.Id, Price = price, Smile = smile });

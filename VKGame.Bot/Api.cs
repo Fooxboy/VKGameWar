@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace VKGame.Bot
 {
@@ -39,7 +40,7 @@ namespace VKGame.Bot
                 return JsonConvert.DeserializeObject<Models.Bugs>(json);
             }
 
-            public static void SetBug(Models.Bugs model)
+            public static void Set(Models.Bugs model)
             {
                 var json = JsonConvert.SerializeObject(model);
                 try
@@ -58,8 +59,9 @@ namespace VKGame.Bot
                         writer.Write(json);
                     }
                 }
-
             }
+
+            public static void SetBug(Models.Bugs model) => new Task(() => Set(model)).Start();
         }
 
         public class Feedback
@@ -88,7 +90,7 @@ namespace VKGame.Bot
                 return JsonConvert.DeserializeObject<Models.Feedbacks>(json);
             }
 
-            public static void SetFeedback(Models.Feedbacks model)
+            public static void Set(Models.Feedbacks model)
             {
                 var json = JsonConvert.SerializeObject(model);
                 try
@@ -107,8 +109,9 @@ namespace VKGame.Bot
                         writer.Write(json);
                     }
                 }
-
             }
+
+            public static void SetFeedback(Models.Feedbacks model) => new Task(() => Set(model)).Start();
         }
 
         public class Registry
@@ -136,7 +139,7 @@ namespace VKGame.Bot
                 return JsonConvert.DeserializeObject<Models.Registry>(json);
             }
 
-            public static void SetRegistry(Models.Registry model)
+            private static void Set(Models.Registry model)
             {
                 var json = JsonConvert.SerializeObject(model);
                 try
@@ -145,7 +148,8 @@ namespace VKGame.Bot
                     {
                         writer.Write(json);
                     }
-                }catch(IOException e)
+                }
+                catch (IOException e)
                 {
                     Logger.WriteError(e);
                     Thread.Sleep(1500);
@@ -153,8 +157,10 @@ namespace VKGame.Bot
                     {
                         writer.Write(json);
                     }
-                }            
+                }
             }
+
+            public static void SetRegistry(Models.Registry model) => new Task(() => Set(model)).Start();
 
             public static Models.Registry Register(long userId)
             {
@@ -220,7 +226,7 @@ namespace VKGame.Bot
                 return JsonConvert.DeserializeObject<Models.MessagesCache>(json);
             }
 
-            public static void SetList(Models.MessagesCache model)
+            public static void Set(Models.MessagesCache model)
             {
                 var json = JsonConvert.SerializeObject(model);
                 try
@@ -229,7 +235,8 @@ namespace VKGame.Bot
                     {
                         writer.Write(json);
                     }
-                }catch(IOException)
+                }
+                catch (IOException)
                 {
                     Thread.Sleep(2000);
                     using (var writer = new StreamWriter(@"Files/CacheMessage.json", false, System.Text.Encoding.Default))
@@ -237,8 +244,9 @@ namespace VKGame.Bot
                         writer.Write(json);
                     }
                 }
-               
             }
+
+            public static void SetList(Models.MessagesCache model) => new Task(() => Set(model)).Start();
         }
 
         public class Competitions
@@ -403,7 +411,7 @@ namespace VKGame.Bot
                 return JsonConvert.DeserializeObject<Models.Referrals>(json);
             }
 
-            public static void SetList(Models.Referrals model, long userId)
+            public static void Set(Models.Referrals model, long userId)
             {
                 var json = JsonConvert.SerializeObject(model);
                 try
@@ -412,7 +420,8 @@ namespace VKGame.Bot
                     {
                         writer.Write(json);
                     }
-                }catch(IOException)
+                }
+                catch (IOException)
                 {
                     Thread.Sleep(1500);
                     using (var writer = new StreamWriter($@"Files/ReferralsFiles/Refferals_{userId}.json", false, System.Text.Encoding.Default))
@@ -420,8 +429,9 @@ namespace VKGame.Bot
                         writer.Write(json);
                     }
                 }
-                
             }
+
+            public static void SetList(Models.Referrals model, long userId) => new Task(() => Set(model, userId)).Start();
         }
 
         public class Roulette
@@ -447,7 +457,7 @@ namespace VKGame.Bot
                 return JsonConvert.DeserializeObject<Models.Roulette>(json);
             }
 
-            public static void SetList(Models.Roulette model)
+            public static void Set(Models.Roulette model)
             {
                 var json = JsonConvert.SerializeObject(model);
                 try
@@ -456,7 +466,8 @@ namespace VKGame.Bot
                     {
                         writer.Write(json);
                     }
-                }catch(IOException)
+                }
+                catch (IOException)
                 {
                     Thread.Sleep(1500);
                     using (var writer = new StreamWriter(@"Files/Roultettes.json", false, System.Text.Encoding.Default))
@@ -464,8 +475,9 @@ namespace VKGame.Bot
                         writer.Write(json);
                     }
                 }
-                
             }
+
+            public static void SetList(Models.Roulette model) => new Task(() => Set(model));
         }
 
         public class Clans
@@ -746,7 +758,7 @@ namespace VKGame.Bot
                 return JsonConvert.DeserializeObject<Models.CreditList>(json);
             }
 
-            public static void SetList(Models.CreditList model)
+            public static void Set(Models.CreditList model)
             {
                 var json = JsonConvert.SerializeObject(model);
                 try
@@ -755,7 +767,8 @@ namespace VKGame.Bot
                     {
                         writer.Write(json);
                     }
-                }catch(IOException)
+                }
+                catch (IOException)
                 {
                     Thread.Sleep(1500);
                     using (var writer = new StreamWriter(@"Files/Credits.json", false, System.Text.Encoding.Default))
@@ -763,8 +776,9 @@ namespace VKGame.Bot
                         writer.Write(json);
                     }
                 }
-                
             }
+
+            public static void SetList(Models.CreditList model) => new Task(() => Set(model)).Start();
         }
 
         public class UserList 
@@ -790,7 +804,7 @@ namespace VKGame.Bot
                 return JsonConvert.DeserializeObject<Models.UsersList>(json);
             }
 
-            public static void SetList(Models.UsersList model) 
+            public static void Set(Models.UsersList model)
             {
                 var json = JsonConvert.SerializeObject(model);
                 try
@@ -799,7 +813,8 @@ namespace VKGame.Bot
                     {
                         writer.Write(json);
                     }
-                }catch(IOException)
+                }
+                catch (IOException)
                 {
                     Thread.Sleep(1500);
                     using (var writer = new StreamWriter(@"Files/Users.json", false, System.Text.Encoding.Default))
@@ -807,8 +822,9 @@ namespace VKGame.Bot
                         writer.Write(json);
                     }
                 }
-                
             }
+
+            public static void SetList(Models.UsersList model) => new Task(() =>Set(model)).Start();
         }
 
         public static bool MessageEdit(string text, long messageId, long peerId)
@@ -1142,7 +1158,7 @@ id = Id;
         public static class User
         {
 
-            public static bool SetUser(Models.User user)
+            public static bool Set(Models.User user)
             {
                 var database = new Database.Methods("Users");
                 try
@@ -1157,11 +1173,18 @@ id = Id;
                     database.Edit(user.Id, "Quest", user.Quest);
                     return true;
                 }
-                catch
+                catch(Exception e)
                 {
+                    Statistics.NewError();
+                    Logger.WriteError(e);
                     return false;
                 }
-                
+            }
+
+            public static bool SetUser(Models.User user)
+            {
+                new Task(() => Set(user)).Start();
+                return true;          
             }
             
             public static Models.User GetUser(long id)

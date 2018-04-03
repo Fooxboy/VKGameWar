@@ -6,6 +6,7 @@ using System.IO;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 
 namespace VKGame.Bot
@@ -19,9 +20,7 @@ namespace VKGame.Bot
                 try
                 {
                     Logger.WriteDebug("Старт бота...");
-
                     var config = Config.Get();
-
                     Console.Title = $"War of the World  ver. {config.Version}";
 
                     Logger.WriteDebug("Создание экземпляра лонгпулла.");
@@ -112,25 +111,14 @@ namespace VKGame.Bot
                         var turnSol = JsonConvert.DeserializeObject<List<Models.UserTurnCreate>>(turnSolJson);
 
                         foreach(var turnT in turnTank)
-                        {
-                            Thread threadStartTank = new Thread(new ParameterizedThreadStart(BackgroundProcess.Army.CreateTanks));
-                            threadStartTank.Name = $"создание танков {turnT.Id}";
-                            threadStartTank.Start(new Models.DataCreateSoldiery() { UserId = turnT.Id, Count = Convert.ToInt32(turnT.Count) });
-                        }
+                            new Task(() => BackgroundProcess.Army.CreateTanks(new Models.DataCreateSoldiery() { UserId = turnT.Id, Count = Convert.ToInt32(turnT.Count) })).Start();
 
-                        foreach(var turnS in turnSol)
-                        {
-                            Thread threadStartTank = new Thread(new ParameterizedThreadStart(BackgroundProcess.Army.CreateSoldiery));
-                            threadStartTank.Name = $"создание войнов {turnS.Id}";
-                            threadStartTank.Start(new Models.DataCreateSoldiery() { UserId = turnS.Id, Count = Convert.ToInt32(turnS.Count) });
-                        }
+                        foreach (var turnS in turnSol)
+                            new Task(() => BackgroundProcess.Army.CreateSoldiery(new Models.DataCreateSoldiery() { UserId = turnS.Id, Count = Convert.ToInt32(turnS.Count) })).Start();
 
-                        if(registryBot.PlayInRulette)
-                        {
-                            var threadRulette = new Thread(BackgroundProcess.Casino.TimerTriggerRoulette);
-                            threadRulette.Name = "threadRulette";
-                            threadRulette.Start();
-                        }
+                        if (registryBot.PlayInRulette)
+                            new Task(() => BackgroundProcess.Casino.TimerTriggerRoulette()).Start();
+
 
                         registryBot.RunForReboot = false;
                     }
@@ -156,12 +144,16 @@ namespace VKGame.Bot
                             int nowDay = 0;
                             if (lastMessage.Month == DateTime.Now.Month) nowDay = DateTime.Now.Day;
                             else nowDay = DateTime.Now.Day + 31;
-                            if (DateTime.Now.Day - day < 5)
+                            if (nowDay - day < 2)
                             {
                                 Thread threadAddingResource = new Thread(new ParameterizedThreadStart(BackgroundProcess.Buildings.AddingResources));
                                 Logger.WriteDebug($"Старт потока AddResource_{user}");
                                 threadAddingResource.Name = $"AddResource_{user}";
                                 threadAddingResource.Start(user);
+                            }else
+                            {
+                                registry.StartThread = false;
+                                Api.Registry.SetRegistry(registry);
                             }
                         }
                         catch (Exception e)

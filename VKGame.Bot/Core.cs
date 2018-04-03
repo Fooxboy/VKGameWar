@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using VKGame.Bot.Commands;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace VKGame.Bot
 {
@@ -13,31 +14,31 @@ namespace VKGame.Bot
     {
         public static List<ICommand> Commands = new List<ICommand>()
         {
-            new Bot.Commands.Start(),
-            new Bot.Commands.WriteData(),
-            new Bot.Commands.Home(),
-            new Bot.Commands.Casino(),
-            new Bot.Commands.Army(),
-            new Bot.Commands.Buildings(),
-            new Bot.Commands.Battle(),
-            new Bot.Commands.Store(),
-            new Bot.Commands.Promocode(),
-            new Bot.Commands.Bank(),
-            new Bot.Commands.Boxes(),
-            new Bot.Commands.Quests(),
-            new Bot.Commands.Referrals(),
-            new Bot.Commands.Clans(),
-            new Bot.Commands.Competitions(),
-            new Bot.Commands.Database(),
-            new Bot.Commands.ExecuteCode(),
-            new Bot.Commands.Settings(),
-            new Bot.Commands.Sections(),
-            new Bot.Commands.Balance(),
+            new Start(),
+            new WriteData(),
+            new Home(),
+            new Casino(),
+            new Army(),
+            new Buildings(),
+            new Battle(),
+            new Store(),
+            new Promocode(),
+            new Bank(),
+            new Boxes(),
+            new Quests(),
+            new Referrals(),
+            new Clans(),
+            new Competitions(),
+            new Commands.Database(),
+            new ExecuteCode(),
+            new Settings(),
+            new Sections(),
+            new Balance(),
             new Commands.Admin.News(),
             new Commands.Admin.NotifyAll(),
             new Commands.Admin.Reboot(),
-            new Commands.Feedback(),
-            new Commands.Bug(),
+            new Feedback(),
+            new Bug(),
             new Commands.Admin.Stat(),
             new Commands.Admin.System()
         };
@@ -69,7 +70,6 @@ namespace VKGame.Bot
             try
             {
                 ICommand command = Proccesing(msg.body.Split(' ')[0].ToLower());
-                
                 if (command != null)
                 {
                     var lastCommands = Common.LastCommand;
@@ -82,7 +82,14 @@ namespace VKGame.Bot
                         lastCommands.Add(msg.from_id, command);
                     }
 
-                    object result = command.Execute(msg);
+                    var user = Api.User.GetUser(msg.from_id);
+
+                    object result;
+
+                    if((int)user.Access < (int)command.Access)
+                    {
+                        result = "❌ У Вас нет прав для выполнения команды!";
+                    }else result = command.Execute(msg);
 
                     if (command.Type == TypeResponse.Text)
                     {
@@ -185,35 +192,38 @@ namespace VKGame.Bot
             }
         }
 
-        public static void JoinInGroup(Models.UserJoin userId)
+        private static void JoinInGroupHealder(Models.UserJoin userId)
         {
             var user = Api.User.GetUser(userId.user_id);
             if (user != null)
             {
                 var registry = Api.Registry.GetRegistry(user.Id);
-                if(registry.isBonusInGroupJoin)
+                if (!registry.isBonusInGroupJoin)
                 {
                     Api.MessageSend("❤ Спасибо, что подписался на группу! Здесь будут публиковаться разные новости и промо акции!" +
                         "\n ➡ Вот тебе бонус за подписку в размере 100 💳", user.Id);
                     Notifications.EnterPaymentCard(100, user.Id, "бонус за подписку");
-                }else
+                    registry.isBonusInGroupJoin = true;
+                    Api.Registry.SetRegistry(registry);
+                }
+                else
                 {
                     Api.MessageSend("❤ Спасибо, что подписался на группу!", user.Id);
                 }
             }
         }
 
+        public static void JoinInGroup(Models.UserJoin userId) => new Task(() => JoinInGroupHealder(userId));
 
-        public static void BotOffline(object sender, EventArgs e)
+        public static void BotOfflineHeadler(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Бот выключен.");
         }
 
-        /// <summary>
-        /// Обработка нового сообщения.
-        /// </summary>
-        /// <param name="message"></param>
-        public static void NewMessage(Models.Message message)
+        public static void BotOffline(object sender, EventArgs e) => new Task(() => BotOfflineHeadler(sender, e)).Start();
+
+
+        private static void NewMessageHalder(Models.Message message)
         {
             try
             {
@@ -230,7 +240,6 @@ namespace VKGame.Bot
                     if (DateTime.Parse(registry.LastMessage).Day != DateTime.Now.Day)
                     {
                         registry.LastMessage = DateTime.Now.ToString();
-                        //Api.User.SetUser(user);
                         Api.Registry.SetRegistry(registry);
                     }
                     Logger.NewMessage($"({message.from_id}) -> {message.body}");
@@ -243,7 +252,6 @@ namespace VKGame.Bot
                     catch (Exception e)
                     {
                         Statistics.NewError();
-
                         Logger.WriteError(e);
                     }
                 }
@@ -273,11 +281,18 @@ namespace VKGame.Bot
                 }
                 Statistics.SendMessage();
                 Statistics.InMessage();
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Statistics.NewError();
                 Logger.WriteError(e);
-            }          
+            }
         }
+
+        /// <summary>
+        /// Обработка нового сообщения.
+        /// </summary>
+        /// <param name="message"></param>
+        public static void NewMessage(Models.Message message) => new Task(() => NewMessageHalder(message)).Start();
     }
 }
