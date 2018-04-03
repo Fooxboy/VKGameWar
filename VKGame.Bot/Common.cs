@@ -35,25 +35,20 @@ namespace VKGame.Bot
         {
             Dictionary<string, int> commandTop = new Dictionary<string, int>();
             if (commands.Count == 0) return "В команде нет подкоманд.";
-            foreach(var command in commands)
+            foreach (var command in commands)
             {
                 var charsCommand = command.ToCharArray();
                 var charsWord = word.ToCharArray();
                 int count = 0;
-                foreach(var charCommand in charsCommand)
+                foreach (var charCommand in charsCommand)
                 {
-                    foreach(var charWord in charsWord)
+                    foreach (var charWord in charsWord)
                     {
-                        if (charCommand == charWord)
-                        {
-                            count = count + 1;
-                        }
+                        if (charCommand == charWord) ++count;
                     }
                 }
                 commandTop.Add(command, count);
             }
-
-
             string valueReturn = String.Empty;
 
             int lastValue = 0;

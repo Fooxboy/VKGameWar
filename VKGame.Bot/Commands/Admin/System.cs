@@ -22,8 +22,8 @@ namespace VKGame.Bot.Commands.Admin
                         $"\n🛡 ОС: {SystemInfo.OS}" +
                         $"\n🎈 Имя компьютера: {SystemInfo.NameComputer}" +
                         $"\n💣 Количество ядер процессора: {SystemInfo.CountCoreProcessor}" +
-                        $"\n😨 Оперативная память(SystemPageSize): {SystemInfo.RAM}" +
-                        $"\n🔥 Оперативная память процесса(WorkingSet): {SystemInfo.RAMProcess/1024/1024} МБ." +
+                        $"\n😨 Оперативная память(SystemPageSize): {SystemInfo.RAM/1024} ГБ." +
+                        $"\n🔥 Оперативная память процесса: {SystemInfo.RAMProcess/1024/1024} МБ." +
                         $"\n✔ UpdateSystemTime: {SystemInfo.UpdateSystemTime}" +
                         $"\n⚔ Количество работающих потоков: {SystemInfo.Threads.Count}";
             return text;

@@ -15,5 +15,11 @@ namespace VKGame.Bot
             get => Convert.ToBoolean((long)db.GetFromId(1, "RunForReboot"));
             set => db.Edit(1, "RunForReboot", value);
         }
+
+        public bool PlayInRulette
+        {
+            get => Convert.ToBoolean((long)db.GetFromId(1, "PlayInRulette"));
+            set => db.Edit(1, "PlayInRulette", value);
+        }
     }
 }

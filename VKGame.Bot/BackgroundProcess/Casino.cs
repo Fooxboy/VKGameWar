@@ -15,7 +15,7 @@ namespace VKGame.Bot.BackgroundProcess
         /// </summary>
         public static void TimerTriggerEndGame(object ticketObject)
         {
-
+           
             Thread.Sleep(300000);
             try
             {
@@ -44,7 +44,7 @@ namespace VKGame.Bot.BackgroundProcess
         /// </summary>
         public static void TimerTriggerRoulette()
         {
-
+            var registry = new RegistryBot();
             Thread.Sleep(120000);
             try
             {
@@ -112,7 +112,7 @@ namespace VKGame.Bot.BackgroundProcess
                     }
                 }
                 Bot.Statistics.WinCasino(priceWinner);
-
+                registry.PlayInRulette = false;
                 roulette.Fund = 0;
                 roulette.Prices = new List<Models.RoulettePrices>();
                 Api.Roulette.SetList(roulette);

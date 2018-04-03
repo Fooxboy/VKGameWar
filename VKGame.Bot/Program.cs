@@ -125,6 +125,13 @@ namespace VKGame.Bot
                             threadStartTank.Start(new Models.DataCreateSoldiery() { UserId = turnS.Id, Count = Convert.ToInt32(turnS.Count) });
                         }
 
+                        if(registryBot.PlayInRulette)
+                        {
+                            var threadRulette = new Thread(BackgroundProcess.Casino.TimerTriggerRoulette);
+                            threadRulette.Name = "threadRulette";
+                            threadRulette.Start();
+                        }
+
                         registryBot.RunForReboot = false;
                     }
 
@@ -132,7 +139,6 @@ namespace VKGame.Bot
                     foreach (var user in listUser.Users)
                     {
                         var registry = Api.Registry.GetRegistry(user);
-                        //var userModel = Api.User.GetUser(user);
                         try
                         {
                             DateTime lastMessage;
