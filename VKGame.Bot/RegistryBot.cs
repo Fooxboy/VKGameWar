@@ -13,13 +13,13 @@ namespace VKGame.Bot
         public bool RunForReboot
         {
             get => Convert.ToBoolean((long)db.GetFromId(1, "RunForReboot"));
-            set => db.Edit(1, "RunForReboot", value);
+            set => db.Edit(1, "RunForReboot", Convert.ToInt64(value));
         }
 
         public bool PlayInRulette
         {
             get => Convert.ToBoolean((long)db.GetFromId(1, "PlayInRulette"));
-            set => db.Edit(1, "PlayInRulette", value);
+            set => db.Edit(1, "PlayInRulette", Convert.ToInt64(value));
         }
     }
 }

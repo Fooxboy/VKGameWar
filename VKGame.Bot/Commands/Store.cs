@@ -21,34 +21,13 @@ namespace VKGame.Bot.Commands
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
                 return GetStoreText(msg);
-            else
-            {
-                var type = typeof(Store);
-                object obj = Activator.CreateInstance(type);
-                var methods = type.GetMethods();
-
-                foreach (var method in methods)
-                {
-                    var attributesCustom = Attribute.GetCustomAttributes(method);
-
-                    foreach (var attribute in attributesCustom)
-                    {
-                        if (attribute.GetType() == typeof(Attributes.Trigger))
-                        {
-                            var myAtr = ((Attributes.Trigger)attribute);
-                            if (myAtr.Name.ToLower() == messageArray[1].ToLower())
-                            {
-                                object result = method.Invoke(obj, new object[] { msg });
-                                return (string)result;
-                            }
-                        }
-                    }
-
-                }
-                var word = Common.SimilarWord(messageArray[1], Commands);
-                return $"❌ Неизвестная подкоманда." +
-                        $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
-            }
+            
+            var type = typeof(Store);
+            var result = Helpers.Command.CheckMethods(type, messageArray[1], msg);
+            if (result != null) return result;
+            var word = Common.SimilarWord(messageArray[1], Commands);
+            return $"❌ Неизвестная подкоманда." +
+                   $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
         }
 
         public static string GetStoreText(Message msg) 
@@ -91,7 +70,7 @@ namespace VKGame.Bot.Commands
         {
             var resources = new Api.Resources(msg.from_id);
             if (!Notifications.RemovePaymentCard(200,msg.from_id, "магазин")) return $"❌ У Вас недосточно монет для покупки. Ваш баланс: {resources.MoneyCard}. Необходимо: 200";
-            resources.TicketsCompetition = resources.TicketsCompetition + 1;
+            resources.TicketsCompetitions = resources.TicketsCompetitions + 1;
 
             return "✅ Вы успешно купили билет на соревнование!";
         }
@@ -151,11 +130,10 @@ namespace VKGame.Bot.Commands
                 return "❌ Вы указали не число.";
             }
             var resources = new Api.Resources(msg.from_id);
-            var user = Api.User.GetUser(msg.from_id);
+            var user = new Api.User(msg.from_id);
             if (resources.MoneyCard < count) return $"❌ У Вас недостаточно денег для такой покупки! Ваш баланс: {resources.MoneyCard}. Необходимо: {count}";
             Notifications.RemovePaymentCard(Convert.ToInt32(count), user.Id, "Покупка опыта.");
             user.Experience = user.Experience + count;
-            Api.User.SetUser(user);
             return $"✅ Вы успешно купили {count} опыта!";
         }
     }

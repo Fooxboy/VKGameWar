@@ -19,31 +19,9 @@ namespace VKGame.Bot.Commands
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
                 return GetBoxesText(msg);
-            else
-            {
-                var type = typeof(Boxes);
-                object obj = Activator.CreateInstance(type);
-                var methods = type.GetMethods();
-
-                foreach (var method in methods)
-                {
-                    var attributesCustom = Attribute.GetCustomAttributes(method);
-
-                    foreach (var attribute in attributesCustom)
-                    {
-                        if (attribute.GetType() == typeof(Attributes.Trigger))
-                        {
-                            var myAtr = ((Attributes.Trigger)attribute);
-                            if (myAtr.Name.ToLower() == messageArray[1].ToLower())
-                            {
-                                object result = method.Invoke(obj, new object[] { msg });
-                                return (string)result;
-                            }
-                        }
-                    }
-
-                }
-            }
+            
+            var type = typeof(Boxes);
+            var result = Helpers.Command.CheckMethods(type, messageArray[1], msg);
 
             var word = Common.SimilarWord(messageArray[1], Commands);
             return $"❌ Неизвестная подкоманда." +
@@ -54,7 +32,7 @@ namespace VKGame.Bot.Commands
         [Attributes.Trigger("купить")]
         public static string Buy(Models.Message msg)
         {
-            var boxes = new Api.Boxes(msg.from_id);
+            var boxes = new Api.Boxs(msg.from_id);
             var messageArray = msg.body.Split(' ');
             string boxName = "";
             try
@@ -69,18 +47,15 @@ namespace VKGame.Bot.Commands
             {
                 case "битвенный":
 
-                    var battleList = boxes.BattleBox;
                     Notifications.RemovePaymentCard(50, msg.from_id, "покупка кейсов");
-                    battleList.Add(new Models.BattleBox());
-                    boxes.BattleBox = battleList;
+                    boxes.Battle = boxes.Battle + 1;
                     Statistics.BuyBox();
 
                     return "🎉 Вы купили битвенный кейс!";
                 case "строительный":
-                    var battleList1 = boxes.BuildBox;
+                    var battleList1 = boxes.Build;
                     Notifications.RemovePaymentCard(100, msg.from_id, "покупка кейсов");
-                    battleList1.Add(new Models.BuildBox());
-                    boxes.BuildBox = battleList1;
+                    boxes.Build = boxes.Build + 1;
                     Statistics.BuyBox();
 
                     return "🎉 Вы купили строительный кейс!";
@@ -101,13 +76,13 @@ namespace VKGame.Bot.Commands
             {
                 return "❌ Вы не указали название кейса!";
             }
-            var boxes = new Api.Boxes(msg.from_id);
+            var boxes = new Api.Boxs(msg.from_id);
             var resources = new Api.Resources(msg.from_id);
             switch(boxName.ToLower())
             {
                 case "битвенный":
-                    if (boxes.BattleBox.Count == 0) return "❌ У Вас нет таких боксов";
-                    var box = boxes.BattleBox[0];
+                    if (boxes.Battle == 0) return "❌ У Вас нет таких боксов";
+                    var box = new Models.Boxes.Battle();
                     var food = box.Food;
                     var money = box.Money;
                     var soldiery = box.Soldiery;
@@ -115,9 +90,7 @@ namespace VKGame.Bot.Commands
                     resources.Food = resources.Food + food;
                     resources.MoneyCard = resources.MoneyCard + money;
                     resources.Soldiery = resources.Soldiery + soldiery;
-                    var boxesList = boxes.BattleBox;
-                    boxesList.RemoveAt(0);
-                    boxes.BattleBox = boxesList;
+                    boxes.Battle = boxes.Battle - 1;
                     return $"✨ Вот, что Вам выпало из кейса: " +
                             $"\n 💳 Монеты: {money}" +
                             $"\n 🍕 Еда: {food}" +
@@ -125,14 +98,14 @@ namespace VKGame.Bot.Commands
                             $"\n 💣 Танков: {tanks}" +
                             $"\n ✨ Поздравляем!";
                 case "строительный":
-                    if (boxes.BuildBox.Count == 0) return "❌ У Вас нет таких боксов";
+                    if (boxes.Build == 0) return "❌ У Вас нет таких боксов";
                     var builds = new Api.Builds(msg.from_id);
                     var r = new Random();
-                    var box1 = boxes.BuildBox[0];
-                    var boxesList1 = boxes.BuildBox;
-                    boxesList1.RemoveAt(1);
-                    boxes.BuildBox = boxesList1;
+                    var box1 = new Models.Boxes.Build();
+                    boxes.Build = boxes.Build - 1;
                     var count = box1.Count;
+
+                    if (count == 0) return "😢 Ой, а Вам попался пустой кейс! :(";
                     var rand = r.Next(1, 9);
                     if(rand == 1)
                     {
@@ -192,20 +165,21 @@ namespace VKGame.Bot.Commands
                         return "❌ Возникла ошибка, которая не может возникнуть.";
                     }
                 default:
-                    return "❌ Неизвестный тип кейса!  Доступные типы кейсов: битвенный и строительный";
+                    return "❌ Неизвестный тип кейса! Доступные типы кейсов: битвенный и строительный";
             }
         }
 
         private string GetBoxesText(Models.Message msg)
         {
-            var boxes = new Api.Boxes(msg.from_id);
+            var boxes = new Api.Boxs(msg.from_id);
             return $"" +
                 $"\n➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖" +
                 $"\n📦 Раздел для управления Вашими кейсами." +
                 $"\n" +
                 $"\nВАШИ КЕЙСЫ➖➖➖➖➖➖➖➖➖➖➖➖➖" +
-                $"\n⚔ БИТВЕННЫЙ: {boxes.BattleBox.Count}" +
-                $"\n🏡 СТРОИТЕЛЬНЫЙ: {boxes.BuildBox.Count}" +
+                $"\n⚔ БИТВЕННЫЙ: {boxes.Battle}" +
+                $"\n🏡 СТРОИТЕЛЬНЫЙ: {boxes.Build}" +
+                $"\n😎 VIP: {boxes.Vip} " +
                 $"\n" +
                 $"\n❓ Для того, чтобы открыть определённый кейс напишите: Кейсы открыть название" +
                 $"\n▶ Например: кейсы открыть битвенный" +

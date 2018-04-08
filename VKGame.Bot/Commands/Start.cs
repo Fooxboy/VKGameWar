@@ -33,32 +33,23 @@ namespace VKGame.Bot.Commands
 
             }catch(FormatException)
             {
-                return "❌ Вы не были зарегистрированы. Введите валидный ид реферала и попробуйте снова.";
+                return "❌ Вы не были зарегистрированы. Введите верный ид реферала и попробуйте снова.";
             }
             if (referral == msg.from_id) return "❌ Вы не были зарегистрированы. Вы не можете использовать себя как реферала. Попробуйте снова, только введите другово реферала!";
             var common = new Common();
-            var user = Api.User.GetUser(msg.from_id);
-            if (user != null) return "❌ Вы уже зарегистрированы в игре.";
-            Api.User.NewUser(msg.from_id);
-            var registry = Api.Registry.Register(msg.from_id);
-            Api.Resources.Register(msg.from_id);
+            if (!Api.User.Check(msg.from_id)) return "❌ Вы уже зарегистрированы в игре.";
+            Bot.Api.User.Registration(msg.from_id);
+            var user = new Api.User(msg.from_id);
+            Api.Registry.Register(msg.from_id);
+            var registry = new Api.Registry(msg.from_id);
             Api.Builds.Register(msg.from_id);
-            var listusers = Api.UserList.GetList();
-            listusers.Users.Add(msg.from_id);
-            Api.UserList.SetList(listusers);
-            user = Api.User.GetUser(msg.from_id);
-            using (File.Create($@"Files/ReferralsFiles/Refferals_{msg.from_id}.json"))
-            {
-
-            }
-            var modelRefferals = new Models.Referrals();
-            modelRefferals.ReferralsList = new List<Models.Referrals.Referral>();
+            Api.Referrals.Register(msg.from_id);
+            Api.Levels.Registration(msg.from_id);
+            Api.Skills.Registration(msg.from_id);
+            Api.Boosters.Register(msg.from_id);
+            Api.ConfigBoosters.Register(msg.from_id);
             Statistics.NewRegistation();
-            var json = JsonConvert.SerializeObject(modelRefferals);
-            using(var writer = new StreamWriter($@"Files/ReferralsFiles/Refferals_{msg.from_id}.json",false, System.Text.Encoding.Default))
-            {
-                writer.Write(json);
-            }
+           
 
             registry.LastMessage = DateTime.Now.ToString();
             registry.StartThread = true;
@@ -74,22 +65,22 @@ namespace VKGame.Bot.Commands
             if (referral != 0)
             {
                 Statistics.NewReferral();
-                registry.isReferal = true;
-                var userRef = Api.User.GetUser(referral);
-                if (userRef != null)
-                {
-                    var listReferral = Api.Referrals.GetList(referral);
-                    listReferral.ReferralsList.Add(new Models.Referrals.Referral { Name = userRef.Name, DateRegistration = DateTime.Now.ToString(), FarmMoney = 100, Id = userRef.Id });
-                    Api.MessageSend($"✨ У Вас новый реферал по имени {userRef.Name}! Он вам принёс 100 💳", referral);
-                    Notifications.EnterPaymentCard(100, referral, "реферальная система");
-                    Notifications.EnterPaymentCard(100, msg.from_id, "реферальная система");
-                    Api.MessageSend("✨ На Вас счёт поступило 100 💳 за то, что вы указали реферала!", msg.from_id);
-                }
+                registry.IsReferal = true;
+                
+                var refferalsuser = new Api.Referrals(referral);
+                var listref= refferalsuser.RefList;
+                listref.Add(msg.from_id);
+                refferalsuser.RefList = listref;
+                
+                var refuser = new Api.User(referral);
+                
+                Api.Message.Send($"✨ У Вас новый реферал по имени {refuser.Name}! Он вам принёс 100 💳", referral);
+                Notifications.EnterPaymentCard(100, referral, "реферальная система");
+                Notifications.EnterPaymentCard(100, msg.from_id, "реферальная система");
+                Api.Message.Send("✨ На Вас счёт поступило 100 💳 за то, что вы указали реферала!", msg.from_id);
             }
 
-            Api.User.SetUser(user);
-            Api.Registry.SetRegistry(registry);
-            Api.Boxes.Register(msg.from_id);
+            Api.Boxs.Register(msg.from_id);
 
             string resultStr =
                 "🎉 Добро пожаловать, новичёк!🙂" +
@@ -101,9 +92,9 @@ namespace VKGame.Bot.Commands
 
             if (uservkdata.Member)
             {
-                Api.MessageSend("♥ Спасибо, что ты подписан на нашу группу, вот тебе бонус за это :)", user.Id);
+                Api.Message.Send("♥ Спасибо, что ты подписан на нашу группу, вот тебе бонус за это :)", user.Id);
                 Notifications.EnterPaymentCard(100, user.Id, "бонус за группу.");
-                registry.isBonusInGroupJoin = true;
+                registry.IsBonusInGroupJoin = true;
                 return resultStr;
             }  
             else resultStr += "\n \n❗ Ого ого! Я заметил, что ты не подписан на группу! ⚠ Играть можно и не подписавшись на группу, но подписчикам дают разные плюшки :) Так что советую подписаться! 😉 \n И за подписку ты можешь получить бонус :)";
@@ -112,21 +103,15 @@ namespace VKGame.Bot.Commands
 
         public static string SetNick(Models.Message msg, string nick)
         {
-            var user = Api.User.GetUser(msg.from_id);
-            var registry = Api.Registry.GetRegistry(user.Id);
-            if (registry.isSetup) return "❌ Вы уже прошли этап установки.!";
+            var user = new Api.User(msg.from_id);
+            var registry = new Api.Registry(user.Id);
+            if (registry.IsSetup) return "❌ Вы уже прошли этап установки.!";
                 
             user.Name = nick;
-            if (Api.User.SetUser(user))
-            {
-                registry.isSetup = true;
-                OneRunGame(user.Id);
-                registry.isHelp = true;
-                Api.Registry.SetRegistry(registry);
-                return $"✅ Так точно! Мы теперь будем называть Вас - {nick}! Вы всегда сможете изменить своё имя в настройках.";
-            }
-                
-            else return "❌ Никак нет! Произошла ошибка при смене ника. Попробуйте изменить в настройках.";
+            registry.IsSetup = true;
+            OneRunGame(user.Id);
+            registry.IsHelp = true;
+            return $"✅ Так точно! Мы теперь будем называть Вас - {nick}! Вы всегда сможете изменить своё имя в настройках.";
         }
 
         private static void OneRunGame(long id)
@@ -168,8 +153,8 @@ namespace VKGame.Bot.Commands
                 $"\n";
 
 
-            Api.MessageSend(textHelp, id);
-            Api.MessageSend("😁 Командир! Вот я Вам и рассказал кратко, что да как!" +
+            Api.Message.Send(textHelp, id);
+            Api.Message.Send("😁 Командир! Вот я Вам и рассказал кратко, что да как!" +
                 "\n😎 А теперь перейдите на домашний экран. Напишите: домой", id);
         }
     }

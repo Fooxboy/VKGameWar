@@ -21,34 +21,13 @@ namespace VKGame.Bot.Commands
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
                 return GetQuestsText(msg);
-            else
-            {
-                var type = typeof(Quests);
-                object obj = Activator.CreateInstance(type);
-                var methods = type.GetMethods();
-
-                foreach (var method in methods)
-                {
-                    var attributesCustom = Attribute.GetCustomAttributes(method);
-
-                    foreach (var attribute in attributesCustom)
-                    {
-                        if (attribute.GetType() == typeof(Attributes.Trigger))
-                        {
-                            var myAtr = ((Attributes.Trigger)attribute);
-
-                            if (myAtr.Name.ToLower() == messageArray[1].ToLower())
-                            {
-                                object result = method.Invoke(obj, new object[] { msg });
-                                return (string)result;
-                            }
-                        }
-                    }
-                }
-                var word = Common.SimilarWord(messageArray[1], Commands);
-                return $"❌ Неизвестная подкоманда." +
-                        $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
-            }
+            
+            var type = typeof(Quests);
+            var result = Helpers.Command.CheckMethods(type, messageArray[1], msg);
+            if (result != null) return result;
+            var word = Common.SimilarWord(messageArray[1], Commands);
+            return $"❌ Неизвестная подкоманда." +
+                   $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
         }
 
         [Attributes.Trigger("старт")]
@@ -73,20 +52,17 @@ namespace VKGame.Bot.Commands
             if (members.List.Any(u => u.Id == msg.from_id)) return "❌ Вы и так учавствуете в квесте!";
             if (!quest.IsOnline) return "❌ Квест уже закончился :( Чтобы посмотреть список: Квесты ";
 
-            var user = Api.User.GetUser(msg.from_id);
+            var user = new Api.User(msg.from_id);
 
             if (user.Quest != 0) return $"❌ Вы и так учавствуете в квесте № {user.Quest}! Если хоитите покинуть квест - Квесты покинуть";
 
             Models.Quests.User member = null;
             var membersList = quest.Users.List;
             var membersWhere = membersList.Where(u => u.Id == user.Id);
-            if (membersWhere != null)
+            foreach (Models.Quests.User memberfor in membersWhere)
             {
-                foreach (Models.Quests.User memberfor in membersWhere)
-                {
-                    member = memberfor;
-                }
-            }       
+                member = memberfor;
+            }
 
             if(member == null)
             {
@@ -106,26 +82,22 @@ namespace VKGame.Bot.Commands
            
             quest.Users = members;
             user.Quest = choise;
-            Api.User.SetUser(user);
 
             return "✅ Вы успешно начали выполнять квест! Чтобы узнать прогресс, напишите: квесты прогресс";
         }
 
         public static void WinBattle(long id)
         {
-            var user = Api.User.GetUser(id);
+            var user = new Api.User(id);
             var quest = new Api.Quests(user.Quest);
             if (user.Quest == 1)
             {
                 Models.Quests.User member = null;
                 var membersList = quest.Users.List;
                 var membersWhere = membersList.Where(u => u.Id == id);
-                if (membersWhere != null)
+                foreach (Models.Quests.User memberfor in membersWhere)
                 {
-                    foreach (Models.Quests.User memberfor in membersWhere)
-                    {
-                        member = memberfor;
-                    }
+                    member = memberfor;
                 }
 
                 if (member != null)
@@ -143,7 +115,7 @@ namespace VKGame.Bot.Commands
                         user.Quest = 0;
                         user.Level += 10;
 
-                        Api.MessageSend($"💥 Вы выполнили квест! Вы получаете {quest.Price}", user.Id);
+                        Api.Message.Send($"💥 Вы выполнили квест! Вы получаете {quest.Price}", user.Id);
                         Notifications.EnterPaymentCard(Convert.ToInt32(quest.Price), user.Id, "выполнение квеста");
                     }
                     membersList.Add(member);
@@ -151,26 +123,22 @@ namespace VKGame.Bot.Commands
                     var model = new Models.Quests.Users();
                     model.List = membersList;
                     quest.Users = model;
-                    Api.User.SetUser(user);
                 }
             }
         }
 
         public static void JoinBattle(long id)
         {
-            var user = Api.User.GetUser(id);
+            var user = new Api.User(id);
             var quest = new Api.Quests(user.Quest);
             if (user.Quest == 2)
             {
                 Models.Quests.User member = null;
                 var membersList = quest.Users.List;
                 var membersWhere = membersList.Where(u => u.Id == id);
-                if (membersWhere != null)
+                foreach (Models.Quests.User memberfor in membersWhere)
                 {
-                    foreach (Models.Quests.User memberfor in membersWhere)
-                    {
-                        member = memberfor;
-                    }
+                    member = memberfor;
                 }
 
                 if (member != null)
@@ -188,7 +156,7 @@ namespace VKGame.Bot.Commands
                         user.Quest = 0;
                         user.Level += 10;
 
-                        Api.MessageSend($"💥 Вы выполнили квест! Вы получаете {quest.Price}", user.Id);
+                        Api.Message.Send($"💥 Вы выполнили квест! Вы получаете {quest.Price}", user.Id);
                         Notifications.EnterPaymentCard(Convert.ToInt32(quest.Price), user.Id, "выполнение квеста");
                     }
                     membersList.Add(member);
@@ -196,26 +164,22 @@ namespace VKGame.Bot.Commands
                     var model = new Models.Quests.Users();
                     model.List = membersList;
                     quest.Users = model;
-                    Api.User.SetUser(user);
                 }
             }
         }
 
         public static void GoToHome(long id)
         {
-            var user = Api.User.GetUser(id);
+            var user = new Api.User(id);
             var quest = new Api.Quests(user.Quest);
             if (user.Quest == 3)
             {
                 Models.Quests.User member = null;
                 var membersList = quest.Users.List;
                 var membersWhere = membersList.Where(u => u.Id == id);
-                if (membersWhere != null)
+                foreach (Models.Quests.User memberfor in membersWhere)
                 {
-                    foreach (Models.Quests.User memberfor in membersWhere)
-                    {
-                        member = memberfor;
-                    }
+                    member = memberfor;
                 }
 
                 if (member != null)
@@ -234,7 +198,7 @@ namespace VKGame.Bot.Commands
                         user.Level += 10;
 
 
-                        Api.MessageSend($"💥 Вы выполнили квест! Вы получаете {quest.Price}", user.Id);
+                        Api.Message.Send($"💥 Вы выполнили квест! Вы получаете {quest.Price}", user.Id);
                         Notifications.EnterPaymentCard(Convert.ToInt32(quest.Price), user.Id, "выполнение квеста");
                     }
                     membersList.Add(member);
@@ -242,7 +206,6 @@ namespace VKGame.Bot.Commands
                     var model = new Models.Quests.Users();
                     model.List = membersList;
                     quest.Users = model;
-                    Api.User.SetUser(user);
                 }
             }
         }
@@ -250,7 +213,7 @@ namespace VKGame.Bot.Commands
         [Attributes.Trigger("покинуть")]
         public static string Leave(Message msg)
         {
-            var user = Api.User.GetUser(msg.from_id);
+            var user = new Api.User(msg.from_id);
             if (user.Quest == 0) return "❌ Вы у не учавствуете ни в каком квесте! Посмотрите список квестов, написав: квесты";
             var quest = new Api.Quests(user.Quest);
 
@@ -269,14 +232,13 @@ namespace VKGame.Bot.Commands
             var model = new Models.Quests.Users();
             model.List = listMembers;
             quest.Users = model;
-            Api.User.SetUser(user);
             return "✅ Вы покинули квест! ";
         }
 
         [Attributes.Trigger("прогресс")]
         public static string Progress(Message msg)
         {
-            var user = Api.User.GetUser(msg.from_id);
+            var user = new Api.User(msg.from_id);
             if (user.Quest == 0) return "❌ Вы у не учавствуете ни в каком квесте! Посмотрите список квестов, написав: квесты";
             var quest = new Api.Quests(user.Quest);
 

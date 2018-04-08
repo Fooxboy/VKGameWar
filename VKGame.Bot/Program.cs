@@ -117,16 +117,15 @@ namespace VKGame.Bot
                             new Task(() => BackgroundProcess.Army.CreateSoldiery(new Models.DataCreateSoldiery() { UserId = turnS.Id, Count = Convert.ToInt32(turnS.Count) })).Start();
 
                         if (registryBot.PlayInRulette)
-                            new Task(() => BackgroundProcess.Casino.TimerTriggerRoulette()).Start();
-
+                            new Task(BackgroundProcess.Casino.TimerTriggerRoulette).Start();
 
                         registryBot.RunForReboot = false;
                     }
 
-                    var listUser = Api.UserList.GetList();
-                    foreach (var user in listUser.Users)
+                    var listUser = Api.User.AllList;
+                    foreach (var user in listUser)
                     {
-                        var registry = Api.Registry.GetRegistry(user);
+                        var registry = new Api.Registry(user);
                         try
                         {
                             DateTime lastMessage;
@@ -138,7 +137,6 @@ namespace VKGame.Bot
                             {
                                 lastMessage = DateTime.Now;
                                 registry.LastMessage = lastMessage.ToString();
-                                Api.Registry.SetRegistry(registry);
                             }
                             int day = lastMessage.Day;
                             int nowDay = 0;
@@ -153,7 +151,6 @@ namespace VKGame.Bot
                             }else
                             {
                                 registry.StartThread = false;
-                                Api.Registry.SetRegistry(registry);
                             }
                         }
                         catch (Exception e)

@@ -40,7 +40,8 @@ namespace VKGame.Bot
             new Feedback(),
             new Bug(),
             new Commands.Admin.Stat(),
-            new Commands.Admin.System()
+            new Commands.Admin.System(),
+            new Skills()
         };
         
         private ICommand Proccesing(string text)
@@ -82,7 +83,7 @@ namespace VKGame.Bot
                         lastCommands.Add(msg.from_id, command);
                     }
 
-                    var user = Api.User.GetUser(msg.from_id);
+                    var user = new Api.User(msg.from_id);
 
                     object result;
 
@@ -94,7 +95,7 @@ namespace VKGame.Bot
                     if (command.Type == TypeResponse.Text)
                     {
 
-                        Api.MessageSend((string)result, msg.from_id);
+                        Api.Message.Send((string)result, msg.from_id);
                         /* string wait = "🔁 Подождите. Команда выполняется 🔁";
                          var messageId = Api.MessageSend(wait, msg.from_id);
                          if(messageId != 0)
@@ -138,7 +139,7 @@ namespace VKGame.Bot
 
                         if (e.InnerException != null)
                         {
-                            Api.MessageSend($"🎈 ОШИБКА: {e.InnerException.Message}" +
+                            Api.Message.Send($"🎈 ОШИБКА: {e.InnerException.Message}" +
                             $"\n 🎉 Исключение: {e.InnerException.GetType().Name}" +
                             $"\n 🎠 StackTrace: {e.InnerException.StackTrace}", msg.from_id);
 
@@ -146,7 +147,7 @@ namespace VKGame.Bot
                         }
                         else
                         {
-                            Api.MessageSend($"🎈  ОШИБКА: {e.Message}" +
+                            Api.Message.Send($"🎈  ОШИБКА: {e.Message}" +
                              $"\n 🎉  Исключение: {e.GetType().Name}" +
                             $"\n 🎠  StackTrace: {e.StackTrace}", msg.from_id);
                         }
@@ -155,14 +156,14 @@ namespace VKGame.Bot
                     {
                         Statistics.NewError();
 
-                        Api.MessageSend("😘 Что-то пошло не так. Попробуй-те ещё раз. Если будет опять эта надпись, то, скорее всего это не сейчас работает.", msg.from_id);
+                        Api.Message.Send("😘 Что-то пошло не так. Попробуй-те ещё раз. Если будет опять эта надпись, то, скорее всего это не сейчас работает.", msg.from_id);
                         Logger.WriteError(e.InnerException);
                     }
                 }catch(Exception e2)
                 {
                     Statistics.NewError();
 
-                    Api.MessageSend($"🎈 ОШИБКА: \n{e2.Message}" +
+                    Api.Message.Send($"🎈 ОШИБКА: \n{e2.Message}" +
                             $"\n 🎉 Исключение: {e2.GetType().Name}" +
                            $"\n 🎠 StackTrace: {e2.StackTrace}", msg.from_id);
                 }          
@@ -181,41 +182,39 @@ namespace VKGame.Bot
 
         public static void LeaveInGroup(Models.UserLeave userId)
         {
-            var user = Api.User.GetUser(userId.user_id);
-            if (user != null)
+            if (Api.User.Check(userId.user_id))
             {
-                var registry = Api.Registry.GetRegistry(user.Id);
-                registry.isLeaveIsGroup = true;
-                Api.MessageSend("😭 Постооой... Ну куда же ты??? Что тебе не понравилось? Ботом можно пользоваться даже, когда ты не подписан на группу, но все же..." +
+                var user = new Api.User(userId.user_id);
+                var registry = new Api.Registry(userId.user_id);
+                registry.IsLeaveIsGroup = true;
+                Api.Message.Send("😭 Постооой... Ну куда же ты??? Что тебе не понравилось? Ботом можно пользоваться даже, когда ты не подписан на группу, но все же..." +
                     "\n ❓ Хочешь написать положительный или отрицательный отзыв? Напиши: Отзыв <текст> ", user.Id);
-                Api.Registry.SetRegistry(registry);
             }
         }
 
         private static void JoinInGroupHealder(Models.UserJoin userId)
         {
-            var user = Api.User.GetUser(userId.user_id);
-            if (user != null)
+            var user = new Api.User(userId.user_id);
+            if (Api.User.Check(userId.user_id))
             {
-                var registry = Api.Registry.GetRegistry(user.Id);
-                if (!registry.isBonusInGroupJoin)
+                var registry = new Api.Registry(user.Id);
+                if (!registry.IsBonusInGroupJoin)
                 {
-                    Api.MessageSend("❤ Спасибо, что подписался на группу! Здесь будут публиковаться разные новости и промо акции!" +
+                    Api.Message.Send("❤ Спасибо, что подписался на группу! Здесь будут публиковаться разные новости и промо акции!" +
                         "\n ➡ Вот тебе бонус за подписку в размере 100 💳", user.Id);
                     Notifications.EnterPaymentCard(100, user.Id, "бонус за подписку");
-                    registry.isBonusInGroupJoin = true;
-                    Api.Registry.SetRegistry(registry);
+                    registry.IsBonusInGroupJoin = true;
                 }
                 else
                 {
-                    Api.MessageSend("❤ Спасибо, что подписался на группу!", user.Id);
+                    Api.Message.Send("❤ Спасибо, что подписался на группу!", user.Id);
                 }
             }
         }
 
         public static void JoinInGroup(Models.UserJoin userId) => new Task(() => JoinInGroupHealder(userId));
 
-        public static void BotOfflineHeadler(object sender, EventArgs e)
+        private static void BotOfflineHeadler(object sender, EventArgs e)
         {
             Console.WriteLine("Бот выключен.");
         }
@@ -228,19 +227,16 @@ namespace VKGame.Bot
             try
             {
                 Common.LastMessage = message.id;
-                var messagesCache = Api.CacheMessages.GetList();
-                if (messagesCache == null) messagesCache = new Models.MessagesCache() { Message = new List<Models.MessageCache>() };
-                if (messagesCache.Message == null) messagesCache.Message = new List<Models.MessageCache>();
-                messagesCache.Message.Add(new Models.MessageCache { Text = message.body, Id = message.id, PeerId = message.from_id, Time = message.date.ToString() });
-                Api.CacheMessages.SetList(messagesCache);
-                var user = Api.User.GetUser(message.from_id);
-                if (user != null)
+                
+                
+                Api.CacheMessages.AddMessage(message.id, DateTime.Now.ToString(), 1, 1, message.from_id, message.body, message.from_id);
+                if (Api.User.Check(message.from_id))
                 {
-                    var registry = Api.Registry.GetRegistry(user.Id);
+                    var user = new Api.User(message.from_id);
+                    var registry = new Api.Registry(user.Id);
                     if (DateTime.Parse(registry.LastMessage).Day != DateTime.Now.Day)
                     {
                         registry.LastMessage = DateTime.Now.ToString();
-                        Api.Registry.SetRegistry(registry);
                     }
                     Logger.NewMessage($"({message.from_id}) -> {message.body}");
                     var core = new Core();
@@ -276,7 +272,7 @@ namespace VKGame.Bot
                     }
                     else
                     {
-                        Api.MessageSend($"💙 Вы ещё не зарегистрированны в нашей игре! Напишите: старт", message.from_id);
+                        Api.Message.Send($"💙 Вы ещё не зарегистрированны в нашей игре! Напишите: старт", message.from_id);
                     }
                 }
                 Statistics.SendMessage();

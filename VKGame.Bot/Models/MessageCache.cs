@@ -11,9 +11,12 @@ namespace VKGame.Bot.Models
 
     public class MessageCache
     {
-        public long Id { get; set; }
-        public string Text { get; set; }
-        public long PeerId { get; set; }
-        public string Time { get; set; }
+        public long Ts { get; }
+        public string Body { get;}
+        public long PeerId { get;}
+        public string Time { get;}
+        public long Type { get;}
+        public long FromType { get;}
+        
     }
 }

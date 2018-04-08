@@ -19,35 +19,12 @@ namespace VKGame.Bot.Commands
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
                 return GetSettingsText();
-            else
-            {
-                var type = typeof(Settings);
-                object obj = Activator.CreateInstance(type);
-                var methods = type.GetMethods();
-
-                foreach (var method in methods)
-                {
-                    var attributesCustom = Attribute.GetCustomAttributes(method);
-
-                    foreach (var attribute in attributesCustom)
-                    {
-                        if (attribute.GetType() == typeof(Attributes.Trigger))
-                        {
-                            var myAtr = ((Attributes.Trigger)attribute);
-                            if (myAtr.Name.ToLower() == messageArray[1].ToLower())
-                            {
-
-                                object result = method.Invoke(obj, new object[] { msg });
-                                return (string)result;
-                            }
-                        }
-                    }
-
-                }
-            }
+            var type = typeof(Settings);
+            var result = Helpers.Command.CheckMethods(type, messageArray[1], msg);
+            if (result != null) return result;
             var word = Common.SimilarWord(messageArray[1], Commands);
             return $"❌ Неизвестная подкоманда." +
-                    $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
+                   $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
         }
 
         [Attributes.Trigger("имя")]
@@ -60,10 +37,9 @@ namespace VKGame.Bot.Commands
             string[] arrayText = msg.body.Split(' ');
             for (int i = 2; arrayText.Length > i; i++) text += $"{arrayText[i]} ";
             if (text == "") text = $"{msg.from_id}";
-            var user = Api.User.GetUser(msg.from_id);
+            var user = new Api.User(msg.from_id);
             user.Name = text;
             Notifications.RemovePaymentCard(100, user.Id, "изменение имени");
-            Api.User.SetUser(user);
             return $"🎉 Вы успешно изменили Ваше имя на {text}!";
         }
 

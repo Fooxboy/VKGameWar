@@ -20,32 +20,10 @@ namespace VKGame.Bot.Commands
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
                 return GetBankText(msg);
-            else
-            {
-                var type = typeof(Bank);
-                object obj = Activator.CreateInstance(type);
-                var methods = type.GetMethods();
-
-                foreach (var method in methods)
-                {
-                    var attributesCustom = Attribute.GetCustomAttributes(method);
-
-                    foreach (var attribute in attributesCustom)
-                    {
-                        if (attribute.GetType() == typeof(Attributes.Trigger))
-                        {
-
-                            var myAtr = ((Attributes.Trigger)attribute);
-
-                            if (myAtr.Name.ToLower() == messageArray[1].ToLower())
-                            { 
-                                object result = method.Invoke(obj, new object[] { msg });
-                                return (string)result;
-                            }
-                        }
-                    }
-                }
-            }
+            
+            var type = typeof(Bank);
+            var result = Helpers.Command.CheckMethods(type, messageArray[1], msg);
+            if (result != null) return result;
             var word = Common.SimilarWord(messageArray[1], Commands);
             return $"❌ Неизвестная подкоманда." +
                     $"\n ❓ Возможно, Вы имели в виду - {Name} {word}"; 
@@ -56,15 +34,11 @@ namespace VKGame.Bot.Commands
             public static long SumCredit(long userLvl) => userLvl * 500;
             public static bool NewCredit(long userId, long price)
             {
-                var idCredit = Bot.Api.Credit.New(userId, price);
-                var registry = Bot.Api.Registry.GetRegistry(userId);
+                var idCredit = Bot.Api.Credits.New(userId, price);
+                var registry = new Bot.Api.Registry(userId);
                 registry.Credit = idCredit;
-                var listCredit = Bot.Api.CreditList.GetList();
-                listCredit.Credits.Add(userId);
                 Statistics.NewCredit();
-                Bot.Api.CreditList.SetList(listCredit);
                 Notifications.EnterPaymentCard(Convert.ToInt32(price), userId, "кредит");
-                Bot.Api.Registry.SetRegistry(registry);
                 return true;
             }
         }
@@ -94,8 +68,8 @@ namespace VKGame.Bot.Commands
         [Attributes.Trigger("кредит")]
         public static string Loan(Models.Message msg) 
         {
-            var user = Bot.Api.User.GetUser(msg.from_id);
-            var registry = Bot.Api.Registry.GetRegistry(msg.from_id);
+            var user = new Bot.Api.User(msg.from_id);
+            var registry = new Bot.Api.Registry(msg.from_id);
             var messageArray = msg.body.Split(' ');
             long count = 0;
             try

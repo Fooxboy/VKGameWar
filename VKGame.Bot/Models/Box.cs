@@ -1,44 +1,73 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace VKGame.Bot.Models
 {
-    public class BattleBox
+    public class Boxes
     {
-        private long money = 0;
-        private long food = 0;
-        private long soldiery = 0;
-        private long tanks = 0;
-
-        public BattleBox()
+        public struct Battle
         {
-            var r = new Random();
-            money = r.Next(5, 80);
-            food = r.Next(0, 20);
-            soldiery = r.Next(0, 5);
-            tanks = r.Next(0, 3);
+            public long Money
+            {
+                get
+                {
+                    var r = new Random();
+                    var rMain = r.Next(1, 3);
+                    if (rMain == 1 || rMain == 2)
+                        return r.Next(5, 50);
+                    else return r.Next(10, 80);
+                }
+            }
+
+            public long Soldiery
+            {
+                get
+                {
+                    var r = new Random();
+                    var rMain = r.Next(1, 2);
+                    if (rMain == 1) return r.Next(8, 15);
+                    return r.Next(10, 18);
+                }
+            }
+
+            public long Tanks
+            {
+                get
+                {
+                    var r = new Random();
+                    var rMain = r.Next(1, 2);
+                    if (rMain == 1) return r.Next(0, 3);
+                    return r.Next(1, 5);
+                }
+            }
+
+            public long Food
+            {
+                get
+                {
+                    var r = new Random();
+                    var rMain = r.Next(1, 2);
+                    if (rMain == 2) return r.Next(10, 50);
+                    return r.Next(20, 80);
+                }
+            }
         }
 
-        public string Name => "Битвенный";
-        public long Money => money;
-        public long Food => food;
-        public long Soldiery => soldiery;
-        public long Tanks => tanks;
-    }
-
-
-    public class BuildBox
-    {
-        long count = 0;
-
-        public BuildBox()
+        public struct Build
         {
-            var r = new Random();
-            count = r.Next(0, 4);
-        }
+            public long Count
+            {
+                get
+                {
+                    var r = new Random();
+                    var rMain = r.Next(1, 2);
+                    if (rMain == 1) return 0;
 
-        public string Name => "Строительный";
-        public long Count => count;
+                    return r.Next(2, 7);
+                }
+            }
+        }
     }
 }

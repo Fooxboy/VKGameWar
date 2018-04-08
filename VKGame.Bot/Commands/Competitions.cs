@@ -20,33 +20,13 @@ namespace VKGame.Bot.Commands
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
                 return GetCompetitionsText(msg);
-            else
-            {
-                var type = typeof(Competitions);
-                object obj = Activator.CreateInstance(type);
-                var methods = type.GetMethods();
-
-                foreach (var method in methods)
-                {
-                    var attributesCustom = Attribute.GetCustomAttributes(method);
-
-                    foreach (var attribute in attributesCustom)
-                    {
-                        if (attribute.GetType() == typeof(Attributes.Trigger))
-                        {
-                            var myAtr = ((Attributes.Trigger)attribute);
-                            if (myAtr.Name.ToLower() == messageArray[1].ToLower())
-                            {
-                                object result = method.Invoke(obj, new object[] { msg });
-                                return (string)result;
-                            }
-                        }
-                    }
-                }
-                var word = Common.SimilarWord(messageArray[1], Commands);
-                return $"❌ Неизвестная подкоманда." +
-                        $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
-            }
+            
+            var type = typeof(Competitions);
+            var result = Helpers.Command.CheckMethods(type, messageArray[1], msg);
+            if (result != null) return result;
+            var word = Common.SimilarWord(messageArray[1], Commands);
+            return $"❌ Неизвестная подкоманда." +
+                   $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
         }
 
         public static void EndCompetition(long id)
@@ -55,25 +35,22 @@ namespace VKGame.Bot.Commands
             try
             {
                 var competition = new Api.Competitions(id);
-                var listCompetitions = Api.Competitions.GetList();
+                var listCompetitions = Api.Competitions.AllList;
                 var priceWinners = (competition.Price / 2) / 3;
                 var priceUsers = (competition.Price / 2) / competition.Members.Count;
                 var topUsers = competition.Top;
                 var members = competition.Members;
                 foreach (var user in topUsers)
                 {
-                    Api.MessageSend($"❤ Соревнование закончилсь! ТЫ ВОШЁЛ В ТОП 3! ВАШ ВЫИГРЫШ: {priceWinners}", user.Id);
+                    Api.Message.Send($"❤ Соревнование закончилсь! ТЫ ВОШЁЛ В ТОП 3! ВАШ ВЫИГРЫШ: {priceWinners}", user.Id);
                     Notifications.EnterPaymentCard(Convert.ToInt32(priceWinners), user.Id, "конец соревнования");
                 }
 
                 foreach (var user in members)
                 {
-                    Api.MessageSend($"❤ Соревнование закончилсь! Вы получили: {priceUsers}", user.Id);
+                    Api.Message.Send($"❤ Соревнование закончилсь! Вы получили: {priceUsers}", user.Id);
                     Notifications.EnterPaymentCard(Convert.ToInt32(priceUsers), user.Id, "конец соревнования");
                 }
-
-                listCompetitions.List.Remove(id);
-                Api.Competitions.SetList(listCompetitions);
             }catch(Exception e)
             {
                 Statistics.NewError();
@@ -85,10 +62,10 @@ namespace VKGame.Bot.Commands
         public static string List(Models.Message msg)
         {
             string competitionsStr = String.Empty;
-            var listCompetitions = Api.Competitions.GetList();
-            if (listCompetitions.List.Count == 0)
+            var listCompetitions = Api.Competitions.AllList;
+            if (listCompetitions.Count == 0)
                 competitionsStr = "🤗 Новых соревнований пока что нет. Зайдите сюда позже :)";
-            foreach(var idCompetitions in listCompetitions.List)
+            foreach(var idCompetitions in listCompetitions)
             {
                 string topUsers = String.Empty;
                 var competition = new Api.Competitions(idCompetitions);
@@ -132,7 +109,7 @@ namespace VKGame.Bot.Commands
                 member.WinBattles += 1;
                 members.Add(member);
 
-                Api.MessageSend($"✅ Вам засчитана победа в соревнованиях! Теперь у Вас {member.WinBattles} побед.", userWin);
+                Api.Message.Send($"✅ Вам засчитана победа в соревнованиях! Теперь у Вас {member.WinBattles} побед.", userWin);
                 //Происходит выставление топа.
                 var sorted = members.OrderByDescending(u => u.WinBattles);
                 int i = 0;
@@ -158,44 +135,44 @@ namespace VKGame.Bot.Commands
         public static string Battle(Models.Message msg)
         {
             var resources = new Api.Resources(msg.from_id);
-            var user = Api.User.GetUser(msg.from_id);
+            var user = new Api.User(msg.from_id);
             if (user.Competition == 0) return "❌ Вы не участвуете в соревновании. Для того, чтобы участвовать, напишите: Соревнование участвовать";
             var competition = new Api.Competitions(user.Competition);
 
             long battleId = 0;
 
             Statistics.BattleCompetition();
-            if (competition.FreeBattle == 0)
+            if (competition.FreeBattle)
             {
-                var registry = Api.Registry.GetRegistry(user.Id);
+                var registry = new Api.Registry(user.Id);
                 ++registry.CountCreateBattles;
-                if (user.IdBattle != 0) return "❌ Вы уже находитесь в другой битве.";
+                if (user.BattleId != 0) return "❌ Вы уже находитесь в другой битве.";
                 long userHp = 0;
                 var price = 0;
                 var builds = new Api.Builds(user.Id);
-                userHp = Bot.Commands.Battle.Api.HpUser(user.Id, user, builds);
-                battleId = Api.Battles.NewBattle(user.Id, $"соревнование {competition.Name}", userHp, price);
-                user.IdBattle = battleId;
-                competition.FreeBattle = battleId;
-                Api.User.SetUser(user);
-                Api.Registry.SetRegistry(registry);
+               // userHp = Bot.Commands.Battle.Api.HpUser(user.Id, user, builds);
+               // battleId = Api.Battles.NewBattle(user.Id, $"соревнование {competition.Name}", userHp, price);
+              //  user.IdBattle = battleId;
+              //  competition.FreeBattle = battleId;
+               // Api.User.SetUser(user);
+              //  Api.Registry.SetRegistry(registry);
                 return "‼ Вы создали битву! Подождите пока кто-либо вступит!";
 
             }
             else
             {
-                var battle = new Api.Battles(competition.FreeBattle);
-                var builds = new Api.Builds(user.Id);
-                if (user.IdBattle != 0) return "❌ Вы уже находитесь в другой битве.";
+               // var battle = new Api.Battles(competition.FreeBattle);
+              //  var builds = new Api.Builds(user.Id);
+               // if (user.BattleId != 0) return "❌ Вы уже находитесь в другой битве.";
 
-                user.IdBattle = battle.Id;
-                var userHp = Bot.Commands.Battle.Api.HpUser(user.Id, user, builds);
-                battle.UserTwo = user.Id;
-                battle.HpTwo = userHp;
-                battle.IsStart = true;
-                competition.FreeBattle = battleId;
-                Api.User.SetUser(user);
-                Api.MessageSend("‼ К Вам в битву вступили! Вы атакуете первый! Атаковать так же как и в обычных битвах.", battle.Creator);
+              //  user.IdBattle = battle.Id;
+              //  var userHp = Bot.Commands.Battle.Api.HpUser(user.Id, user, builds);
+              //  battle.UserTwo = user.Id;
+              //  battle.HpTwo = userHp;
+              //  battle.IsStart = true;
+             //   competition.FreeBattle = battleId;
+               // Api.User.SetUser(user);
+               // Api.Message.Send("‼ К Вам в битву вступили! Вы атакуете первый! Атаковать так же как и в обычных битвах.", battle.Creator);
                 return "‼ Вы вступили в битву! Сейчас ход Вашего врага!";
             }
         }
@@ -204,8 +181,8 @@ namespace VKGame.Bot.Commands
         public static string Join(Models.Message msg)
         {
             var resources = new Api.Resources(msg.from_id);
-            if (resources.TicketsCompetition == 0) return "❌ У тебя нет билетов!";
-            resources.TicketsCompetition = resources.TicketsCompetition - 1;
+            if (resources.TicketsCompetitions == 0) return "❌ У тебя нет билетов!";
+            resources.TicketsCompetitions = resources.TicketsCompetitions - 1;
             var messageArray = msg.body.Split(' ');
             long idComp = 0;
             try
@@ -222,9 +199,9 @@ namespace VKGame.Bot.Commands
 
             if (!Api.Competitions.Check(idComp)) return "❌ Такого соревнования не существует!";
             var competition = new Api.Competitions(idComp);
-            if (competition.isEnd) return "❌ Это соревнование уже закончилось!";
+            if (competition.IsEnd) return "❌ Это соревнование уже закончилось!";
             var members = competition.Members;
-            var user = Api.User.GetUser(msg.from_id);
+            var user = new Api.User(msg.from_id);
             if(user.Competition != 0) return "❌ Вы уже учавствуете в соревновании!";
             var member = new Models.CompetitionsList.Member();
             member.Id = user.Id;
@@ -234,24 +211,23 @@ namespace VKGame.Bot.Commands
             competition.Members = members;
             user.Competition = competition.Id;
             Statistics.JoinCompetition();
-            Api.User.SetUser(user);
             return "✅ Вы успешно участвуете в соревновании. Для начала атаки напишите: соревнования бой";
         }
 
         [Attributes.Trigger("создать")]
         public static string Create(Models.Message msg)
         {
-            var user = Api.User.GetUser(msg.from_id);
+            var user = new Api.User(msg.from_id);
             if (user.Access < 4) return "❌ Вам недоступна подкоманда.";
             var messageArray = msg.body.Split(' ');
             string name = messageArray[2];
             long price = Int64.Parse(messageArray[3]);
             long time = Int64.Parse(messageArray[4]);
             var idComp = Api.Competitions.New(name, price, time);
-            var listComp = Api.Competitions.GetList();
-            listComp.List.Add(idComp);
-            Api.Competitions.SetList(listComp);
+            var listComp = Api.Competitions.AllList;
+            listComp.Add(idComp);
             Statistics.NewCompetition();
+            //TODO: Создание соревнований не работает как положено. Доделать.
             return $"Вы создали соревнование с ID - {idComp}";
         }
 

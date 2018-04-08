@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using VKGame.Bot.Api;
 
 namespace VKGame.Bot.Commands
 {
@@ -22,15 +23,15 @@ namespace VKGame.Bot.Commands
 
             if(messageArray[1] == "список")
             {
-                var bugs = Api.Bug.GetBugs().bugs;
-                var userBugs = bugs.Where(b => b.User == msg.from_id);
+                var userBugs = Api.Bugs.BugsFromUser(msg.from_id);
 
                 string bugsStr = String.Empty;
-                if (userBugs.Count() == 0) bugsStr = "🤔 Похоже, Вы ещё не отправляли ни одного бага.";
+                if (userBugs.Count == 0) bugsStr = "🤔 Похоже, Вы ещё не отправляли ни одного бага.";
                 else
                 {
-                    foreach(var bug in userBugs)
+                    foreach(var bugId in userBugs)
                     {
+                        var bug = new Api.Bugs(bugId);
                         bugsStr += $"🆔 Id - {bug.Id}" +
                                 $"\n ⏰ Время отправки: {bug.Time}" +
                                 $"\n ✨ Сообщение {bug.Text}" +
@@ -51,18 +52,14 @@ namespace VKGame.Bot.Commands
                     strBug += $"{messageArray[i]} ";
                 }
 
-                var bugs = Api.Bug.GetBugs();
-                var randomId = strBug.GetHashCode();
-                var bugModel = new Models.Bug() { Id = randomId, Status = 0, Text = strBug, Time = DateTime.Now.ToString(), User = msg.from_id };
-                bugs.bugs.Add(bugModel);
-                Api.Bug.SetBug(bugs);
-                Api.MessageSend($"🎈 Новое сообщение о баге! ID - {randomId}", 308764786);
+                var randomId = Bugs.Add(strBug, msg.from_id);
+                Api.Message.Send($"🎈 Новое сообщение о баге! ID - {randomId}", 308764786);
 
                 return "🎈 Вы сообщили о баге! Если сообщение о баге ложное - вы получите выговор, если нет, то получите бонус в виде монет. Список багов, которые вы отправили: баг список ";
             }            
         }
 
-        public static string NoTextBug()
+        private static string NoTextBug()
         {
             return "🎗🎁 Здесь Вы можете сообщить о баге администрации проекта. Описывайте подробно как и что. Что вы делали, чтобы получить баг. " +
                 "\n Для того, чтобы сообщнить достаточно написать: Баг <описание бага>";

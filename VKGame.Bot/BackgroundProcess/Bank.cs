@@ -12,22 +12,19 @@ namespace VKGame.Bot.BackgroundProcess
                 Thread.Sleep(3600000);
                 try
                 {
-                    var listCredits = Api.CreditList.GetList();
-                    foreach (var userId in listCredits.Credits)
+                    var listCredits = Api.Credits.All;
+                    foreach (var userId in listCredits)
                     {
-                        var registry = Api.Registry.GetRegistry(userId);
-                        var credit = new Api.Credit(registry.Credit);
-                        var creditTime = credit.Time;
-                        credit.Time = --creditTime;
+                        var registry = new Api.Registry(userId);
+                        var credit = new Api.Credits(registry.Credit);
+                        var creditTime = --credit.Time;
                         if (creditTime == 0)
                         {
                             var resources = new Api.Resources(userId);
                             resources.MoneyCard = resources.MoneyCard - credit.Price;
-                            Api.MessageSend($"✨ С Вашего счёта был снята сумма за кредит. Баланс: {resources.MoneyCard}", userId);
+                            Api.Message.Send($"✨ С Вашего счёта был снята сумма за кредит. Баланс: {resources.MoneyCard}", userId);
                             registry.Credit = 0;
-                            listCredits.Credits.Remove(userId);
-                            Api.CreditList.SetList(listCredits);
-                            Api.Registry.SetRegistry(registry);
+                            credit.Delete();
                         }
                     }
                 }catch(Exception e)

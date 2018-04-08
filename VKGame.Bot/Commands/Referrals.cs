@@ -21,13 +21,14 @@ namespace VKGame.Bot.Commands
 
         private string GetReferralsText(long id)
         {
-            var referrals = Api.Referrals.GetList(id);
+            var referrals = new Api.Referrals(id).RefList;
             string referralsStr = "";
-            foreach(var refer in referrals.ReferralsList)
+            foreach(var refer in referrals)
             {
-                referralsStr += $"😀 Имя: {refer.Name}" +
-                    $"\n🆗 Дата регистрации реферала: {refer.DateRegistration}" +
-                    $"\n💳 Прибыль с реферала: {refer.FarmMoney}" +
+                var user = new Api.User(refer);
+                referralsStr += $"😀 Имя: {user.Name}" +
+                    $"\n🆗 Дата регистрации реферала: time" +
+                    $"\n💳 Прибыль с реферала: farm" +
                     $"\n";
             }
             return $"➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖" +
@@ -35,8 +36,8 @@ namespace VKGame.Bot.Commands
                 $"\n" +
                 $"{referralsStr}" +
                 $"\n" +
-                $"\n😀 Всего рефералов: {referrals.ReferralsList.Count}" +
-                $"\n💳 Всего получено прибыли: {referrals.SumCash}" +
+                $"\n😀 Всего рефералов: {referrals.Count}" +
+                $"\n💳 Всего получено прибыли: {new Api.Referrals(id).SumCash}" +
                 $"\n" +
                 $"\n ❓ Для того, чтобы кто-то стал Вашим рефералом, нужно, чтобы он при регистарации написал:" +
                 $"\n ➡ Старт {id}" +

@@ -28,7 +28,7 @@ namespace VKGame.Bot.BackgroundProcess
                 moneyUser += price[priceInt];
                 resources.MoneyCard = moneyUser;
                 Bot.Statistics.WinCasino(price[priceInt]);
-                Api.MessageSend($"✨ Денежный перевод! На Ваш банковский счёт было зачислено {price[priceInt]} 💳 от КАЗИНО \"ИСПЫТАЙ УДАЧУ\". ", ticket.User);
+                Api.Message.Send($"✨ Денежный перевод! На Ваш банковский счёт было зачислено {price[priceInt]} 💳 от КАЗИНО \"ИСПЫТАЙ УДАЧУ\". ", ticket.User);
 
             }catch(Exception e)
             {
@@ -48,7 +48,7 @@ namespace VKGame.Bot.BackgroundProcess
             Thread.Sleep(120000);
             try
             {
-                var roulette = Api.Roulette.GetList();
+                var roulette = Bot.Common.Roulette;
 
                 Dictionary<string, string> smiles = new Dictionary<string, string>();
                 smiles.Add("❤", "сердце");
@@ -89,7 +89,7 @@ namespace VKGame.Bot.BackgroundProcess
                     {
                         Notifications.EnterPaymentCard(Convert.ToInt32(priceWinner), price.User, "победа в рулетке");
 
-                        var userWin = Api.User.GetUser(price.User);
+                        var userWin = new Api.User(price.User);
                         winersTxt = "";
                         winersTxt += $"\n😀 {userWin.Name} взял {priceWinner}";
                     }
@@ -104,18 +104,18 @@ namespace VKGame.Bot.BackgroundProcess
                                    $"\nСписок победителей: {winersTxt}";
                 foreach (var price in roulette.Prices)
                 {
-                    var user = Api.User.GetUser(price.User);
+                    var user = new Api.User(price.User);
 
                     if (price.Smile == winSmile)
                     {
-                        Api.MessageSend(winText, price.User);
+                        Api.Message.Send(winText, price.User);
                     }
                 }
                 Bot.Statistics.WinCasino(priceWinner);
                 registry.PlayInRulette = false;
                 roulette.Fund = 0;
                 roulette.Prices = new List<Models.RoulettePrices>();
-                Api.Roulette.SetList(roulette);
+                Bot.Common.Roulette = roulette;
             }catch(Exception e)
             {
                 Logger.WriteError(e);

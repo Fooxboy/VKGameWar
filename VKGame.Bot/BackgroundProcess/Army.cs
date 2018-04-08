@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System;
 using System.Linq;
+using VKGame.Bot.Helpers;
 
 namespace VKGame.Bot.BackgroundProcess
 {
@@ -19,11 +20,13 @@ namespace VKGame.Bot.BackgroundProcess
 
             long userId = 0;
             int count = 0;
+            bool boost = false;
             Api.Resources resources = null;
             try
             {
                  userId = data.UserId;
                  count = data.Count;
+                boost = data.Boost;
                  resources = new Api.Resources(userId);
             }catch(Exception e)
             {
@@ -33,18 +36,30 @@ namespace VKGame.Bot.BackgroundProcess
             var builds = new Api.Builds(userId);
 
             Bot.Statistics.CreateSol(count);
-            Api.MessageSend($"➡ Они будут обучаться:  {count * 20} секунд", userId);
+            if(boost)
+                Api.Message.Send($"➡ Солдаты будут обучаться:  {(count * 20)/2} секунд", userId);
+            else
+            {
+                Api.Message.Send($"➡ Солдаты будут обучаться:  {count * 20} секунд", userId);
+
+            }
+
             var turn = Bot.Common.TurnCreateSoildery;
 
             while (count > 0)
             {
                 try
                 {
-                    if (!turn.Any(u => u.Id == userId))
+                    if (turn.All(u => u.Id != userId))
                         turn.Add(new Models.UserTurnCreate() { Id = userId, Count = count });
                     else turn.Find(u => u.Id == userId).Count = count;  
                     if (count < 0) break;
-                    Thread.Sleep(20000);
+
+                    int time = 20000;
+
+                    if (boost) time = time / 2;
+                    
+                    Thread.Sleep(time);
                     var soldiery = resources.Soldiery;
                     soldiery++;
                     resources.Soldiery = soldiery;
@@ -59,7 +74,7 @@ namespace VKGame.Bot.BackgroundProcess
             }
             var user = turn.Find(u => u.Id == userId);
             turn.Remove(user);
-            Api.MessageSend($"✅ Солдаты были обучены. Вы можете идти в бой! ", userId);
+            Api.Message.Send($"✅ Солдаты были обучены. Вы можете идти в бой! ", userId);
         }
 
 
@@ -71,11 +86,13 @@ namespace VKGame.Bot.BackgroundProcess
             var data = (Models.DataCreateSoldiery)datas;
             long userId=0;
             int count=0;
+            bool boost = false;
             Api.Resources resources = null;
             try
             {
                  userId = data.UserId;
                  count = data.Count;
+                boost = data.Boost;
                  resources = new Api.Resources(userId);
                 
             }catch(Exception e)
@@ -86,17 +103,28 @@ namespace VKGame.Bot.BackgroundProcess
             Bot.Statistics.CreateTanks(count);
             var builds = new Api.Builds(userId);
 
-            Api.MessageSend($"➡ Они будут создаваться:  {count} минут", userId);
+            if (boost)
+            {
+                count = count * 60000;
+                count = count / 2;
+                count = count / 1000;
+                Api.Message.Send($"➡ Танки будут создаваться:  {count} секунд", userId);
+            }    
+            else 
+                Api.Message.Send($"➡ Танки будут создаваться:  {count} минут", userId);
+
             var turn = Bot.Common.TurnCreateTanks;
 
             while (count > 0)
             {             
                 try
                 {
-                    if (!turn.Any(u => u.Id == userId))
+                    if (turn.All(u => u.Id != userId))
                         turn.Add(new Models.UserTurnCreate() { Id = userId, Count = count });
                     else turn.Find(u => u.Id == userId).Count = count;
                     if (count < 0) break;
+                    var time = 60000;
+                    if(boost) time = time / 2;
                     Thread.Sleep(60000);
                     var tanks = resources.Tanks;
                     tanks++;
@@ -113,7 +141,7 @@ namespace VKGame.Bot.BackgroundProcess
 
             var user = turn.Find(u => u.Id == userId);
             turn.Remove(user);
-            Api.MessageSend("✅ Танки были сделаны. Вы можете идти в бой!", userId);
+            Api.Message.Send("✅ Танки были сделаны. Вы можете идти в бой!", userId);
         }
     }
 }

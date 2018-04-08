@@ -18,25 +18,26 @@ namespace VKGame.Bot.Commands
         {
             var listCommand = new List<ICommand>()
             {
-            new Bot.Commands.Start(),
-            new Bot.Commands.Home(),
-            new Bot.Commands.Casino(),
-            new Bot.Commands.Army(),
-            new Bot.Commands.Buildings(),
-            new Bot.Commands.Battle(),
-            new Bot.Commands.Store(),
-            new Bot.Commands.Promocode(),
-            new Bot.Commands.Bank(),
-            new Bot.Commands.Boxes(),
-            new Bot.Commands.Quests(),
-            new Bot.Commands.Referrals(),
-            new Bot.Commands.Clans(),
-            new Bot.Commands.Competitions(),
-            new Bot.Commands.Settings(),
-            new Bot.Commands.Sections(),
-            new Bot.Commands.Balance(),
-            new Bot.Commands.Feedback(),
-            new Bot.Commands.Bug()
+            new Start(),
+            new Home(),
+            new Casino(),
+            new Army(),
+            new Buildings(),
+            new Battle(),
+            new Store(),
+            new Promocode(),
+            new Bank(),
+            new Boxes(),
+            new Quests(),
+            new Referrals(),
+            new Clans(),
+            new Competitions(),
+            new Settings(),
+            new Sections(),
+            new Balance(),
+            new Feedback(),
+            new Bug(),
+            new Skills()
             };
 
             string text = $"➖➖➖➖➖➖➖➖➖➖➖➖" +

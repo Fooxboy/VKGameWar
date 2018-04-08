@@ -13,34 +13,15 @@ namespace VKGame.Bot.Commands
         public List<string> Commands => new List<string> { "отнять", "прибавить", "узнать"};
         public Access Access => Access.User;
 
-
         public object Execute(Models.Message msg)
         {
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
                 return GetBalanceText(msg.from_id);
-            else
-            {
-                var type = typeof(Balance);
-                object obj = Activator.CreateInstance(type);
-                var methods = type.GetMethods();
-                foreach (var method in methods)
-                {
-                    var attributesCustom = Attribute.GetCustomAttributes(method);
-                    foreach (var attribute in attributesCustom)
-                    {
-                        if (attribute.GetType() == typeof(Attributes.Trigger))
-                        {
-                            var myAtr = ((Attributes.Trigger)attribute);
-                            if (myAtr.Name.ToLower() == messageArray[1].ToLower())
-                            {
-                                object result = method.Invoke(obj, new object[] { msg });
-                                return (string)result;
-                            }
-                        }
-                    }
-                }
-            }
+            
+            var type = typeof(Balance);
+            var result = Helpers.Command.CheckMethods(type, messageArray[1], msg);
+            if (result != null) return result;
             var word = Common.SimilarWord(messageArray[1], Commands);
             return $"❌ Неизвестная подкоманда." +
                     $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
@@ -49,7 +30,7 @@ namespace VKGame.Bot.Commands
         [Attributes.Trigger("отнять")]
         public string RemoveMoney(Models.Message msg)
         {
-            var user = Api.User.GetUser(msg.from_id);
+            var user = new Api.User(msg.from_id);
             if (user.Access < 4) return "У Вас нет доступа.";
             long userId = 0;
             var messageArray = msg.body.Split(' ');
@@ -70,7 +51,7 @@ namespace VKGame.Bot.Commands
         [Attributes.Trigger("прибавить")]
         public string AddMoney(Models.Message msg)
         {
-            var user = Api.User.GetUser(msg.from_id);
+            var user = new Api.User(msg.from_id);
             if (user.Access < 4) return "У Вас нет доступа.";
             long userId = 0;
             var messageArray = msg.body.Split(' ');
@@ -91,7 +72,7 @@ namespace VKGame.Bot.Commands
         [Attributes.Trigger("узнать")]
         public string Find(Models.Message msg)
         {
-            var user = Api.User.GetUser(msg.from_id);
+            var user = new Api.User(msg.from_id);
             if (user.Access < 4) return "У Вас нет доступа.";
             long userId = 0;
             var messageArray = msg.body.Split(' ');

@@ -22,34 +22,12 @@ namespace VKGame.Bot.Commands
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
                 return "не указаны аргументы";
-            else
-            {
-                var type = typeof(Database);
-                object obj = Activator.CreateInstance(type);
-                var methods = type.GetMethods();
-
-                foreach (var method in methods)
-                {
-                    var attributesCustom = Attribute.GetCustomAttributes(method);
-
-                    foreach (var attribute in attributesCustom)
-                    {
-                        if (attribute.GetType() == typeof(Attributes.Trigger))
-                        {
-                            var myAtr = ((Attributes.Trigger)attribute);
-
-                            if (myAtr.Name.ToLower() == messageArray[1].ToLower())
-                            {
-                                object result = method.Invoke(obj, new object[] { msg });
-                                return (string)result;
-                            }
-                        }
-                    }
-                }
-                var word = Common.SimilarWord(messageArray[1], Commands);
-                return $"❌ Неизвестная подкоманда." +
-                        $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
-            }
+            var type = typeof(Database);
+            var result = Helpers.Command.CheckMethods(type, messageArray[1], msg);
+            if (result != null) return result;
+            var word = Common.SimilarWord(messageArray[1], Commands);
+            return $"❌ Неизвестная подкоманда." +
+                   $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
         }
 
         [Attributes.Trigger("изменить")]

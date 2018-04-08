@@ -1,6 +1,8 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
 using VkNet.Model.RequestParams;
 using System.Collections.Generic;
+using VKGame.Bot.Api;
 
 namespace VKGame.Bot.Commands
 {
@@ -24,23 +26,106 @@ namespace VKGame.Bot.Commands
             string[] arrayText = msg.body.Split(' ');
             for (int i = 1; arrayText.Length > i; i++) text += $"{arrayText[i]} ";
             
-            //var common = new Common();
-
-            var vk = Common.GetVk();
-            var historyMessage = vk.Messages.GetHistory(new MessagesGetHistoryParams()
+            try
             {
-                Count = 10,
-                PeerId = msg.from_id
-            });
+                var lastcommand = Common.LastCommand;
+                var command = lastcommand[msg.from_id];
+                var boosters = new Api.Boosters(msg.from_id);
+                
+                
+                if(command.Name.ToLower() == "старт") return Start.SetNick(msg, text);
+                else if (command.Name.ToLower() == "армия")
+                {
+                    int count = 0;
+                    int type = 0;
+                    try
+                    {
+                        if (Common.CountCreateArmySoldiery[msg.from_id] != 0)
+                        {
+                            count = Common.CountCreateArmySoldiery[msg.from_id];
+                            type = 1;
+                            Common.CountCreateArmySoldiery.Remove(msg.from_id);
+                            boosters.CreateSoldiery -= 1;
+                        }
+                        else if (Common.CountCreateArmyTanks[msg.from_id] != 0)
+                        {
+                            count = Common.CountCreateArmyTanks[msg.from_id];
+                            type = 2;
+                            Common.CountCreateArmyTanks.Remove(msg.from_id);
+                            boosters.CreateTanks -= 1;
+                        }
+                        else count = 0;
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                        count = 0;
+                    }
 
-            foreach (var message in historyMessage.Messages)
-            {
-                var messageCommand = message.Body.Split(' ')[0].ToLower();
-                Logger.WriteDebug(messageCommand);
-                if (messageCommand == "старт") return Start.SetNick(msg, text);
+                    var value = text;
+
+                    if (value.ToLower() == "да")
+                    {
+                        if (type == 1)
+                        {
+                            Bot.Commands.Army.Api.CreateSoldiery(count, msg.from_id, true);
+                        }else if (type == 2)
+                        {
+                            Bot.Commands.Army.Api.CreateTanks(count, msg.from_id, true);
+                        }
+
+                        return "✅ Вы успешно создаёте армию с усилителем!";
+                    }else if (value.ToLower() == "нет")
+                    {
+                        if (type == 1)
+                        {
+                            Bot.Commands.Army.Api.CreateSoldiery(count, msg.from_id, false);
+                        }else if (type == 2)
+                        {
+                            Bot.Commands.Army.Api.CreateTanks(count, msg.from_id, false);
+                        }
+                        
+                        return "✅ Вы успешно создаёте армию без усилителя!";
+
+                    }else if (value.ToLower() == "умолчание")
+                    {
+                        var config = new Api.ConfigBoosters(msg.from_id);
+                        if (type == 1)
+                        {
+                            Bot.Commands.Army.Api.CreateSoldiery(count, msg.from_id, Convert.ToBoolean(config.CreateSoldiery));
+                        }else if (type == 2)
+                        {
+                            Bot.Commands.Army.Api.CreateTanks(count, msg.from_id, Convert.ToBoolean(config.CreateTanks));
+                        }
+                        var registry = new Api.Registry(msg.from_id);
+                        registry.ShowNotifyBoostArmy = false;
+                        return "✅ Вы успешно создаёте армию со значением по умолчанию";
+                    }
+                    else
+                    {
+                        var config = new Api.ConfigBoosters(msg.from_id);
+                        if (type == 1)
+                        {
+                            Bot.Commands.Army.Api.CreateSoldiery(count, msg.from_id, Convert.ToBoolean(config.CreateSoldiery));
+                        }else if (type == 2)
+                        {
+                            Bot.Commands.Army.Api.CreateTanks(count, msg.from_id, Convert.ToBoolean(config.CreateTanks));
+                        }
+
+                        return $"✅ Не было распознано значение. Было использовано значение по умолчанию - {Convert.ToBoolean(config.CreateSoldiery)}";
+                    }
+                }
+                else
+                {
+                    return "❌" + " Не найдена команда, для которой нужны данные.";
+                }            
             }
+            catch (KeyNotFoundException)
+            {
+                return "❌" + " Не найдена команда, для которой нужны данные.";
 
+            }
             return "❌" + " Не найдена команда, для которой нужны данные.";
+
         }
     }
 }

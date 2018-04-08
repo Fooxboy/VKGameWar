@@ -16,10 +16,10 @@ namespace VKGame.Bot.BackgroundProcess
                 {
                     if (DateTime.Now.Hour == 8)
                     {
-                        var listUsers = Api.UserList.GetList();
-                        foreach (var userId in listUsers.Users)
+                        var listUsers = Api.User.AllList;
+                        foreach (var userId in listUsers)
                         {
-                            var registry = Api.Registry.GetRegistry(userId);
+                            var registry = new Api.Registry(userId);
                             var lastMessage = DateTime.Parse(registry.LastMessage);
                             int day = lastMessage.Day;
                             int nowDay = 0;
@@ -27,14 +27,14 @@ namespace VKGame.Bot.BackgroundProcess
                             else nowDay = DateTime.Now.Day + 31;
                             if (nowDay - day < 2)
                             {
-                                Api.MessageSend("🎉 Ежедневный бонус! Спасибо, что Вы играли вчера! Вот Ваш маленький бонус сегодня! 300 монет!", userId);
+                                Api.Message.Send("🎉 Ежедневный бонус! Спасибо, что Вы играли вчера! Вот Ваш маленький бонус сегодня! 300 монет!", userId);
                                 Notifications.EnterPaymentCard(300, userId, "ежедненый бонус");
                             }
                             else
                             {
                                 if ((nowDay - day > 5) && (nowDay - day < 20))
                                 {
-                                    Api.MessageSend("🎈 Привет! Я вижу, что ты давно не играл! Ваша армия Вас ждёт! НАЧИНАЙ ИГРАТЬ :)", userId);
+                                    Api.Message.Send("🎈 Привет! Я вижу, что ты давно не играл! Ваша армия Вас ждёт! НАЧИНАЙ ИГРАТЬ :)", userId);
                                 }
                             }
                         }
@@ -70,9 +70,7 @@ namespace VKGame.Bot.BackgroundProcess
                     {
                         try
                         {
-                            var model = new Models.MessagesCache();
-                            model.Message = new System.Collections.Generic.List<Models.MessageCache>();
-                            Api.CacheMessages.SetList(model);
+                            Api.CacheMessages.ResetCache();
                         }
                         catch (Exception e)
                         {
@@ -91,9 +89,8 @@ namespace VKGame.Bot.BackgroundProcess
                             {
                                 foreach (var member in members)
                                 {
-                                    var user = Api.User.GetUser(member.Id);
+                                    var user = new Api.User(member.Id);
                                     user.Quest = 0;
-                                    Api.User.SetUser(user);
                                 }
                                 members = new System.Collections.Generic.List<Models.Quests.User>();
                             }
@@ -110,9 +107,8 @@ namespace VKGame.Bot.BackgroundProcess
                             {
                                 foreach (var member2 in members2)
                                 {
-                                    var user2 = Api.User.GetUser(member2.Id);
+                                    var user2 = new Api.User(member2.Id);
                                     user2.Quest = 0;
-                                    Api.User.SetUser(user2);
                                 }
                                 members2 = new System.Collections.Generic.List<Models.Quests.User>();
                             }

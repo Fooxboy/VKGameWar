@@ -31,33 +31,13 @@ namespace VKGame.Bot.Commands
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
                 return GetCasinoText(msg.from_id, $"Время последнего обновления: {DateTime.Now}");
-            else
-            {
-                var type = typeof(Casino);
-                object obj = Activator.CreateInstance(type);
-                var methods = type.GetMethods();
-
-                foreach (var method in methods)
-                { 
-                    var attributesCustom = Attribute.GetCustomAttributes(method);
-
-                    foreach (var attribute in attributesCustom)
-                    {
-                        if (attribute.GetType() == typeof(Attributes.Trigger))
-                        {
-                            var myAtr = ((Attributes.Trigger) attribute);
-                            if (myAtr.Name.ToLower() == messageArray[1].ToLower())
-                            {
-                                object result = method.Invoke(obj, new object[] {msg});
-                                return (string) result;
-                            }
-                        }
-                    }         
-                }
-                var word = Common.SimilarWord(messageArray[1], Commands);
-                return $"❌ Неизвестная подкоманда." +
-                        $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
-            }
+            
+            var type = typeof(Casino);
+            var result = Helpers.Command.CheckMethods(type, messageArray[1], msg);
+            if (result != null) return result;
+            var word = Common.SimilarWord(messageArray[1], Commands);
+            return $"❌ Неизвестная подкоманда." +
+                   $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
         }
         
         /// <summary>
@@ -84,7 +64,7 @@ namespace VKGame.Bot.Commands
         public string Ticket(Models.Message msg)
         {
             var id = msg.from_id;
-            var user = Api.User.GetUser(id);
+            var user = new Api.User(id);
             var resouces = new Api.Resources(id);
             if (resouces.MoneyCard < 50) return $"❌ На Вашем счету недостаточно Монет. Ваш баланс: {resouces.MoneyCard} 💳 Необходимо: 50 💳 ";
             string[] letters = {"a", "b", "c", "d", "f", "g", "k", "i"};
@@ -101,7 +81,7 @@ namespace VKGame.Bot.Commands
         [Attributes.Trigger("рулетка")]
         public static string Roulette(Models.Message msg)
         {
-            var user = Api.User.GetUser(msg.from_id);
+            var user = new Api.User(msg.from_id);
             var resources = new Api.Resources(user.Id);
             var messageArray = msg.body.Split(' ');
             string smile = "";
@@ -127,7 +107,7 @@ namespace VKGame.Bot.Commands
 
             if (price < 10) return "❌ Сумма должна быть больше 10!";
             if (price > resources.MoneyCard) return $"❌ Вы ставите больше, чем у Вас есть на балансе. Ваш баланс: {resources.MoneyCard}";
-            var roulette = Api.Roulette.GetList();
+            var roulette = Common.Roulette;
             bool userUsed = false;
             foreach (var rouletteItem in roulette.Prices)
             {
@@ -146,14 +126,14 @@ namespace VKGame.Bot.Commands
             }
             roulette.Prices.Add(new Models.RoulettePrices { User = user.Id, Price = price, Smile = smile });
             roulette.Fund = roulette.Fund + price;
-            Api.Roulette.SetList(roulette);
+            Common.Roulette = roulette;
             string users = "";
 
             foreach(var priceUser in roulette.Prices)
             {
-                var userModel = Api.User.GetUser(priceUser.User);
+                var userModel = new Api.User(priceUser.User);
                 users += $"\n➡ {userModel.Name} поставил {priceUser.Price} на {priceUser.Smile}";
-                Api.MessageSend($"❗ К игре присоединился новый игрок! Фонд рулетки теперь: {roulette.Fund}", userModel.Id);
+                Api.Message.Send($"❗ К игре присоединился новый игрок! Фонд рулетки теперь: {roulette.Fund}", userModel.Id);
             }
             return $"✅  Вы успешно поставили на {smile}!" +
                 $"\n" +
@@ -164,8 +144,8 @@ namespace VKGame.Bot.Commands
 
         public string GetCasinoText(long id,string notify)
         {
-            var user = Api.User.GetUser(id);
-            Models.IResources resources = new Api.Resources(id);
+            var user = new Api.User(id);
+            var resources = new Api.Resources(id);
 
             return        $"‼{notify}" +
                           $"\n➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖" +

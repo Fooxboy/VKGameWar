@@ -30,9 +30,9 @@ namespace VKGame.Bot.Commands
 
         public static string GetHomeText(Message msg, string notify)
         {
-            var user = Api.User.GetUser(msg.from_id);
+            var user = new Api.User(msg.from_id);
             var builds = new Api.Builds(user.Id);
-            Models.IResources resources = new Api.Resources(user.Id);
+            var resources = new Api.Resources(user.Id);
             Quests.GoToHome(user.Id);
             return $"‼{notify}‼" +
                           $"\n➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖" +

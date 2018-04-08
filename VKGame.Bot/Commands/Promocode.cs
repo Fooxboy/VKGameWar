@@ -5,6 +5,8 @@ using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
 using System.Threading;
+using System.Security;
+using System.Security.Cryptography;
 
 namespace VKGame.Bot.Commands
 {
@@ -24,25 +26,21 @@ namespace VKGame.Bot.Commands
 
             if (messageArray[1] == "ген") return Gen(msg.from_id, messageArray[2], messageArray[3]);
 
-            long promocode = 0;
-            try 
+            string promocode = String.Empty;
+            try
             {
-                promocode = Int64.Parse(messageArray[1]);
+                promocode = messageArray[1];
             }catch (IndexOutOfRangeException) 
             {
                 return "❌ Вы  не указали промокод!";
-            }catch (FormatException) 
-            {
-                return "❌ Вы указали невалидный промокод";
             }
-            if(!Api.Promocode.Check(promocode)) return "❌ Такого промокода не существует.";
-            var promo = new Api.Promocode(promocode);
+            if(!Api.Promocodes.Check(promocode)) return "❌ Такого промокода не существует.";
+            var promo = new Api.Promocodes(promocode);
             if(promo.Count == 0) return "❌ Количество использований этого промокода уже изчерпано.";
             foreach(var userId in promo.Users) 
             {
                 if(userId == msg.from_id) return "❌ Вы уже использовали данный промокод.";
             }
-            var resources =  new Api.Resources(msg.from_id);
             Notifications.EnterPaymentCard(Convert.ToInt32(promo.MoneyCard), msg.from_id, "Активация промокода.");
             var usersPromo = promo.Users;
             usersPromo.Add(msg.from_id);
@@ -54,24 +52,15 @@ namespace VKGame.Bot.Commands
 
         public static string Gen(long userId, string price, string count)
         {
-            var user = Api.User.GetUser(userId);
+            var user = new Api.User(userId);
             if (user.Access < 4) return "Вам недоступна ента подкоманда.";
 
-            var r = new Random();
+            var promoId = SHA256.Create($"{userId}_{price}_{count}{new Random().Next(1, 1000)}_{new Random().Next(5000, 33253)}_promo{DateTime.Now}").Hash.ToString();
 
-            var promo = r.Next(10, 754358634);
-            if(Api.Promocode.Check(promo))
-            {
-                promo = r.Next(10, 754358634);
-                if (Api.Promocode.Check(promo))
-                {
-                    promo = r.Next(10, 754358634);
-                }
-            }
+            Api.Promocodes.Create(promoId, count, price);
+           
 
-            Api.Promocode.Create(promo, Int32.Parse(count), Int32.Parse(price));
-
-            return $"Вы успешно создали промокод {promo}";
+            return $"Вы успешно создали промокод: {promoId}";
         }
     }
 }

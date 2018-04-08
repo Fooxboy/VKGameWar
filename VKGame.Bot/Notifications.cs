@@ -13,7 +13,7 @@ namespace VKGame.Bot
             var balance = resources.MoneyCard;
             balance+=count;
             resources.MoneyCard = balance;
-            Api.MessageSend($"✨ Платёжное уведомление!✨" +
+            Api.Message.Send($"✨ Платёжное уведомление!✨" +
                 $"\n" +
                 $"\n ➡ Вам поступил платёж в размере {count} 💳 от: {name}" +
                 $"\n 💳 Ваш баланс: {resources.MoneyCard}", id);
@@ -42,7 +42,7 @@ namespace VKGame.Bot
             {
                 var userId = dialog.UserId;
 
-                Api.MessageSend($"❤ Уведомление от администрации!❤" +
+                Api.Message.Send($"❤ Уведомление от администрации!❤" +
                                 "\n{text}", userId.Value);
                 Thread.Sleep(wait);
             }
@@ -58,7 +58,7 @@ namespace VKGame.Bot
 
             balance -= count;
             resources.MoneyCard = balance;
-            Api.MessageSend($"✨ Платёжное уведомление!✨" +
+            Api.Message.Send($"✨ Платёжное уведомление!✨" +
                 $"\n" +
                 $"\n ➡ С Вашего банковского счёта было снято {count} 💳 на счёт: {name}" +
                 $"\n 💳 Ваш баланс: {resources.MoneyCard}", id);

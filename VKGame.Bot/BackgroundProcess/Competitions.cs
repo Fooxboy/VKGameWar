@@ -14,15 +14,18 @@ namespace VKGame.Bot.BackgroundProcess
                 Thread.Sleep(3600000);
                 try
                 {
-                    var listCompetitions = Api.Competitions.GetList();
-                    if (listCompetitions.List.Count != 0)
+                    var listCompetitions = Api.Competitions.AllList;
+                    if (listCompetitions.Count != 0)
                     {
-                        foreach (var idCompetition in listCompetitions.List)
+                        foreach (var idCompetition in listCompetitions)
                         {
                             var competition = new Api.Competitions(idCompetition);
-                            competition.Time = competition.Time - 1;
-                            if (competition.Time == 0)
-                                Commands.Competitions.EndCompetition(competition.Id);
+                            if (!competition.IsEnd)
+                            {
+                                competition.Time = competition.Time - 1;
+                                if (competition.Time == 0)
+                                    Commands.Competitions.EndCompetition(competition.Id);
+                            }            
                         }
                     }
                 }catch(Exception e)

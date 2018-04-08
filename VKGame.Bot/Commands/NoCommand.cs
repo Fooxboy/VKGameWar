@@ -58,14 +58,14 @@ namespace VKGame.Bot.Commands
                             $"\n ❓ Или, может быть, Вы хотели написать {comG}";
                 }
 
-                Api.MessageSend(response, msg.from_id);
+                Api.Message.Send(response, msg.from_id);
             }catch(KeyNotFoundException)
             {
                 var commandList = new List<string>();
                 foreach (var commandM in Core.Commands) commandList.Add(commandM.Name);
                 var comG = Common.SimilarWord(messageArray[0], commandList);
 
-                Api.MessageSend($"❌ Неизвестная команда!" +
+                Api.Message.Send($"❌ Неизвестная команда!" +
                     $"\n❓ Может быть. Вы хотели написать {comG}", msg.from_id);
             }
         }

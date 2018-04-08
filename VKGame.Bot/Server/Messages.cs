@@ -15,27 +15,12 @@ namespace VKGame.Bot.Server
 
             try
             {
-                if (ts == Convert.ToUInt64(Bot.Common.LastMessage)) Thread.Sleep(10000);
-                var modelMessages = new NowMessagesResponse { Updates = new List<MessageResponse>() };
-                var listMessages = Api.CacheMessages.GetList();
-                var messageNotWatch = listMessages.Message.Where(message => Convert.ToUInt64(message.Id) > ts);
-                foreach (Models.MessageCache message in messageNotWatch)
+
+                if (ts != (ulong) Bot.Common.LastMessage)
                 {
-                    var modelMessage = new MessageResponse
-                    {
-                        Id = message.Id,
-                        Text = message.Text,
-                        Time = message.Time,
-                        PeerId = message.PeerId
-                    };
-                    modelMessages.Updates.Add(modelMessage);
-                    ts = Convert.ToUInt64(message.Id);
                 }
 
-                modelMessages.Ts = ts;
-                response.Data = modelMessages;
-                response.Ok = true;
-                return JsonConvert.SerializeObject(response);
+                throw new Exception();
 
             }catch(Exception e)
             {

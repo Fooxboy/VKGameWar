@@ -4,6 +4,7 @@ using System.Text;
 using VkNet;
 using System.Net;
 using System.Linq;
+using VKGame.Bot.Models;
 
 namespace VKGame.Bot
 {
@@ -18,11 +19,17 @@ namespace VKGame.Bot
             return "89d513f60f1f26a711a376720a9dba0149ab2a283941b83fc1753c0a9fd54b2350be6ada97a44ee083de1";
         }
 
+        public static Bot.Models.Roulette Roulette = new Models.Roulette(){ Prices =  new List<RoulettePrices>(), Fund = 0};
+
         public static string Notification = null;
 
         public static long LastMessage = 0;
 
         public static Dictionary<long, ICommand> LastCommand = new Dictionary<long, ICommand>();
+        
+        public static Dictionary<long, int> CountCreateArmySoldiery = new Dictionary<long, int>();
+        public static Dictionary<long, int> CountCreateArmyTanks = new Dictionary<long, int>();
+
 
         public static List<Models.UserTurnCreate> TurnCreateSoildery = new List<Models.UserTurnCreate>();
         public static List<Models.UserTurnCreate> TurnCreateTanks = new List<Models.UserTurnCreate>();
@@ -77,7 +84,8 @@ namespace VKGame.Bot
                 "Приглашайте в игру рефералов! При регистрации пользователь должен указать Ваш id. Подробнее: Рефералы",
                 "В соревнованиях можно хорошо заработать! Напиши: Соревнования",
                 "Нашли баг? Срочно опишите его в разделе БАГ. Использование: БАГ (сообщение о баге)",
-                "Хотите оставить отзыв? Напишите его! Отзыв (ваш отзыв)"
+                "Хотите оставить отзыв? Напишите его! Отзыв (ваш отзыв)",
+                "Надоело долго ждать обучения армии? Используйте усилители! напишите: Усилители"
             };
             var r = new Random();
             var i = r.Next(0, (ListHelp.Length -1));

@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using VKGame.Bot.Models;
+using VkNet;
 
 namespace VKGame.Bot.Commands
 {
@@ -21,7 +22,7 @@ namespace VKGame.Bot.Commands
         {
             var messageArray = msg.body.Split(' ');
 
-            var user = Api.User.GetUser(msg.from_id);
+            var user = new Api.User(msg.from_id);
             if (user.Access < 4) return "Вам недоступна эта команда.";
             string code = String.Empty;
 
@@ -35,9 +36,9 @@ namespace VKGame.Bot.Commands
             try
             {
                 var result = CSharpScript.EvaluateAsync($"using System; using VKGame.Bot;" +
-                    $" using System.Collections.Generic; using System.Threading; " +
-                    $"using System.IO; using System.Net; using Newtosoft.Json;" +
-                    $"using System.Text; using VNet; {code}",
+                    $"using System.Collections.Generic; using System.Threading; " +
+                    $"using System.IO; using System.Net; using Newtonsoft.Json;" +
+                    $"using System.Text; using VkNet; {code}",
                 ScriptOptions.Default.WithReferences(typeof(Program).Assembly));
                 var resultA = result.Result.ToString();
                 if (resultA == null) resultA = "Результат выполнения кода равен null";

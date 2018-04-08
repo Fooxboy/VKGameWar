@@ -21,22 +21,24 @@ namespace VKGame.Bot.Commands
 
             if (messageArray[1] == "+список")
             {
-                var user = Api.User.GetUser(msg.from_id);
+                var user = new Api.User(msg.from_id);
                 if (user.Access < 3) return "Вам недоступна команда просмотра отзывов.";
-                var feedbacks = Api.Feedback.GetFeedback();
-                int count = Int32.Parse(messageArray[2]);
-
+                var feedbacks = Api.Feedbacks.Alllist;
+                //int count = Int32.Parse(messageArray[2]);
+                
                 string feedbackText = String.Empty;
 
-                for (int i = 0; i < feedbacks.Feedback.Count; i++)
+                foreach (var feedbackId in feedbacks)
                 {
-                    feedbackText += $"🆔 *id{feedbacks.Feedback[i].UserId}" +
-                        $"\n⏰ {feedbacks.Feedback[i].Time}" +
-                        $"\n🔥 {feedbacks.Feedback[i].Text}" +
-                        $"\n" +
-                        $"\n";
+                    var feedback = new Api.Feedbacks(feedbackId);
+                    feedbackText += $"🆔 *id{feedback.User}" +
+                                    $"\n⏰ {feedback.Time}" +
+                                    $"\n🔥 {feedback.Text}" +
+                                    $"\n" +
+                                    $"\n";
                 }
 
+               
                 return feedbackText;
             }
             else
@@ -47,13 +49,10 @@ namespace VKGame.Bot.Commands
                     feedbackText += $"{messageArray[i]} ";
                 }
 
-                var feedbackModel = new Models.FeedBack() { Time = DateTime.Now.ToString(), Text = feedbackText, UserId = msg.from_id };
-                var feedbacks = Api.Feedback.GetFeedback();
-                feedbacks.Feedback.Add(feedbackModel);
-                Api.Feedback.SetFeedback(feedbacks);
+                var id = Api.Feedbacks.Add(feedbackText, msg.from_id);
 
                 //TODO: заменить
-                Api.MessageSend("🎈 Добавлен новый отзыв!", 308764786);
+                Api.Message.Send($"🎈 Добавлен новый отзыв - ID = {id}!", 308764786);
 
                 return "😎 Ваш отзыв будет обязательно прочтён!";
             }
