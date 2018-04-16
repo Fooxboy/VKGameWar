@@ -9,10 +9,10 @@ namespace VKGame.Bot.Api
         private Database.Data DB = null;
         private long id;
 
-        public Registry(long id)
+        public Registry(long Id)
         {
             DB = new Database.Data("Registry");
-            this.id = id;
+            id = Id;
         }
 
         public static void Register(long userId)

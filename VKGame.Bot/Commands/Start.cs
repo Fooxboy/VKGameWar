@@ -41,18 +41,20 @@ namespace VKGame.Bot.Commands
             Bot.Api.User.Registration(msg.from_id);
             var user = new Api.User(msg.from_id);
             Api.Registry.Register(msg.from_id);
-            var registry = new Api.Registry(msg.from_id);
             Api.Builds.Register(msg.from_id);
             Api.Referrals.Register(msg.from_id);
             Api.Levels.Registration(msg.from_id);
             Api.Skills.Registration(msg.from_id);
             Api.Boosters.Register(msg.from_id);
             Api.ConfigBoosters.Register(msg.from_id);
+            Api.Boxs.Register(msg.from_id);
+            Api.Resources.Registration(msg.from_id);
             Statistics.NewRegistation();
-           
+
+            var registry = new Api.Registry(msg.from_id);
+            registry.DateReg = DateTime.Now.ToString();
             registry.LastMessage = DateTime.Now.ToString();
             registry.StartThread = true;
-            registry.DateReg = DateTime.Now.ToString();
             
 
             //Старт потока добавления ресурсов.
@@ -79,7 +81,6 @@ namespace VKGame.Bot.Commands
                 Api.Message.Send("✨ На Вас счёт поступило 100 💳 за то, что вы указали реферала!", msg.from_id);
             }
 
-            Api.Boxs.Register(msg.from_id);
 
             string resultStr =
                 "🎉 Добро пожаловать, новичёк!🙂" +

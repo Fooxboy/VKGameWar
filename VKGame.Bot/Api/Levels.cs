@@ -19,7 +19,9 @@ namespace VKGame.Bot.Api
         public static void Registration(long userId)
         {
             var fields = new List<string>() {"Id"};
-            var values = new List<string>() {userId.ToString()}; 
+            var values = new List<string>() {userId.ToString()};
+            Database.Data.Add(fields, values, "Levels");
+
         }
 
 

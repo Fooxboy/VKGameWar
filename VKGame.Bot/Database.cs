@@ -195,10 +195,13 @@ namespace VKGame.Bot
             
             public Data(string table)
             {
-                if (ConnectionData != null) return;
-                ConnectionData = new SqliteConnection(ConnectionString);
-                ConnectionData.Open();
+                if(ConnectionData == null)
+                {
+                    ConnectionData = new SqliteConnection(ConnectionString);
+                    ConnectionData.Open();
+                }
                 Table = table;
+                Logger.NewMessage($"ТАБЛИЦА {table}");
             }
 
             public SqliteDataReader  GetAll()
@@ -247,7 +250,8 @@ namespace VKGame.Bot
 
             public void EditFromId(object id, string field, object value)
             {
-                var sql = $"UPDATE {Table} SET {field}='{value}' WHERE Id='{id}'";
+                var sql = $"UPDATE {Table} SET `{field}`='{value}' WHERE `Id`='{id}';";
+                Logger.NewMessage(sql);
                 var command = new SqliteCommand(sql, ConnectionData);
                 command.ExecuteNonQuery();
             }
@@ -318,7 +322,7 @@ namespace VKGame.Bot
                 command.ExecuteNonQuery();
             }
             
-            public void DeleteFromId(string key)
+            public void DeleteFromKey(string key)
             {
                 string sql = $"DELETE FROM {Table} WHERE Key='{key}'";
                 var command = new SqliteCommand(sql, ConnectionData);
