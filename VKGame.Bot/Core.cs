@@ -42,7 +42,8 @@ namespace VKGame.Bot
             new Commands.Admin.Stat(),
             new Commands.Admin.System(),
             new Skills(),
-            new Bot.Commands.Admin.Bugs()
+            new Bot.Commands.Admin.Bugs(),
+            new Top()
         };
         
         private ICommand Proccesing(string text)
@@ -263,8 +264,8 @@ namespace VKGame.Bot
                         var core = new Core();
                         try
                         {
-                            var thread = new Thread(new ParameterizedThreadStart(core.ExecutorCommand));
-                            thread.Start(message);
+
+                            Api.Message.Send((string)Commands[0].Execute(message), message.from_id);
                         }
                         catch (Exception e)
                         {

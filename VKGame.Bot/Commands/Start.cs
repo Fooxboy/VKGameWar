@@ -37,7 +37,7 @@ namespace VKGame.Bot.Commands
             }
             if (referral == msg.from_id) return "❌ Вы не были зарегистрированы. Вы не можете использовать себя как реферала. Попробуйте снова, только введите другово реферала!";
             var common = new Common();
-            if (!Api.User.Check(msg.from_id)) return "❌ Вы уже зарегистрированы в игре.";
+            if (Api.User.Check(msg.from_id)) return "❌ Вы уже зарегистрированы в игре.";
             Bot.Api.User.Registration(msg.from_id);
             var user = new Api.User(msg.from_id);
             Api.Registry.Register(msg.from_id);

@@ -4,6 +4,7 @@ using System.Text;
 using VkNet;
 using System.Net;
 using System.Linq;
+using Microsoft.Data.Sqlite;
 using VKGame.Bot.Models;
 
 namespace VKGame.Bot
@@ -29,6 +30,8 @@ namespace VKGame.Bot
         
         public static Dictionary<long, int> CountCreateArmySoldiery = new Dictionary<long, int>();
         public static Dictionary<long, int> CountCreateArmyTanks = new Dictionary<long, int>();
+
+        
 
 
         public static List<Models.UserTurnCreate> TurnCreateSoildery = new List<Models.UserTurnCreate>();
