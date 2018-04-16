@@ -70,8 +70,11 @@ namespace VKGame.Bot.Api
                 var battles = new List<long>();
                 while (rider.Read())
                 {
-                    if ((long) rider["isActive"] == 1 && (long) rider["isStart"] == 0)
-                        battles.Add((long) rider["Id"]);
+                    var battle = new Api.Battles((long)rider["Id"]);
+
+                    if (battle.IsActive && !battle.IsStart)
+                        battles.Add(battle.Id);
+
                 }
                 rider.Close();
                 return battles;
