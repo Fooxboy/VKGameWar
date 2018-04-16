@@ -58,7 +58,7 @@ namespace VKGame.Bot.Api
             var values = new List<string>() { battleId.ToString(), name, user.ToString(), hp.ToString(), price.ToString(), user.ToString()};
             DB.EditFromId(0, "Found", battleId);
             Database.Data.Add(fields, values, "Battles");
-            return battleId;
+            return battleId; 
         }
 
         public static List<long> GetActivesAll
@@ -73,6 +73,7 @@ namespace VKGame.Bot.Api
                     if ((long) rider["isActive"] == 1 && (long) rider["isStart"] == 0)
                         battles.Add((long) rider["Id"]);
                 }
+                rider.Close();
                 return battles;
             }
         }

@@ -30,8 +30,7 @@ namespace VKGame.Bot.Commands
             {
                 var lastcommand = Common.LastCommand;
                 var command = lastcommand[msg.from_id];
-                var boosters = new Api.Boosters(msg.from_id);
-                
+                var boosters = new Api.Boosters(msg.from_id);          
                 
                 if(command.Name.ToLower() == "старт") return Start.SetNick(msg, text);
                 else if (command.Name.ToLower() == "армия")
@@ -116,16 +115,14 @@ namespace VKGame.Bot.Commands
                 }
                 else
                 {
-                    return "❌" + " Не найдена команда, для которой нужны данные.";
+                    return "1❌" + " Не найдена команда, для которой нужны данные.";
                 }            
             }
             catch (KeyNotFoundException)
             {
-                return "❌" + " Не найдена команда, для которой нужны данные.";
+                return "2❌" + " Не найдена команда, для которой нужны данные.";
 
             }
-            return "❌" + " Не найдена команда, для которой нужны данные.";
-
         }
     }
 }

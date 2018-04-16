@@ -229,8 +229,7 @@ namespace VKGame.Bot
             try
             {
                 Common.LastMessage = message.id;
-                
-                
+                        
                 Api.CacheMessages.AddMessage(message.id, DateTime.Now.ToString(), 1, 1, message.from_id, message.body, message.from_id);
                 if (Api.User.Check(message.from_id))
                 {

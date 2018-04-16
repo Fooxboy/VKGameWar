@@ -201,7 +201,7 @@ namespace VKGame.Bot
                     ConnectionData.Open();
                 }
                 Table = table;
-                Logger.NewMessage($"ТАБЛИЦА {table}");
+                //Logger.NewMessage($"ТАБЛИЦА {table}");
             }
 
             public SqliteDataReader  GetAll()
@@ -251,7 +251,7 @@ namespace VKGame.Bot
             public void EditFromId(object id, string field, object value)
             {
                 var sql = $"UPDATE {Table} SET `{field}`='{value}' WHERE `Id`='{id}';";
-                Logger.NewMessage(sql);
+                //Logger.NewMessage(sql);
                 var command = new SqliteCommand(sql, ConnectionData);
                 command.ExecuteNonQuery();
             }
