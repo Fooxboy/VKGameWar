@@ -1,11 +1,13 @@
-﻿namespace VKGame.Bot.Api
+﻿using System;
+
+namespace VKGame.Bot.Api
 {
     public class Statistics
     {
         public static void SetValue(string key, long count=1)
         {
             var db = new Database.Stat("Statistics");
-            var lastValue = (long) db.GetFromKey(key);
+            var lastValue = System.Int64.Parse((string) db.GetFromKey(key));
             lastValue += count;
             db.EditFromKey(key, lastValue);
         }
@@ -27,61 +29,61 @@
             var db = new Database.Stat("Statistics");
             var model = new Models.Statistics()
             {
-                InMessageDay = (long) db.GetFromKey("InMessageDay"),
-                OutMessageDay = (long) db.GetFromKey("OutMessageDay"),
-                AllMessages =  (long) db.GetFromKey("AllMessages"),
+                InMessageDay = Int64.Parse( (string) db.GetFromKey("InMessageDay")),
+                OutMessageDay = Int64.Parse((string) db.GetFromKey("OutMessageDay")),
+                AllMessages = Int64.Parse((string) db.GetFromKey("AllMessages")),
                 Errors =  new Models.Statistics.ErrorsModel()
                 {
-                    All = (long)db.GetFromKey("ErrorsAll"),
-                    Day =  (long)db.GetFromKey("ErrorsDay")
+                    All = Int64.Parse((string)db.GetFromKey("ErrorsAll")),
+                    Day = Int64.Parse((string)db.GetFromKey("ErrorsDay"))
                 },
                 Battles = new Models.Statistics.BattlesModel()
                 {
-                    All = (long)db.GetFromKey("BattlesAll"),
-                    Day = (long)db.GetFromKey("BattlesDay")
+                    All = Int64.Parse((string)db.GetFromKey("BattlesAll")),
+                    Day = Int64.Parse((string)db.GetFromKey("BattlesDay"))
                 },
                 Registrations = new Models.Statistics.RegistrationsModel()
                 {
-                    All =(long)db.GetFromKey("RegistrationsAll"),
-                    Day = (long)db.GetFromKey("RegistrationsDay")
+                    All = Int64.Parse((string)db.GetFromKey("RegistrationsAll")),
+                    Day = Int64.Parse((string)db.GetFromKey("RegistrationsDay"))
                 },
                 WinCasino = new Models.Statistics.WinCasinoModel()
                 {
-                    All = (long)db.GetFromKey("WinCasinoAll"),
-                    Day = (long)db.GetFromKey("WinCasinoDay")
+                    All = Int64.Parse((string)db.GetFromKey("WinCasinoAll")),
+                    Day = Int64.Parse((string)db.GetFromKey("WinCasinoDay"))
                 },
                 CreateArmy = new Models.Statistics.CreateArmyModel()
                 {
-                    AllTanks  = (long)db.GetFromKey("CreateArmyAllTanks"),
-                    AllSol = (long)db.GetFromKey("CreateArmySolAll"),
-                    DaySol = (long)db.GetFromKey("CreateArmySolDay"),
-                    DayTanks = (long)db.GetFromKey("CreateArmyDayTanks")
+                    AllTanks  = Int64.Parse((string)db.GetFromKey("CreateArmyAllTanks")),
+                    AllSol = Int64.Parse((string)db.GetFromKey("CreateArmySolAll")),
+                    DaySol = Int64.Parse((string)db.GetFromKey("CreateArmySolDay")),
+                    DayTanks = Int64.Parse((string)db.GetFromKey("CreateArmyDayTanks"))
                 },
                 Boxs = new Models.Statistics.BoxsModel()
                 {
-                    BuyStoreAll = (long)db.GetFromKey("BoxsBuyAll"),
-                    BuyStoreDay = (long)db.GetFromKey("BoxsBuyDay"),
-                    WinBattleAll = (long)db.GetFromKey("BoxsWinAll"),
-                    WinBattleDay = (long)db.GetFromKey("BoxsWinDay")
+                    BuyStoreAll = Int64.Parse((string)db.GetFromKey("BoxsBuyAll")),
+                    BuyStoreDay = Int64.Parse((string)db.GetFromKey("BoxsBuyDay")),
+                    WinBattleAll = Int64.Parse((string)db.GetFromKey("BoxsWinAll")),
+                    WinBattleDay = Int64.Parse((string)db.GetFromKey("BoxsWinDay"))
                 },
                 Competitions = new Models.Statistics.CompetitionsModel()
                 {
-                    All=(long)db.GetFromKey("CompetitionsAll"),
-                    BattleCompetitionAll =(long)db.GetFromKey("CompetitionsBattleAll") ,
-                    BattleCompetitionDay = (long)db.GetFromKey("CompetitionsBattleDay"),
-                    JoinPeopleAll = (long)db.GetFromKey("CompetitionsJoinAll"),
-                    JoinPeopleDay =(long)db.GetFromKey("CompetitionsJoinDay") 
+                    All= Int64.Parse((string)db.GetFromKey("CompetitionsAll")),
+                    BattleCompetitionAll = Int64.Parse((string)db.GetFromKey("CompetitionsBattleAll")) ,
+                    BattleCompetitionDay = Int64.Parse((string)db.GetFromKey("CompetitionsBattleDay")),
+                    JoinPeopleAll = Int64.Parse((string)db.GetFromKey("CompetitionsJoinAll")),
+                    JoinPeopleDay = Int64.Parse((string)db.GetFromKey("CompetitionsJoinDay")) 
                 },
                 CreateClans = new Models.Statistics.CreateClansModel()
                 {
-                    All=(long)db.GetFromKey("CreateClansAll"),
-                    Day=(long)db.GetFromKey("CreateClansDay")
+                    All= Int64.Parse((string)db.GetFromKey("CreateClansAll")),
+                    Day= Int64.Parse((string)db.GetFromKey("CreateClansDay"))
                 },
-                PromocodesAll = (long)db.GetFromKey("PromocodesAll"),
-                KreditsAll = (long)db.GetFromKey("KreditsAll"),
-                RefferalAll = (long)db.GetFromKey("RefferalAll"),
-                WinBattleAll = (long)db.GetFromKey("WinBattleAll"),
-                WinBattleDay = (long)db.GetFromKey("WinBattleDay")             
+                PromocodesAll = Int64.Parse((string)db.GetFromKey("PromocodesAll")),
+                KreditsAll = Int64.Parse((string)db.GetFromKey("KreditsAll")),
+                RefferalAll = Int64.Parse((string)db.GetFromKey("RefferalAll")),
+                WinBattleAll = Int64.Parse((string)db.GetFromKey("WinBattleAll")),
+                WinBattleDay = Int64.Parse((string)db.GetFromKey("WinBattleDay"))             
             };
 
             return model;

@@ -15,7 +15,7 @@ namespace VKGame.Bot
 
         public class Stat
         {
-            private const string ConnectionString = "@Filename=Files/Stat.db;";
+            private const string ConnectionString = @"Filename=Files/Stat.db;";
             private string Table = null;    
             
             public Stat(string table)
@@ -51,7 +51,7 @@ namespace VKGame.Bot
 
             public object GetFromKey(object key, object value, string field)
             {
-                var sql = $"SELECT {field} FROM {Table} WHERE {key}={value}";
+                var sql = $"SELECT {field} FROM {Table} WHERE {key}='{value}'";
                 var command = new SqliteCommand(sql, ConnectionStat);
                 var result = command.ExecuteScalar();
                 return result;
@@ -59,7 +59,7 @@ namespace VKGame.Bot
             
             public object GetFromKey(string key)
             {
-                var sql = $"SELECT value FROM {Table} WHERE Key={key}";
+                var sql = $"SELECT value FROM {Table} WHERE Key='{key}'";
                 var command = new SqliteCommand(sql, ConnectionStat);
                 var result = command.ExecuteScalar();
                 return result;
@@ -98,7 +98,7 @@ namespace VKGame.Bot
 
             public static bool CheckFromKey(object key, string value, string Table)
             {
-                string sql = $"SELECT * FROM `{Table}` WHERE {key} = {value}";
+                string sql = $"SELECT * FROM `{Table}` WHERE {key} = '{value}'";
                 var command = new SqliteCommand(sql, ConnectionStat);
                 var reader = command.ExecuteReader();
                 bool response = reader.Read();
@@ -108,7 +108,7 @@ namespace VKGame.Bot
             
             public static bool CheckFromKey(string key, string Table)
             {
-                string sql = $"SELECT * FROM `{Table}` WHERE key = {key}";
+                string sql = $"SELECT * FROM `{Table}` WHERE key = '{key}'";
                 var command = new SqliteCommand(sql, ConnectionStat);
                 var reader = command.ExecuteReader();
                 bool response = reader.Read();
@@ -125,14 +125,14 @@ namespace VKGame.Bot
             
             public void DeleteFromId(string key)
             {
-                string sql = $"DELETE FROM {Table} WHERE Key={key}";
+                string sql = $"DELETE FROM {Table} WHERE Key='{key}'";
                 var command = new SqliteCommand(sql, ConnectionStat);
                 command.ExecuteNonQuery();
             }
 
             public void DeleteFromKey(object key, string value)
             {
-                string sql = $"DELETE FROM {Table} WHERE {key}={value}";
+                string sql = $"DELETE FROM {Table} WHERE {key}='{value}'";
                 var command = new SqliteCommand(sql, ConnectionStat);
                 command.ExecuteNonQuery();
             }
@@ -156,7 +156,7 @@ namespace VKGame.Bot
         
         public class Data
         {
-            private const string ConnectionString = "@Filename=Files/Data.db;";
+            private const string ConnectionString = @"Filename=Files/Data.db;";
             private string Table = null;    
             
             public Data(string table)
@@ -192,7 +192,7 @@ namespace VKGame.Bot
 
             public object GetFromKey(object key, object value, string field)
             {
-                var sql = $"SELECT {field} FROM {Table} WHERE {key}={value}";
+                var sql = $"SELECT {field} FROM {Table} WHERE {key}='{value}'";
                 var command = new SqliteCommand(sql, ConnectionData);
                 var result = command.ExecuteScalar();
                 return result;
@@ -239,7 +239,7 @@ namespace VKGame.Bot
 
             public static bool CheckFromKey(object key, string value, string Table)
             {
-                string sql = $"SELECT * FROM `{Table}` WHERE {key} = {value}";
+                string sql = $"SELECT * FROM `{Table}` WHERE {key} = '{value}'";
                 var command = new SqliteCommand(sql, ConnectionData);
                 var reader = command.ExecuteReader();
                 bool response = reader.Read();
@@ -266,14 +266,14 @@ namespace VKGame.Bot
             
             public void DeleteFromId(string key)
             {
-                string sql = $"DELETE FROM {Table} WHERE Key={key}";
+                string sql = $"DELETE FROM {Table} WHERE Key='{key}'";
                 var command = new SqliteCommand(sql, ConnectionData);
                 command.ExecuteNonQuery();
             }
 
             public void DeleteFromKey(object key, string value)
             {
-                string sql = $"DELETE FROM {Table} WHERE {key}={value}";
+                string sql = $"DELETE FROM {Table} WHERE {key}='{value}'";
                 var command = new SqliteCommand(sql, ConnectionData);
                 command.ExecuteNonQuery();
             }
