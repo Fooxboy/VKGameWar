@@ -45,7 +45,7 @@ namespace VKGame.Bot.Api
         public long CountCreateBattles
         {
             get => (long) DB.GetFromId(id, "CountCreateBattles");
-            set => DB.EditFromId(id, "CountCreateBattles", value);
+            set => DB.EditFromId(id, "CountCreateBattles", Convert.ToInt64(value));
         }
 
         public string LastMessage
@@ -57,7 +57,7 @@ namespace VKGame.Bot.Api
         public bool StartThread
         {
             get => Convert.ToBoolean((long) DB.GetFromId(id, "StartThread"));
-            set => DB.EditFromId(id, "StartThread", value);
+            set => DB.EditFromId(id, "StartThread", Convert.ToInt64(value));
         }
 
         public long Credit
@@ -75,61 +75,67 @@ namespace VKGame.Bot.Api
         public bool IsSetup
         {
             get => Convert.ToBoolean((long) DB.GetFromId(id, "isSetup"));
-            set => DB.EditFromId(id, "isSetup", value);
+            set => DB.EditFromId(id, "isSetup", Convert.ToInt64(value));
         }
 
         public bool IsHelp
         {
             get => Convert.ToBoolean((long) DB.GetFromId(id, "isHelp"));
-            set => DB.EditFromId(id, "isHelp", value);
+            set => DB.EditFromId(id, "isHelp", Convert.ToInt64(value));
         }
 
         public bool IsReferal
         {
             get => Convert.ToBoolean((long) DB.GetFromId(id, "isReferal"));
-            set => DB.EditFromId(id, "isReferal", value);
+            set => DB.EditFromId(id, "isReferal", Convert.ToInt64(value));
         }
 
         public bool IsBonusInGroupJoin
         {
             get => Convert.ToBoolean((long) DB.GetFromId(id, "isBonusInGroupJoin"));
-            set => DB.EditFromId(id, "isBonusInGroupJoin", value);
+            set => DB.EditFromId(id, "isBonusInGroupJoin", Convert.ToInt64(value));
         }
 
         public bool IsLeaveIsGroup
         {
             get => Convert.ToBoolean((long) DB.GetFromId(id, "isLeaveIsGroup"));
-            set => DB.EditFromId(id, "isLeaveIsGroup", value);
+            set => DB.EditFromId(id, "isLeaveIsGroup", Convert.ToInt64(value));
         }
 
         public bool IsTodaySendMessageLast
         {
             get => Convert.ToBoolean((long) DB.GetFromId(id, "isTodaySendMessageLast"));
-            set => DB.EditFromId(id, "isTodaySendMessageLast", value);
+            set => DB.EditFromId(id, "isTodaySendMessageLast", Convert.ToInt64(value));
         }
 
         public bool ShowNotifyBoostArmy
         {
             get => Convert.ToBoolean((long) DB.GetFromId(id, "ShowNotifyBoostArmy"));
-            set => DB.EditFromId(id, "ShowNotifyBoostArmy", value);
+            set => DB.EditFromId(id, "ShowNotifyBoostArmy", Convert.ToInt64(value));
         }
 
         public bool ShowNotifyBoostResources
         {
             get => Convert.ToBoolean((long) DB.GetFromId(id, "ShowNotifyBoostResources"));
-            set => DB.EditFromId(id, "ShowNotifyBoostResources", value);
+            set => DB.EditFromId(id, "ShowNotifyBoostResources", Convert.ToInt64(value));
         } 
         
         public bool ActivedBoostFood
         {
             get => Convert.ToBoolean((long) DB.GetFromId(id, "ActivedBoostFood"));
-            set => DB.EditFromId(id, "ActivedBoostFood", value);
+            set => DB.EditFromId(id, "ActivedBoostFood", Convert.ToInt64(value));
         } 
         
         public bool ActivedBoostWater
         {
             get => Convert.ToBoolean((long) DB.GetFromId(id, "ActivedBoostWater"));
-            set => DB.EditFromId(id, "ActivedBoostWater", value);
-        } 
+            set => DB.EditFromId(id, "ActivedBoostWater", Convert.ToInt64(value));
+        }
+
+        public long CountLoserBattle
+        {
+            get => (long) DB.GetFromId(id, "CountLoserBattle");
+            set => DB.EditFromId(id, "CountLoserBattle", value);
+        }
     }
 }

@@ -91,9 +91,6 @@ namespace VKGame.Bot.Models
         /// </summary>
         public long WinBattleDay { get; set; }
 
-
-
-
         public class CompetitionsModel
         {
             public long JoinPeopleAll { get; set; }

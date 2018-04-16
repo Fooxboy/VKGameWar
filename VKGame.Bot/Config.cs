@@ -8,17 +8,12 @@ namespace VKGame.Bot
 {
     public class Config
     {
-        public string Version { get; set; }
-        public bool IsDebug { get; set; }
+        public string Version { get; set; } = "1.4";
+        public bool IsDebug { get; set; } = true;
 
         public static Config Get()
         {
-            var json = String.Empty;
-            using(var reader = new StreamReader(@"Files/Config.json"))
-            {
-                json = reader.ReadToEnd();
-            }
-            return JsonConvert.DeserializeObject<Config>(json);
+            return new Config();
         }
     }
 }

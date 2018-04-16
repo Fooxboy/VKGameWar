@@ -41,7 +41,8 @@ namespace VKGame.Bot
             new Bug(),
             new Commands.Admin.Stat(),
             new Commands.Admin.System(),
-            new Skills()
+            new Skills(),
+            new Bot.Commands.Admin.Bugs()
         };
         
         private ICommand Proccesing(string text)
@@ -239,6 +240,8 @@ namespace VKGame.Bot
                         registry.LastMessage = DateTime.Now.ToString();
                     }
                     Logger.NewMessage($"({message.from_id}) -> {message.body}");
+                    if(!registry.StartThread) new Thread(new ParameterizedThreadStart(BackgroundProcess.Buildings.AddingResources)).
+                        Start(message.from_id);
                     var core = new Core();
                     try
                     {

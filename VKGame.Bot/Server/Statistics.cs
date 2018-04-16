@@ -13,7 +13,7 @@ namespace VKGame.Bot.Server
 
             try
             {
-                var stat = Bot.Statistics.GetStat();
+                var stat = Bot.Statistics.GetAll;
                 response.Ok = true;
                 response.Data = stat;
             }catch(Exception e)

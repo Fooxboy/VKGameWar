@@ -20,7 +20,11 @@ namespace VKGame.Bot.Api
 
         public string Time => (string) DB.GetFromId(id, "Time");
 
-        public long Status => (long) DB.GetFromId(id, "Status");
+        public long Status
+        {
+            get => (long) DB.GetFromId(id, "Status");
+            set => DB.EditFromId(id, "Status", value);
+        }
 
         public string Text => (string) DB.GetFromId(id, "Text");
 

@@ -55,7 +55,7 @@ namespace VKGame.Bot.Commands
             var user = new Api.User(userId);
             if (user.Access < 4) return "Вам недоступна ента подкоманда.";
 
-            var promoId = SHA256.Create($"{userId}_{price}_{count}{new Random().Next(1, 1000)}_{new Random().Next(5000, 33253)}_promo{DateTime.Now}").Hash.ToString();
+            var promoId = MD5.Create($"{userId}_{price}_{count}{new Random().Next(1, 1000)}_{new Random().Next(5000, 33253)}_promo{DateTime.Now}").Hash.ToString().ToUpper();
 
             Api.Promocodes.Create(promoId, count, price);
            

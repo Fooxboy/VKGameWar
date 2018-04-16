@@ -26,5 +26,6 @@ namespace VKGame.Bot.Api
             get => (long) DB.GetFromId(id, "Fortuna");
             set => DB.EditFromId(id, "Fortuna", value);
         }
+       
     }
 }

@@ -45,6 +45,28 @@ namespace VKGame.Bot.Api
             }
         }
 
+        public List<long> Moders
+        {
+            get
+            {
+                string membersStr = (string)DB.GetFromId(id, "Moders");
+                string[] membersArray = membersStr.Split(',');
+                List<long> members = new List<long>();
+                foreach (var member in membersArray) members.Add(Int64.Parse(member));
+                return members;
+            }
+            set
+            {
+                List<long> members = value;
+                string memberStr = "";
+                foreach (var member in members) memberStr += $"{member},";
+                memberStr = memberStr.Remove(memberStr.Length - 1);
+                DB.EditFromId(id, "Moders", memberStr);
+            }
+        }
+
+        public long Resources => (long)DB.GetFromId(id, "Resources");
+
         public long Creator => (long) DB.GetFromId(id, "Creator");
         
         public static void Delete(long clanId)

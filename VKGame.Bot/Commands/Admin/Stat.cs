@@ -15,7 +15,7 @@ namespace VKGame.Bot.Commands.Admin
 
         public object Execute(Models.Message msg)
         {
-            var stat = Bot.Statistics.GetStat();
+            var stat = Bot.Statistics.GetAll;
             string text = $"📩 Принято сообщений за день: {stat.InMessageDay}" +
                         $"\n📤 Отправлено сообщений за день: {stat.OutMessageDay}" +
                         $"\n✉ Всего сообщений: {stat.AllMessages}" +

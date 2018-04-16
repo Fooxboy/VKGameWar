@@ -165,34 +165,39 @@ namespace VKGame.Bot.Commands
         [Attributes.Trigger("инфо")]
         public static string Info(Models.Message msg)
         {
-            try
-            {
                 var messageArray = msg.body.Split(' ');
                 var user = new Api.User(msg.from_id);
                 if (user.Clan == 0) return "❌ Вы не находитесь в клане!";
                 var clan = new Api.Clans(user.Clan);
                 var members = clan.Members;
-                string MemberString = "";
-
+                var moders = clan.Moders;
+                string MemberString = String.Empty;
+                string modersString = String.Empty;
+                
                 foreach (var member in members)
                 { 
                     var userMember = new Api.User(member);
                     MemberString += $"\n😎 [id{member}|{userMember.Name}]";
                 }
+
+                foreach (var moder in moders)
+                {
+                    var userModer = new Api.User(moder);
+                    modersString += $"\n💣 [id{moder}|{userModer.Name}]";
+                }
+                          
                 var infoClan = $"➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖" +
                              $"\n✅ Название: {clan.Name}" +
                              $"\n😀 Создатель: *id{clan.Creator}" +
+                             $"\n" +
+                             $"\n❗ Модераторы:" +
+                             $"\n {modersString}" +
                              $"\n" +
                              $"\n🖐 Участники: " +
                              $"{MemberString}" +
                              $"\n➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖";
                 return infoClan;
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine($"{e.Message}\n {e.StackTrace}");
-                return "Ты пидорас";
-            }
+            
         }
 
         [Attributes.Trigger("распустить")]

@@ -48,6 +48,7 @@ namespace VKGame.Bot.BackgroundProcess
 
             while (count > 0)
             {
+
                 try
                 {
                     if (turn.All(u => u.Id != userId))
@@ -58,14 +59,12 @@ namespace VKGame.Bot.BackgroundProcess
                     int time = 20000;
 
                     if (boost) time = time / 2;
-                    
-                    Thread.Sleep(time);
-                    var soldiery = resources.Soldiery;
-                    soldiery++;
-                    resources.Soldiery = soldiery;
-                    if (resources.Soldiery > Commands.Buildings.Api.MaxSoldiery(builds.Apartments)) resources.Soldiery = Commands.Buildings.Api.MaxSoldiery(builds.Apartments);
+                    TimerCallback tm = new TimerCallback(CreateSoilderyHelper);
+                    // создаем таймер
+                    Timer timer = new Timer(tm, new ParamsArmy() { Resources = resources, Builds = builds, Count = count }, time, Timeout.Infinite);
                     --count;
-                }catch(Exception e)
+                }
+                catch(Exception e)
                 {
                     Logger.WriteError(e);
                     Bot.Statistics.NewError();
@@ -75,6 +74,32 @@ namespace VKGame.Bot.BackgroundProcess
             var user = turn.Find(u => u.Id == userId);
             turn.Remove(user);
             Api.Message.Send($"✅ Солдаты были обучены. Вы можете идти в бой! ", userId);
+        }
+
+        public class ParamsArmy
+        {
+
+            public Api.Resources Resources { get; set; }
+            public Api.Builds Builds { get; set; }
+            public int Count { get; set; }
+        }
+
+        public static void CreateSoilderyHelper(object data)
+        {
+            var param = (ParamsArmy)data;
+            var soldiery = param.Resources.Soldiery;
+            soldiery++;
+            param.Resources.Soldiery = soldiery;
+            if (param.Resources.Soldiery > Commands.Buildings.Api.MaxSoldiery(param.Builds.Apartments)) param.Resources.Soldiery = Commands.Buildings.Api.MaxSoldiery(param.Builds.Apartments);
+        }
+
+        public static void CreateTanksHelper(object data)
+        {
+            var param = (ParamsArmy)data;
+            var tanks = param.Resources.Tanks;
+            tanks++;
+            param.Resources.Tanks = tanks;
+            if (param.Resources.Tanks > Commands.Buildings.Api.MaxTanks(param.Builds.Hangars)) param.Resources.Tanks = Commands.Buildings.Api.MaxTanks(param.Builds.Hangars);
         }
 
 
@@ -125,11 +150,10 @@ namespace VKGame.Bot.BackgroundProcess
                     if (count < 0) break;
                     var time = 60000;
                     if(boost) time = time / 2;
-                    Thread.Sleep(60000);
-                    var tanks = resources.Tanks;
-                    tanks++;
-                    resources.Tanks = tanks;
-                    if (resources.Tanks > Commands.Buildings.Api.MaxTanks(builds.Hangars)) resources.Tanks = Commands.Buildings.Api.MaxTanks(builds.Hangars);
+
+                    TimerCallback tm = new TimerCallback(CreateTanksHelper);
+                    // создаем таймер
+                    Timer timer = new Timer(tm, new ParamsArmy() { Resources= resources, Builds = builds, Count= count}, time, Timeout.Infinite);
                     --count;
                 }
                 catch (Exception e)

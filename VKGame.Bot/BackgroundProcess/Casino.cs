@@ -16,48 +16,47 @@ namespace VKGame.Bot.BackgroundProcess
         public static void TimerTriggerEndGame(object ticketObject)
         {
            
-            Thread.Sleep(300000);
             try
             {
-                Models.Tickets.Ticket ticket = (Models.Tickets.Ticket)ticketObject;
-                long[] price = { 5, 8, 1, 10, 20, 30, 40, 50, 55, 70, 80, 100, 150, 200, 300 };
-                var r = new Random();
-                var resources = new Api.Resources(ticket.User);
-                var moneyUser = resources.MoneyCard;
-                var priceInt = r.Next(0, price.Length - 1);
-                moneyUser += price[priceInt];
-                resources.MoneyCard = moneyUser;
-                Bot.Statistics.WinCasino(price[priceInt]);
-                Api.Message.Send($"✨ Денежный перевод! На Ваш банковский счёт было зачислено {price[priceInt]} 💳 от КАЗИНО \"ИСПЫТАЙ УДАЧУ\". ", ticket.User);
-
-            }catch(Exception e)
+                TimerCallback tm = new TimerCallback(TriggerEndGameHelper);
+                // создаем таймер
+                Timer timer = new Timer(tm, ticketObject, 300000, Timeout.Infinite);
+            }
+            catch(Exception e)
             {
                 Logger.WriteError(e);
                 Bot.Statistics.NewError();
             }
+        }
 
+        public static void TriggerEndGameHelper(object ticketObject)
+        {
+            Models.Tickets.Ticket ticket = (Models.Tickets.Ticket)ticketObject;
+            long[] price = { 5, 8, 1, 10, 20, 30, 40, 50, 55, 70, 80, 100, 150, 200, 300 };
+            var r = new Random();
+            var resources = new Api.Resources(ticket.User);
+            var moneyUser = resources.MoneyCard;
+            var priceInt = r.Next(0, price.Length - 1);
+            moneyUser += price[priceInt];
+            resources.MoneyCard = moneyUser;
+            Bot.Statistics.WinCasino(price[priceInt]);
+            Api.Message.Send($"✨ Денежный перевод! На Ваш банковский счёт было зачислено {price[priceInt]} 💳 от КАЗИНО \"ИСПЫТАЙ УДАЧУ\". ", ticket.User);
 
         }
 
-        /// <summary>
-        /// КРутит рулетку и выдаёт выигрыш!
-        /// </summary>
-        public static void TimerTriggerRoulette()
-        {
-            var registry = new RegistryBot();
-            Thread.Sleep(120000);
-            try
-            {
-                var roulette = Bot.Common.Roulette;
 
-                Dictionary<string, string> smiles = new Dictionary<string, string>();
-                smiles.Add("❤", "сердце");
-                smiles.Add("💥", "взрыв");
-                smiles.Add("🍕", "пицца");
-                smiles.Add("🌸", "цветок");
-                smiles.Add("😀", "лицо");
-                string[] smilesList =
-                {
+        public static void RouletteHelper(object lol)
+        {
+            var roulette = Bot.Common.Roulette;
+
+            Dictionary<string, string> smiles = new Dictionary<string, string>();
+            smiles.Add("❤", "сердце");
+            smiles.Add("💥", "взрыв");
+            smiles.Add("🍕", "пицца");
+            smiles.Add("🌸", "цветок");
+            smiles.Add("😀", "лицо");
+            string[] smilesList =
+            {
                 "❤",
                 "💥",
                 "🍕",
@@ -65,63 +64,76 @@ namespace VKGame.Bot.BackgroundProcess
                 "😀"
                 };
 
-               
-                var r = new Random();
-                var i = r.Next(0, smiles.Count - 1);
-                var winSmile = smiles[smilesList[i]];
-                int countWinners = 0;
-                var winersTxt = "\n Победителей нет 😪";
+            var registry = new RegistryBot();
 
-                foreach (var winner in roulette.Prices)
+            var r = new Random();
+            var i = r.Next(0, smiles.Count - 1);
+            var winSmile = smiles[smilesList[i]];
+            int countWinners = 0;
+            var winersTxt = "\n Победителей нет 😪";
+
+            foreach (var winner in roulette.Prices)
+            {
+                if (winner.Smile == winSmile) ++countWinners;
+            }
+
+            long priceWinner = 0;
+            if (countWinners == 0) priceWinner = 0;
+            else
+                priceWinner = roulette.Fund / countWinners;
+
+
+            foreach (var price in roulette.Prices)
+            {
+                if (price.Smile == winSmile)
                 {
-                    if (winner.Smile == winSmile) ++countWinners;
+                    Notifications.EnterPaymentCard(Convert.ToInt32(priceWinner), price.User, "победа в рулетке");
+
+                    var userWin = new Api.User(price.User);
+                    winersTxt = "";
+                    winersTxt += $"\n😀 {userWin.Name} взял {priceWinner}";
                 }
+            }
 
-                long priceWinner = 0;
-                if (countWinners == 0) priceWinner = 0;
-                else
-                    priceWinner = roulette.Fund / countWinners;
+            string winText = $"🎉 Результаты рулетки!🎉" +
+                               $"\n" +
+                               $"\n➡➡➡➡ ⬇ ⬅⬅⬅⬅" +
+                               $"\n{smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]} {smilesList[i]} {smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]}" +
+                               $"\n➡➡➡➡ ⬆ ⬅⬅⬅⬅\n" +
+                               $"\n💳 Выигрыш: {priceWinner}" +
+                               $"\nСписок победителей: {winersTxt}";
+            foreach (var price in roulette.Prices)
+            {
+                var user = new Api.User(price.User);
 
-
-                foreach (var price in roulette.Prices)
+                if (price.Smile == winSmile)
                 {
-                    if (price.Smile == winSmile)
-                    {
-                        Notifications.EnterPaymentCard(Convert.ToInt32(priceWinner), price.User, "победа в рулетке");
-
-                        var userWin = new Api.User(price.User);
-                        winersTxt = "";
-                        winersTxt += $"\n😀 {userWin.Name} взял {priceWinner}";
-                    }
+                    Api.Message.Send(winText, price.User);
                 }
-               
-                string winText = $"🎉 Результаты рулетки!🎉" +
-                                   $"\n" +
-                                   $"\n➡➡➡➡ ⬇ ⬅⬅⬅⬅" +
-                                   $"\n{smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]} {smilesList[i]} {smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]}{smilesList[r.Next(0, smiles.Count)]}" +
-                                   $"\n➡➡➡➡ ⬆ ⬅⬅⬅⬅\n" +
-                                   $"\n💳 Выигрыш: {priceWinner}" +
-                                   $"\nСписок победителей: {winersTxt}";
-                foreach (var price in roulette.Prices)
-                {
-                    var user = new Api.User(price.User);
+            }
+            Bot.Statistics.WinCasino(priceWinner);
+            registry.PlayInRulette = false;
+            roulette.Fund = 0;
+            roulette.Prices = new List<Models.RoulettePrices>();
+            Bot.Common.Roulette = roulette;
+        }
 
-                    if (price.Smile == winSmile)
-                    {
-                        Api.Message.Send(winText, price.User);
-                    }
-                }
-                Bot.Statistics.WinCasino(priceWinner);
-                registry.PlayInRulette = false;
-                roulette.Fund = 0;
-                roulette.Prices = new List<Models.RoulettePrices>();
-                Bot.Common.Roulette = roulette;
-            }catch(Exception e)
+        /// <summary>
+        /// КРутит рулетку и выдаёт выигрыш!
+        /// </summary>
+        public static void TimerTriggerRoulette()
+        {
+            try
+            {
+                TimerCallback tm = new TimerCallback(RouletteHelper);
+                // создаем таймер
+                Timer timer = new Timer(tm, null, 120000, Timeout.Infinite);
+            }
+            catch(Exception e)
             {
                 Logger.WriteError(e);
                 Bot.Statistics.NewError();
             }
-
         }
     }
 }

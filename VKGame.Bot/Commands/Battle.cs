@@ -2,494 +2,586 @@ using System;
 using Newtonsoft.Json;
 using System.IO;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using VKGame.Bot.Api;
 
 namespace VKGame.Bot.Commands
 {
-    public class Battle : ICommand 
+    public class Battle : ICommand
     {
         public string Name => "Бой";
         public string Arguments => "(), (вариант_выбора)";
         public string Caption => "Раздел предназначен для проведения боёв.";
         public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string>() { "бот", "атака", "вступить", "покинуть", "мой", "создать", "список" };
+
+        public List<string> Commands =>
+            new List<string>() {"бот", "атака", "вступить", "покинуть", "мой", "создать", "список"};
+
         public Access Access => Access.User;
 
 
-        public object Execute(Models.Message msg) 
+        public object Execute(Models.Message msg)
         {
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
-                return GetBattleText(msg);
-            else
+                return GetBattleText();
+            var result = Helpers.Command.CheckMethods(typeof(Battle), messageArray[1], msg);
+            if (result != null) return result;
+            var word = Common.SimilarWord(messageArray[1], Commands);
+            return $"❌ Неизвестная подкоманда." +
+                   $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
+        }
+
+        public static class API
+        {
+
+            public static long HpUser(long userId)
             {
-                var type = typeof(Battle);
-                object obj = Activator.CreateInstance(type);
-                var methods = type.GetMethods();
-                foreach (var method in methods)
+                var builds = new Api.Builds(userId);
+                var levels = new Api.Levels(userId);
+                var user = new Api.User(userId);
+                var hp = (builds.Apartments * 10) + (builds.Eatery * 10) +
+                         (builds.Hangars * 30) + (builds.PowerGenerators * 30) +
+                         (builds.WarehouseEat * 30) + (builds.WarehouseEnergy * 30) +
+                         (builds.WaterPressureStation * 30) + (user.Level * 100) +
+                         (levels.Apartments * 10) + (levels.Eatery * 10) +
+                         (levels.Hangars * 10) + (levels.PowerGenerators * 10) +
+                         (levels.Soldiery * 100) + (levels.Tanks * 100) +
+                         (levels.WarehouseEat * 10) + (levels.WarehouseEnergy * 100) +
+                         (levels.WarehouseWater * 10) + (levels.WaterPressureStation * 10);
+                return hp;
+            }
+
+            public static void JoinToBattle(long userId, long idBattle)
+            {
+                Statistics.JoinBattle();
+                var battle = new Api.Battles(idBattle);
+                var user = new Api.User(userId);
+                var registry = new Api.Registry(userId);
+                user.BattleId = idBattle;
+                registry.CountBattles += 1;
+                battle.AddMember(userId, API.HpUser(userId));
+                battle.Found *= 2;
+                battle.IsStart = true;
+            }
+
+            public static long SoldieryHp = 10;
+            
+            public static long TanksHp = 10;
+
+            public static long OneLvlSoldiery = 50;
+
+            public static long OneLevlTanks = 50;
+
+            public static long ResourceSoldiery = 5;
+
+            public static long ResourceTanks = 5;
+
+            public static void EndBattle(long battleId, long winner)
+            {
+                var battle = new Api.Battles(battleId);
+                foreach (var member in battle.Members)
                 {
-                    var attributesCustom = Attribute.GetCustomAttributes(method);
-                    foreach (var attribute in attributesCustom)
+                    var user = new Api.User(member.Key);
+                    user.BattleId = 0;
+                    if (member.Key == winner)
                     {
-                        if (attribute.GetType() == typeof(Attributes.Trigger))
+                        user.Experience += 10;
+                        var registry = new Api.Registry(member.Key);
+                        registry.CountWinBattles += 1;
+                    }
+                }
+                battle.IsActive = false;
+
+                new Task(() =>
+                    Api.Message.Send($"💣 ПОБЕДА! Вы победили в этом бою! Вы получаете фонд битвы: {battle.Found} 💳", winner)).Start();
+                Notifications.EnterPaymentCard(Convert.ToInt32(battle.Found), winner, "победа в битве");
+            }
+            
+            public static long Create(long userId, string nameBattle, long price)
+            {
+                var user = new Api.User(userId);
+                var registry = new Api.Registry(userId);
+                registry.CountBattles += 1;
+                registry.CountCreateBattles += 1;
+                var id = Api.Battles.Create(nameBattle, userId, price, API.HpUser(userId));
+                user.BattleId = id;
+                return id;
+            }
+
+            public static long ChoiseUser(long user1, long user2)
+            {
+                var skills1 = new Api.Skills(user1);
+                var skills2 = new Api.Skills(user2);
+                var r = new Random();
+
+                if (skills1.Fortuna == skills2.Fortuna)
+                {
+                    int choise = r.Next(1, 2);
+                    if (choise == 1) return user1;
+                    else if (choise == 2) return user2;
+                }
+                
+                if (skills1.Fortuna > skills2.Fortuna)
+                {
+                    var choise = r.Next(1, 3);
+                    if (choise == 2) return user2;
+                    else return user1;
+                }
+                else
+                {
+                    var choise = r.Next(1, 3);
+                    if (choise == 2) return user1;
+                    else return user2;
+                }
+            } 
+        }
+
+        
+        [Attributes.Trigger("атака")]
+        public static string AttackToBattle(Models.Message msg)
+        {
+            var messageArray = msg.body.Split(' ');
+            var typeArmy = String.Empty;
+            long count = 0;
+            try
+            {
+                count = Int64.Parse(messageArray[2]);
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return "❌ Вы не указали количество армии. Пример: атака <количество> <тип армии> ";
+            }
+            catch (FormatException)
+            {
+                return "❌ Количество армии должно быть числовым значением.";
+            }
+
+            try
+            {
+                typeArmy = messageArray[3];
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return "❌ Вы не указали тип армии. Доступные типы: Танков, Солдат";
+            }
+            
+            var user = new Api.User(msg.from_id);
+
+            if (user.BattleId == 0) return "❌ Вы не учавствуете ни в какой битве.";
+            
+            var battle = new Api.Battles(user.BattleId);
+            var skills = new Api.Skills(user.Id);
+            var resources = new Api.Resources(msg.from_id);
+            long countHpArmy = 0;
+            long countResoures = 0;
+            string typeResourses = String.Empty;
+            var levels = new Api.Levels(msg.from_id);
+            
+            if (typeArmy.ToLower() == "солдат")
+            {
+                if (resources.Soldiery < count) return "❌ У Вас нет необходимого количества солдат.";
+                countHpArmy += count * API.SoldieryHp;
+                countHpArmy += count * API.OneLvlSoldiery;
+                countResoures += count * API.ResourceSoldiery;
+                typeResourses = "🍕";
+                if (resources.Food < countResoures)
+                    return
+                        "❌ У Вас нехватает еды, чтобы прокормить армию. Купите еды или подождите пока она сама пополниться";
+                resources.Food -= countResoures;
+
+            }else if (typeArmy.ToLower() == "танков")
+            {
+                if (resources.Tanks < count) return "❌ У Вас нет необходимого количества танков.";
+                countHpArmy += count * API.TanksHp;
+                countHpArmy += count * API.OneLevlTanks;
+                countResoures += count * API.ResourceTanks;
+                typeResourses = "💧";
+                if (resources.Water < countResoures)
+                    return
+                        "❌ У Вас нехватает воды, чтобы завести танки. Купите воду в магазие или подождите пока она сама пополниться";
+                resources.Water -= countResoures;
+            }
+            else return "❌ Вы ввели неизвестный тип армии. Доступные: Солдат, танков";
+
+            var members = battle.Members;
+
+            if (battle.UserAttack != msg.from_id)
+                return "❌ Сейчас очередь атаки Вашего врага. Подождите его хода.";
+
+            if (!battle.IsStart)
+                return "❌ Игра ещё не началась. Вы не можете атаковать, пока игра не начнётся.";
+
+            long vrag = 0;
+
+            foreach (var member in members)
+            {
+                if (member.Key != msg.from_id) vrag = member.Key;
+            }
+            
+            var userVrag = new Api.User(vrag);
+            var skillsVrag = new Api.Skills(vrag);
+
+            var resourcesStr = $"❗ На атаку вы потратили: {countResoures} {typeResourses}";
+            var myHp = $"❤ Ваше здоровье: [{members[msg.from_id]}/{API.HpUser(msg.from_id)}]";
+            
+            
+            var r = new Random();
+            int chaise = r.Next(1, 3);
+            
+            if (skills.Fortuna > skillsVrag.Fortuna)
+            {
+                if (chaise == 2)
+                {
+                    chaise = r.Next(1, 3);
+                    if (chaise == 2)
+                    {
+                        if (user.Level < userVrag.Level)
                         {
-                            var myAtr = ((Attributes.Trigger)attribute);
-                            if (myAtr.Name.ToLower() == messageArray[1].ToLower())
-                            {
-                                object result = method.Invoke(obj, new object[] { msg });
-                                return (string)result;
-                            }
+                            chaise = r.Next(1, 3);
+                        }
+                    }else if (chaise == 1)
+                    {
+                        if (user.Level < userVrag.Level)
+                        {
+                            var lol = r.Next(1, 5);
+                            if (lol == 4) chaise = 3;
+                        }
+                    }
+                }else if (chaise == 1)
+                {
+                    var lol = r.Next(1, 5);
+                    if (lol == 3) chaise = 3;
+                    else
+                    {
+                        if (user.Level < userVrag.Level)
+                        {
+                            var kek = r.Next(1, 5);
+                            if (kek == 4) chaise = 3;
                         }
                     }
                 }
+            }else if (skills.Fortuna == skillsVrag.Fortuna)
+            {
+                chaise = r.Next(1, 3);
+            }else if (skills.Fortuna < skillsVrag.Fortuna)
+            {
+                var loh = r.Next(1, 4);
+                if (loh == 1) chaise = 1;
+                if (loh == 2) chaise = 2;
+                if (loh == 3) chaise = 2;
+                if (loh == 4) chaise = 3;
             }
-            var word = Common.SimilarWord(messageArray[1], Commands);
-            return $"❌ Неизвестная подкоманда." +
-                    $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
-        }
-
-        public static class Api
-        {
-            public static long HpUser(long userId, Models.User user = null, Bot.Api.Builds builds = null )
-            {
-                if (builds == null) builds = new Bot.Api.Builds(userId);
-                if (user == null) user = VKGame.Bot.Api.User.GetUser(userId);
-                return (builds.Apartments * 10) + (builds.Eatery * 10) + (builds.Hangars * 50) +
-                (builds.Mine * 10) + (builds.PowerGenerators * 50) + (builds.WarehouseEat * 30) +
-                (builds.WarehouseEnergy * 20) + (builds.WarehouseWater * 10) +
-                (builds.WaterPressureStation * 50) + (user.Level * 100);
-            }
-
-            public static bool JoinBattle(long battleId, long userId, Models.User user = null, Bot.Api.Battles battle = null)
-            {
-                if (user == null) user = Bot.Api.User.GetUser(userId);
-
-                var userHp = Api.HpUser(userId, user);
-                if (battle == null) battle = new Bot.Api.Battles(battleId);
-                battle.UserTwo = userId;
-                battle.HpTwo = userHp;
-                battle.IsStart = true;
-               
-                Statistics.JoinBattle();
-
-                return true;
-            }
-
-            public static bool RemoveListBattle(long battleId)
-            {
-                var listBattle = Bot.Api.Battles.GetListBattles();
-                listBattle.Battles.Remove(battleId);
-                Bot.Api.Battles.SetListBattles(listBattle);
-                return true;
-            }
-
-            public static bool AddToListBattles(long battleId)
-            {
-                var ListBattles = VKGame.Bot.Api.Battles.GetListBattles();
-                if (ListBattles.Battles == null) ListBattles.Battles = new System.Collections.Generic.List<long>();
-                ListBattles.Battles.Add(battleId);
-                VKGame.Bot.Api.Battles.SetListBattles(ListBattles);
-                return true;
-            }
-
-            public static long CreateBattle(long userCreate, string body, int price, Models.User user= null)
-            {
-                if (user == null) user = VKGame.Bot.Api.User.GetUser(userCreate);
-                long userHp = Api.HpUser(userCreate,user);
-                var builds = new Bot.Api.Builds(userCreate);
-                var battleId = VKGame.Bot.Api.Battles.NewBattle(userCreate, body, userHp, price);
-               
-                Notifications.RemovePaymentCard(price, userCreate, "Создание битвы");
-                return battleId;
-            }
-        }  
-
-        [Attributes.Trigger("бот")]
-        public static string BotPlay(Models.Message msg)
-        {
-            //создание битвы
-            var messageArray = msg.body.Split(' ');
-            int price = 0;
-            try
-            {
-                price = Convert.ToInt32(messageArray[2]);
-            }catch(IndexOutOfRangeException)
-            {
-                return "❌ Вы не уазали сумму!";
-            }catch(FormatException)
-            {
-                return "❌ Вы указали неверную сумму";
-            }
-            var user = Bot.Api.User.GetUser(msg.from_id);
-            var registry = Bot.Api.Registry.GetRegistry(user.Id);
-            var resources = new Bot.Api.Resources(user.Id);
-            if (resources.MoneyCard < price) return $"❌ Вы указали сумму больше, чем у вас есть! Ваш баланс: {resources.MoneyCard}";
-            ++registry.CountCreateBattles;
-            if(resources.MoneyCard < price)
-            if (user.IdBattle != 0) return $"❌ Вы уже находитесь в другой битве. Id битвы, в которой Вы находитесь: {user.IdBattle}. Чтобы покинуть ту битву, напишите: бой покинуть";
-            var idBattle = Api.CreateBattle(user.Id, "Бой с ботом", price, user);
-            user.IdBattle = idBattle;
-            Bot.Api.User.SetUser(user);
-            Bot.Api.Registry.SetRegistry(registry);
-
-            //Бот присоединяется к битве
-            var battle = new Bot.Api.Battles(idBattle);
-            battle.UserTwo = 16101;
-            battle.HpTwo = Api.HpUser(user.Id, user);
-            battle.IsStart = true;
-            return "✅ Вы успешно создали новую битву! Вы атакуете первый! " +
-                "\n❓ Как атаковать: бой атака кол-во тип_войска" +
-                "\n❗ Пример: бой атака 10 солдат" +
-                "\n❗ Доступные типы войск: солдат и танков";
-        }
-
-        private static void BotAttack(long BattleId)
-        {
-            var battle = new Bot.Api.Battles(BattleId);
-            long[] HpArray =
-            {
-               10, 40, 50,60, 80, 90, 100,140, 160, 200,210
-            };
-            var r = new Random();
-            long Hp = HpArray[r.Next(0, HpArray.Length - 1)];
-
-            var userHp = battle.HpOne;
-
-            userHp = userHp - Hp;
-            battle.HpOne = userHp;
-            battle.UserCourse = battle.UserOne;
-            Bot.Api.MessageSend($"🤔 Вам нанесли {Hp} урона! У Вас осталось хп: {battle.HpOne} Срочно отвечайте!" +
-                $"\n❓ Как атаковать: бой атака кол-во тип_войска" +
-                $"\n❗ Пример: бой атака 10 солдат" +
-                $"\n❗ Доступные типы войск: солдат и танков", battle.UserOne);
-            if(userHp < 0 || userHp == 0)
-            {
-                var user = Bot.Api.User.GetUser(battle.UserOne);
-                user.IdBattle = 0;
-                Bot.Api.User.SetUser(user);
-                Bot.Api.MessageSend("😥 :( Вы проиграли! Попробуйте ещё раз!", battle.UserOne);
-            }
-        } 
-        
-
-        [Attributes.Trigger("атака")]
-        public static string Attack(Models.Message msg) 
-        {
-            var messageArray = msg.body.Split(' ');
-            var user = Bot.Api.User.GetUser(msg.from_id);
-            var resources = new Bot.Api.Resources(user.Id);
             
-            if(user.IdBattle == 0 ) return "❌ Вы не участвуете ни в какой битве. Вы можете присоединиться к уже существующей: бой список  или вы можете создать свою: бой создать название цена";
-            var battle = new Bot.Api.Battles(user.IdBattle);
-            if(battle.UserCourse != user.Id) return "❌ Сейчас ход Вашего противника.";
-            int countArmy = 0;
-            try 
+            if (chaise == 1)
             {
-                countArmy = Int32.Parse(messageArray[2]);
-            }catch (FormatException) 
-            {
-                return "❌ Вы указали неверное число.";
-            }catch(IndexOutOfRangeException) 
-            {
-                return "❌ Вы не указали число!";
-            }
+                string typeBuilds = String.Empty;
+                
+                var kek = r.Next(1, 3);
+                if (kek == 2)
+                {
+                    var buildsVrag = new Builds(vrag);
+                    var lol = r.Next(1, 8);
+                    if (lol == 1)
+                    {
+                        buildsVrag.Apartments -= 1;
+                        typeBuilds = "Жилой дом";
+                    }else if (lol == 2)
+                    {
+                        buildsVrag.Eatery -= 1;
+                        typeBuilds = "Столовую";
+                    }else if (lol == 3)
+                    {
+                        buildsVrag.Hangars -= 1;
+                        typeBuilds = "Ангар";
+                    }else if (lol == 4)
+                    {
+                        buildsVrag.PowerGenerators -= 1;
+                        typeBuilds = "Энергостаницию";
+                    }else if (lol == 5)
+                    {
+                        buildsVrag.WarehouseEat -= 1;
+                        typeBuilds = "Холодильник";
+                    }else if (lol == 6)
+                    {
+                        buildsVrag.WarehouseEnergy -= 1;
+                        typeBuilds = "Батарею";
+                    }else if (lol == 7)
+                    {
+                        buildsVrag.WarehouseWater -= 1;
+                        typeBuilds = "Бочку с водой";
+                    }else if (lol == 8)
+                    {
+                        buildsVrag.WaterPressureStation -= 1;
+                        typeBuilds = "Водонапорную башню";
+                    }
 
-            string type = "";
-            try {
-                type = messageArray[3].ToLower();
-            }catch(IndexOutOfRangeException) 
-            {
-                return "❌ Вы не указали тип войска. Доступные типы войск: содалдат и  танков";
-            }
-            var r = new Random();
-             
-            int countHP = 0;
-            if(type == "солдат") 
-            {
-                if(countArmy > resources.Soldiery) return $"❌ У Вас недостаточно солдат. У Вас осталось солдат: {resources.Soldiery}. Вы можете прямо сейчас обучить новых!";
-
-                countHP = countArmy * 15;
-                if (countHP > 300) return "Вы не можете наносить больше 300 урона за раз!";
-                var food = resources.Food;
-                var soldiery = resources.Soldiery;
-                var countFoodForSoldiery = countArmy * 2;
-                if (countFoodForSoldiery > food) return $"❌ У Вас недостаточно еды, чтобы прокормить армию! Ваши запасы: {food}. Необходимо еды: {countFoodForSoldiery}. Вы можете купить еды в магазине или подождать пока она появится сама.";
-                resources.Soldiery = soldiery - countArmy;
-                food -= countFoodForSoldiery;
-                resources.Food = food;
-            }else if( type == "танков") 
-            {
-                if(countArmy > resources.Tanks) return $"❌ У Вас недостаточно танков. У Вас осталось танков: {resources.Tanks}. Вы можете прямо сейчас создать новых!";
-                countHP = countArmy * 100;
-                if (countHP > 500) return "Вы не можете наносить больше 500 урона за раз!";
-                var tanks = resources.Tanks;
-                var water = resources.Water;
-                var countWaterForTanks = countArmy * 5;
-                if (countWaterForTanks > resources.Water) return $"❌ ОГО! У Вас кончилась вода! Осталось: {resources.Water}. Необходимо: {countWaterForTanks} А как танки будут ездить без топлива-то??? Вы можете купить воды в магазине или подождать пока она появится сама.";
-                resources.Tanks = tanks - countArmy;
-                water = water - countWaterForTanks;
-                resources.Water = water;
-
-            }
-            else return "❌ Вы ввели неизвестный тип армии. Доступные типы армии: танков и солдат";
-
-            long enemy = 0;
-            long hpEnemy = 0;
-            long hpMy = 0;
-            long enemyNumber = 0;
-            if (user.Id == battle.UserOne)
-            {
-                enemy = battle.UserTwo;
-                hpEnemy = battle.HpTwo;
-                hpMy = battle.HpOne;
-                enemyNumber = 2;
-            }
-            else if (user.Id == battle.HpTwo)
-            {
-                enemy = battle.UserOne;
-                hpEnemy = battle.HpOne;
-                hpMy = battle.HpTwo;
-                enemyNumber = 1;
-            }
-                hpEnemy -= countHP;
-                if (hpEnemy < 0 || hpEnemy == 0)
+                    new Task(() => Api.Message.Send($"💣 Упс! Вам противник нанёс урон по заданию! И Вы потеряли {typeBuilds}." +
+                                                    "\n❓ Если у Вас количество зданий - 0 или меньше, то скорее купите новые!" +
+                                                    "\n❗ Скорее отвечайте: бой атака <количество> <тип войска>", vrag)).Start();
+                    battle.UserAttack = vrag;
+                    return $"👍 Отличный удар! Вы нанесли критический урон и забрали у врага {typeBuilds}! Кажется, кому-то скоро нужно покупать новое здание:)" +
+                           $"\n {resourcesStr}" +
+                           $"\n {myHp}";
+                }
+                
+                if(kek == 1)
                 {
                     
-                    if (user.Competition == 0)
-                        Notifications.EnterPaymentCard(Convert.ToInt32(battle.Price * 2), user.Id, "победа в битве");
-                    user.IdBattle = 0;
-                    var registry = Bot.Api.Registry.GetRegistry(user.Id);
-                    ++registry.CountWinBattles;
-                    ++registry.CountBattles;
-                    user.Experience = user.Experience + 10;
-                    Bot.Api.Registry.SetRegistry(registry);
-                    Bot.Api.User.SetUser(user);
-                    if (enemy != 16101)
-                    {
-                    var refistryTwo = Bot.Api.Registry.GetRegistry(enemy);
-                        var userTwo = Bot.Api.User.GetUser(enemy);
-                        userTwo.IdBattle = 0;
-                        ++refistryTwo.CountBattles;
-                        Bot.Api.User.SetUser(userTwo);
-                        Bot.Api.Registry.SetRegistry(refistryTwo);
-                    }
-                    int shance = r.Next(1, 4);
-                    Quests.WinBattle(user.Id);
-                    string WinText = "✨🎉 Поздравляю! Вы победили! Вы уничтожили противника! За это вы получаете фонд битвы!";
-                    if (shance == 4)
-                    {
-                        Statistics.WinBox();
-                        WinText += "\n 🎈 Вам выпал битвенный кейс!";
-                        var boxes = new Bot.Api.Boxes(user.Id);
-                        var battleList = boxes.BattleBox;
-                        battleList.Add(new Models.BattleBox());
-                        boxes.BattleBox = battleList;
-                    }
-                    Statistics.WinBattle();
-                    if (battle.UserTwo != 16101) Bot.Api.MessageSend("❌ПОРАЖЕНИЕ! ВАС УНИЧТОЖИЛИ! В следующем бою Вам повезёт больше!", enemy);
-                    if (user.Competition != 0)
-                    {
-                        Competitions.EndBattle(user.Id, enemy, user.Competition, battle.Id);
-                    }
-                    return WinText;
+                    new Task(()=>
+                        Api.Message.Send($"💣 Воу-Воу! Противник Вам нанёс урон по зданию! Здоровье зданий уменьшелось!" +
+                                         $"\n❗ Скорее отвечайте: бой атака <количество> <тип войска>", vrag)).Start();
+                    battle.UserAttack = vrag;
+                    return $"⚔ Ну почти.. Ты попал противнику в здание и нанёс по нем урон!" +
+                           $"\n{resourcesStr}" +
+                           $"\n {myHp}";
                 }
-                else 
+                
+                if (kek == 3)
                 {
-                    if(enemyNumber ==1)
-                {
-                    battle.HpOne = hpEnemy;
-                }else if(enemyNumber == 2)
-                {
-                    battle.HpTwo = hpEnemy;
+                    new Task(()=>
+                        Api.Message.Send($"💣 Воу-Воу! Противник Вам нанёс урон по зданию! Здоровье зданий уменьшелось!" +
+                                         $"\n❗ Скорее отвечайте: бой атака <количество> <тип войска>", vrag)).Start();
+                    battle.UserAttack = vrag;
+
+                    return $"⚔ Ну почти.. Ты попал противнику в здание и нанёс по нем урон!" +
+                           $"\n{resourcesStr}" +
+                           $"\n {myHp}";
                 }
-                   
-                    battle.UserCourse = enemy;
-                    if (battle.UserTwo == 16101)
-                    {
-                        BotAttack(battle.Id);
-                    }else
-                    {
-                        Bot.Api.MessageSend($"❌ Вам нанесли {countHP} урона! Осталось хп: {hpMy}. Теперь Ваша очередь атаковать!" +
-                            $"\n❓ Как атаковать: бой атака кол-во тип_войска" +
-                            $"\n❗ Пример: бой атака 10 солдат" +
-                            $"\n❗ Доступные типы войск: солдат и танков", enemy);
-                    }
-                    return $"✅ Вы нанесли {countHP} урона противнику! Остаток хп противника: {battle.HpTwo}.";
-                } 
-        }
-        private string GetBattleText(Models.Message msg) 
-        {
-            var user = Bot.Api.User.GetUser(msg.from_id);
-            return $"➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖"+
-                   $"\n✋ Привет, {user.Name}!"+
-                   $"\n" +
-                   $"\n⚔ Чтобы начать бой - посмотри список боёв! Напиши: бой список" +
-                   $"\n🛡 Не хочешь вступать в бой? Создай свой! Напиши: бой создать сумма название" +
-                   $"\n😎 Нет подходящей битвы? Поиграй с ботом! Напиши: бой бот сумма"+
-                   $"\n➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖";
 
-        }
-
-        [Attributes.Trigger("вступить")]
-        public static string JoinToBattle(Models.Message msg) 
-        {
-            var messageArray = msg.body.Split(' ');
-            var idBattle = 0;
-            try {
-                 idBattle = Convert.ToInt32(messageArray[2]);
-            }catch(FormatException) {
-                return "❌ Вы указали неверный ID";
-            }catch(IndexOutOfRangeException) 
-            {
-                return "❌ Вы не указали ID";
             }
-            if(!Bot.Api.Battles.Check(idBattle)) return "❌ Такой битвы не существует";
-            var battle = new Bot.Api.Battles(idBattle);
-            var user = Bot.Api.User.GetUser(msg.from_id);
-            var resources = new Bot.Api.Resources(user.Id);
-            var builds = new Bot.Api.Builds(user.Id);
-            if(battle.Creator == user.Id) return "❌ Вы не можете вступить в свою же битву.";
-            if(user.IdBattle != 0) return $"❌ Вы уже находитесь в другой битве c ID - {user.IdBattle}";
-            
-                if(battle.IsStart) return "❌ Эта битва уже началась. Вы не можете в неё вступить.";
-                if(battle.Id == Convert.ToInt64(idBattle)) 
-                {
-                    if(resources.MoneyCard < battle.Price) return $"❌ На Вашем банковском счету недостаточно монет. Ваш баланс: {resources.MoneyCard}";
-                    Notifications.RemovePaymentCard(Convert.ToInt32(battle.Price), user.Id, "битвы");
-                    Api.JoinBattle(battle.Id, user.Id, user, battle);
-                    user.IdBattle = battle.Id;
-                    Api.RemoveListBattle(battle.Id);
-                    if(!Bot.Api.User.SetUser(user)) return "❌ Произошла ошибка при добавлении в БД. Вы не присоеденились к битве. Попробуйте позже";
-                    Bot.Api.MessageSend("‼ К Вам в битву вступили! Вы атакуете первый! " +
-                    "\n❓ Как атаковать: бой атака кол-во тип_войска" +
-                    "\n❗ Пример: бой атака 10 солдат" +
-                    "\n❗ Доступные типы войск: солдат и танков", battle.Creator);
-                return "✅ Вы успешно вступили в эту битву! Враг атакует первый.";
-                }
-            return "❌ Вы указали неверный ID";
-        }
 
-        [Attributes.Trigger("покинуть")]
-        public static string Leave(Models.Message msg) 
-        {
-            var user = Bot.Api.User.GetUser(msg.from_id);
-            if(user.IdBattle == 0) return "Вы не находитесь ни в какой битве.";
-            var battle = new Bot.Api.Battles(user.IdBattle);
-            user.IdBattle = 0;
-            Bot.Api.User.SetUser(user);
-            
-            long userwo = 0 ;
-            if(battle.UserOne == user.Id) userwo = battle.UserTwo;
-            else if(battle.UserTwo == user.Id) userwo = battle.UserOne;
-            
-            if(userwo != 16101)
+            if (chaise == 2)
             {
-                if (userwo != 0)
+                new Task(()=> 
+                    Api.Message.Send($"🤣 Ха-ха-ха! Ваш враг не смог в Вас попасть! Так держать!" +
+                                     $"\n ❗ Скорее отвечайте: бой атака <количество> <тип войска>", vrag)).Start();
+                battle.UserAttack = vrag;
+                return $"😢 Нуу было близко! Вы промазали! Попробуйте в следующий раз." +
+                       $"\n {resourcesStr}" +
+                       $"\n {myHp}";
+            }
+
+            if (chaise == 3)
+            {
+                var hpVrag = members[vrag]- countHpArmy;
+                if (hpVrag < 0 || hpVrag < 0)
                 {
-                    var userTwo = Bot.Api.User.GetUser(userwo);
-                    userTwo.IdBattle = 0;
-                    Bot.Api.User.SetUser(userTwo);
-                    Notifications.EnterPaymentCard(System.Convert.ToInt32(battle.Price * 2), userwo, "Победа в битве");
-                    Bot.Api.MessageSend("Ваш противник трусливо сбежал! Вы получаете весь фонд!", userwo);
+                    //player win
+                    
+                    var registryVrag = new Api.Registry(vrag);
+                    registryVrag.CountLoserBattle += 1;
+                    
+                    new Task(()=> Api.Message.Send("😭 Вас разграмили! Вы проиграли! В следующей битве повезёт больше!", vrag)).Start();
+                    API.EndBattle(battle.Id, msg.from_id);
+                    return resourcesStr;
                 }
-            } 
+                
+                battle.SetHp(vrag, hpVrag);
+
+                new Task(() => Api.Message.Send($"💣 ВАМ НАНЕСЁН УДАР! Урон: {countHpArmy}" +
+                                                $"\n ❤ Ваше здоровье: [{hpVrag}/{API.HpUser(vrag)}]" +
+                                                $"\n ❗ Скорее отвечайте: бой атака <количество> <тип войска>", vrag)).Start();
+                
+                battle.UserAttack = vrag;
+                return $"✨ Прямо  в яблочко! Вы нанесли противнику {countHpArmy} урона!" +
+                       $"\n {resourcesStr}" +
+                       $"\n {myHp}";
+            }
+
+            return "❌ Произошла неизвестная ошибка, при выполнении. Статус неизвестен.";
+        }
+        
+        [Attributes.Trigger("покинуть")]
+        public static string LeaveToBattle(Models.Message msg)
+        {
+            var user = new Api.User(msg.from_id);
+            if (user.BattleId == 0) return "❌ Вы не учавствуете в какой-либо битве.";
+
+            var battle = new Api.Battles(user.BattleId);
+
+            if (!battle.IsStart)
+            {
+                battle.IsActive = false;
+                user.BattleId = 0;
+                return "✅ Вы успешно покинули бой.";
+            }
+            var members = battle.Members;
+            long winner = 0;
             
-            return "✅ Вы успешно покинули битву :( Плохо так делать!";
+            foreach (var member in members)
+            {
+                if (member.Key != msg.from_id) winner = member.Key;
+            }
+            
+            new Task(()=> Api.Message.Send("😎  Ваш противник покинул бой! Вы получаете весь фонд битвы.", winner)).Start();
+            
+            API.EndBattle(user.BattleId, winner);             
+            return "😢 Вы успешно покинули бой. Ваш противник получил уведомление об этом.";
         }
 
         [Attributes.Trigger("мой")]
-        public static string MyBattle(Models.Message msg) 
+        public static string MyBattle(Models.Message msg)
         {
-            var user = Bot.Api.User.GetUser(msg.from_id);
-            if(user.IdBattle == 0) return "❌ Вы не находитесь ни в какой битве.";
-            var battle = new Bot.Api.Battles(user.IdBattle);
-            Models.User userCreator = null;
+            var userO = new Api.User(msg.from_id);
+            if (userO.BattleId == 0) return "❌ Вы не находитесь ни в какой битве!";
 
-            if (battle.Creator != user.Id)
+            var battle = new Api.Battles(userO.BattleId);
+            
+            var membersString = String.Empty;
+            foreach (var member in battle.Members)
             {
-                userCreator = Bot.Api.User.GetUser(battle.Creator);
-            }else
-            {
-                userCreator = user;
+                var user = new Api.User(member.Key);
+                membersString += $"\n 😀 Имя: [id{user.Id}|{user.Name}]" +
+                                 $"\n 🔝 Уровень: {user.Level}" +
+                                 $"\n 💯 Рейтинг: user.top" +
+                                 $"\n";
             }
-
-            long hpEnemy = 0;
-            if (battle.UserOne == user.Id) hpEnemy = battle.HpTwo;
-            else if (battle.UserTwo == user.Id) hpEnemy = battle.HpOne;
-
-            string result = $"⚔ Битва №{battle.Id}.\n ➡ Название: {battle.Body}." +
-                          $"\n😀 Создатель: [id{userCreator.Id}|{userCreator.Name}]" +
-                          $"\n🔝 Уровень противника: {userCreator.Level}" +
-                          $"\n🛡 HP противника: {battle.HpOne}" +
-                          $"\n💰 Фонд: {battle.Price}";
-
-            return result;
+            var battleString = $"\n ⚔ БИТВА №{battle.Id}" +
+                          $"\n ➡ Название: {battle.Name}" +
+                          $"\n 💳 Фонд: {battle.Found}" +
+                          $"\n 😎 Участники:" +
+                          $"{membersString}" +
+                          $"\n";
+            return battleString;
         }
 
-        [Attributes.Trigger("создать")]
-        public static string CreateBattle(Models.Message msg) 
+        [Attributes.Trigger("вступить")]
+        public static string JoinToBattle(Models.Message msg)
         {
             var messageArray = msg.body.Split(' ');
-            Statistics.CreateBattle();
+            long battleId = 0;
+            try
+            {
+                battleId = Convert.ToInt64(messageArray[2]);
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return "❌ Вы не указали Id битвы. Пример: вступить 235";
+            }
+            catch (FormatException)
+            {
+                return "❌ Вы указали неверный Id битвы. Id должен быть чилом.";
+            }
 
-            var price = 0;
-            try {
-                price = Convert.ToInt32(messageArray[2]);
-            } catch(FormatException) {
-                return "❌ Вы ввели неверную сумму.";
-            } catch(IndexOutOfRangeException) 
-            {
-                return "❌ Вы не указали цену.";
-            }
-            string body = "";
-            try {
-                for (int i = 3; messageArray.Length > i; i++)
-                {
-                    body += $"{messageArray[i]} ";
-                }
-            }catch(IndexOutOfRangeException) 
-            {
-                body = "Бой на смерть";
-            }
-            var user = VKGame.Bot.Api.User.GetUser(msg.from_id);
-            var resources = new Bot.Api.Resources(user.Id);
-            if (user.IdBattle != 0) return $"❌ Вы уже находитесь в другой битве c ID - {user.IdBattle}.";
-            if (resources.MoneyCard < price) return $"❌ Вы ставите денег больше, чем у Вас на балансе. Ваш баланс: {resources.MoneyCard} 💳 Вы можете получить деньги, например, в казино";
-            var battleId = Api.CreateBattle(user.Id, body, price, user);
-            var registry = Bot.Api.Registry.GetRegistry(user.Id);
-            ++registry.CountCreateBattles;
-            user.IdBattle = battleId;
-            Api.AddToListBattles(battleId);
-            Bot.Api.Registry.SetRegistry(registry);
-            if (!VKGame.Bot.Api.User.SetUser(user)) return "Ошибка при добавлении пользователя в БД. Но битва создалась наверное. Но Вы не вошли в битву.";
-            return "✅ Вы успешно создали новую битву! Теперь осталось подождать противника.";
+            var user = new Api.User(msg.from_id);
+            if (user.BattleId != 0) return "❌ Вы и так учавствуете в другой битве!";
+            if (!Api.Battles.Check(battleId))
+                return "❌ Такой битвы несуществует! Чтобы узнать список доступных битв, напишите: список";
+            var battle = new Api.Battles(battleId);
+            if (!battle.IsActive) return "❌ Эта битва уже закончилась! Вы не можете вступить в неё. Посмотрите другие битвы, напишите: список";
+            if (battle.IsStart) return "❌ Эта битва уже началась! Вы не можете вступить в неё! Посмотрите другие битвы, напишите: список";
+
+            if (!Notifications.RemovePaymentCard(Convert.ToInt32(battle.Found), msg.from_id, "вступление в битву"))
+                return $"❌ У Вас не хватает монет на балансе. Необходимо: {battle.Found} ";
+            
+            API.JoinToBattle(msg.from_id, battleId);
+            
+            new Task(()=>Api.Message.Send($"⚔ К Вам в битву вступил противник!" +
+                                          $"\n ❤ ВАШЕ ЗДОРОВЬЕ: {API.HpUser(battle.Creator)}" +
+                                          $"\n 🖤 ЗДОРОВЬЕ ПРОТИВНИКА: {API.HpUser(msg.from_id)}", battle.Creator)).Start();
+            
+            new Task(()=> ChoisidBattleStart(new List<long>() {msg.from_id, battle.Creator}, battle.Id)).Start();
+            return $"✅ Вы успешно вступили в битву. Сейчас произойдёт рандомный выбор игрока, который первый атакует." +
+                   $"\n ❤ ВАШЕ ЗДОРОВЬЕ: {API.HpUser(msg.from_id)}" +
+                   $"\n 🖤 ЗДОРОВЬЕ ПРОТИВНИКА: {API.HpUser(battle.Creator)}";
         }
+
+        private static void ChoisidBattleStart(List<long> users, long battleId)
+        {
+            var user = API.ChoiseUser(users[0], users[1]);
+            var battle = new Api.Battles(battleId);
+            battle.UserAttack = user;
+            Api.Message.Send("💣 Вы атакуете первым! Скорее! Бой атака <количество> <тип армии> ", user);
+        }
+        
+        [Attributes.Trigger("создать")]
+        public static string CreateBattle(Models.Message msg)
+        {
+            var messageArray = msg.body.Split(' ');
+            long price = 0;
+            try
+            {
+                price = Convert.ToInt64(messageArray[2]);
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return "❌ Вы не цену битвы! Пример: бой создать 100 попробуй меня победить.";
+            }catch(FormatException)
+            {
+                return "❌ Вы указали неверную цену! Цена должна быть ЧИСЛОМ!";
+            }
+
+            string nameBattle = String.Empty;
+            try
+            {
+                for (var i = 3; i < messageArray.Length; i++) nameBattle += $"{messageArray[i]} ";
+            }
+            catch (IndexOutOfRangeException)
+            {
+                nameBattle = "Битва без названия";
+            }
+
+            if (nameBattle == String.Empty) nameBattle = "Битва без названия";
+
+            if (!Notifications.RemovePaymentCard(Convert.ToInt32(price), msg.from_id, "создание битвы"))
+                return $"❌ У Вас на балансе нет необходимой суммы: {price} 💳 ";
+
+            var battleId = API.Create(msg.from_id, nameBattle, price);
+            
+            return $"✅ Битва успешна создана. Id битвы -- {battleId}";
+        }
+
 
         [Attributes.Trigger("список")]
-        public static string ListBattles(Models.Message msg) 
+        public static string ActiveListBattles(Models.Message msg)
         {
-            string json =  "";
-            using(var reader = new StreamReader(@"Files/Battles.json")) 
-            {
-                json = reader.ReadToEnd();
-            }
-            var model = JsonConvert.DeserializeObject<Models.ActiveBattles>(json);      
-            string result = "CПИСОК БИТВ➖➖➖➖➖➖➖➖➖➖➖➖➖\n";
-            if(model.Battles.Count == 0) return "😒 Список битв пуст. Создайте первую битву!";
-            foreach(var battleId in model.Battles) 
+            var battlesStr = String.Empty;
+            var battles = Api.Battles.GetActivesAll;
+            foreach (var battleId in battles)
             {
                 var battle = new Bot.Api.Battles(battleId);
-                var user = VKGame.Bot.Api.User.GetUser(battle.Creator);
-                result +=   $"⚔ Битва №{battle.Id}.\n ➡ Название: {battle.Body}."+
-                          $"\n🧑 Создатель: [id{user.Id}|{user.Name}]"+
-                          $"\n🔝 Уровень противника: {user.Level}"+
-                          $"\n🛡 HP противника: {battle.HpOne}"+
-                          $"\n💰 Ставка: {battle.Price}"+
-                          $"\n💥 Чтобы вступить в эту битву, напишите: бой вступить {battle.Id}"+
-                          $"\n"+
-                          $"\n";                   
+
+                var membersString = String.Empty;
+                foreach (var member in battle.Members)
+                {
+                    var user = new Api.User(member.Key);
+                    membersString += $"\n 😀 Имя: [id{user.Id}|{user.Name}]" +
+                                     $"\n 🔝 Уровень: {user.Level}" +
+                                     $"\n ❤ Здоровье: {member.Value}" +
+                                     $"\n 💯 Рейтинг: user.top" +
+                                     $"\n";
+                }
+                battlesStr += $"\n ⚔ БИТВА №{battle.Id}" +
+                              $"\n ➡ Название: {battle.Name}" +
+                              $"\n 💳 Цена: {battle.Found}" +
+                              $"\n 😎 Участники:" +
+                              $"{membersString}" +
+                              $"\n ❓ Чтобы вступить в бой, напишите: Бой вступить {battle.Id}" +
+                              $"\n";
             }
-            result+= "\n➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖";
-            return result;
+
+            return $"➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖" +
+                   $"\n СПИСОК АКТИВНЫХ БОЁВ" +
+                   $"\n" +
+                   $"\n{battlesStr}" +
+                   $"\n" +
+                   $"\n➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖";
         }
+
+
+        private string GetBattleText()
+        {
+            return "➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖" +
+                   "\n ⚔ Раздел битв." +
+                   "\n" +
+                   "\n❓ Здесь можно создать битву или вступить в битву, которая уже создана." +
+                   "\n " +
+                   "\n ⚔ Бой список -- выводит список доступных битв." +
+                   "\n ✨ Бой создать (цена) (название) -- создание собственной битвы." +
+                   "\n 😎 Бой вступить (ID) -- вступить в уже созданную битву. ";
+        }
+
+        
     }
 }

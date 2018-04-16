@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VKGame.Bot", "VKGame.Bot\VKGame.Bot.csproj", "{D3E3663A-4472-45C7-82B0-D359F8BDB508}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controller", "Controller\Controller.csproj", "{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,26 +33,6 @@ Global
 		{D3E3663A-4472-45C7-82B0-D359F8BDB508}.Release|x64.Build.0 = Release|Any CPU
 		{D3E3663A-4472-45C7-82B0-D359F8BDB508}.Release|x86.ActiveCfg = Release|Any CPU
 		{D3E3663A-4472-45C7-82B0-D359F8BDB508}.Release|x86.Build.0 = Release|Any CPU
-		{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}.Debug|ARM.ActiveCfg = Debug|ARM
-		{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}.Debug|ARM.Build.0 = Debug|ARM
-		{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}.Debug|ARM.Deploy.0 = Debug|ARM
-		{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}.Debug|x64.ActiveCfg = Debug|x64
-		{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}.Debug|x64.Build.0 = Debug|x64
-		{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}.Debug|x64.Deploy.0 = Debug|x64
-		{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}.Debug|x86.ActiveCfg = Debug|x86
-		{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}.Debug|x86.Build.0 = Debug|x86
-		{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}.Debug|x86.Deploy.0 = Debug|x86
-		{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}.Release|Any CPU.ActiveCfg = Release|x86
-		{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}.Release|ARM.ActiveCfg = Release|ARM
-		{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}.Release|ARM.Build.0 = Release|ARM
-		{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}.Release|ARM.Deploy.0 = Release|ARM
-		{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}.Release|x64.ActiveCfg = Release|x64
-		{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}.Release|x64.Build.0 = Release|x64
-		{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}.Release|x64.Deploy.0 = Release|x64
-		{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}.Release|x86.ActiveCfg = Release|x86
-		{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}.Release|x86.Build.0 = Release|x86
-		{1E07AEC9-E88F-4ADE-BA16-7E8F3C61E046}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

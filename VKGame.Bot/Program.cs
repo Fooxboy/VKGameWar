@@ -20,8 +20,9 @@ namespace VKGame.Bot
                 try
                 {
                     Logger.WriteDebug("Старт бота...");
-                    var config = Config.Get();
-                    Console.Title = $"War of the World  ver. {config.Version}";
+                    //var config = Config.Get();
+                    const double Version = 1.4;
+                    Console.Title = $"War of the World  ver. {Version}";
 
                     Logger.WriteDebug("Создание экземпляра лонгпулла.");
                     var longpoll = new BotsLongPollVK();
