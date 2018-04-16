@@ -50,7 +50,6 @@ namespace VKGame.Bot.Commands
             Api.ConfigBoosters.Register(msg.from_id);
             Statistics.NewRegistation();
            
-
             registry.LastMessage = DateTime.Now.ToString();
             registry.StartThread = true;
             registry.DateReg = DateTime.Now.ToString();
