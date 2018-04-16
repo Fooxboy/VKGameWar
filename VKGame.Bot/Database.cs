@@ -247,7 +247,7 @@ namespace VKGame.Bot
 
             public void EditFromId(object id, string field, object value)
             {
-                var sql = $"UPDATE {Table}  SET `{field}`='{value}' WHERE `Id`='{id}';";
+                var sql = $"UPDATE {Table} SET {field}='{value}' WHERE Id='{id}'";
                 var command = new SqliteCommand(sql, ConnectionData);
                 command.ExecuteNonQuery();
             }
