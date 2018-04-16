@@ -31,6 +31,7 @@ namespace VKGame.Bot
         public static Dictionary<long, int> CountCreateArmySoldiery = new Dictionary<long, int>();
         public static Dictionary<long, int> CountCreateArmyTanks = new Dictionary<long, int>();
 
+        public static List<long> TopUsers = new List<long>();
         
 
 

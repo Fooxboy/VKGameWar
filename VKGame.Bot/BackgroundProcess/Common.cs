@@ -1,7 +1,9 @@
 using System.IO;
 using System.Threading;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace VKGame.Bot.BackgroundProcess
 {
@@ -17,9 +19,12 @@ namespace VKGame.Bot.BackgroundProcess
                     if (DateTime.Now.Hour == 8)
                     {
                         var listUsers = Api.User.AllList;
+                        Dictionary<long, long> usersTop = new Dictionary<long, long>();
                         foreach (var userId in listUsers)
                         {
+                            
                             var registry = new Api.Registry(userId);
+                            usersTop.Add(userId, registry.CountWinBattles);
                             var lastMessage = DateTime.Parse(registry.LastMessage);
                             int day = lastMessage.Day;
                             int nowDay = 0;
@@ -37,6 +42,12 @@ namespace VKGame.Bot.BackgroundProcess
                                     Api.Message.Send("🎈 Привет! Я вижу, что ты давно не играл! Ваша армия Вас ждёт! НАЧИНАЙ ИГРАТЬ :)", userId);
                                 }
                             }
+                        }
+
+                        var userTopAll = usersTop.OrderByDescending(u => u.Value);
+                        for(var i=0; i <9; i++)
+                        {
+                           // Bot.Common.TopUsers.Add(userTopAll);
                         }
                     }
                 }catch(Exception e)

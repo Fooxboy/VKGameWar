@@ -23,6 +23,24 @@ namespace VKGame.Bot.Commands
                    $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
         }
 
+        [Attributes.Trigger("игроков")]
+        public static string TopUsers(Models.Message msg)
+        {
+            var allUsers = Api.User.AllList;
+            foreach(var userId in allUsers)
+            {
+                var registry = new Api.Registry(userId);
+            }
+
+            return null;
+        }
+
+        [Attributes.Trigger("кланов")]
+        public static string TopClans(Models.Message msg)
+        {
+            return null;
+        }
+
         private string GetTopText()
         {       
             return "😎 Здесь находится зал славы лучших игроков игры и лучших кланов." +

@@ -37,7 +37,8 @@ namespace VKGame.Bot.Commands
             new Balance(),
             new Feedback(),
             new Bug(),
-            new Skills()
+            new Skills(),
+            new Top()
             };
 
             string text = $"➖➖➖➖➖➖➖➖➖➖➖➖" +

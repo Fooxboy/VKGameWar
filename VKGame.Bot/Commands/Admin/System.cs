@@ -13,7 +13,7 @@ namespace VKGame.Bot.Commands.Admin
         public string Arguments => "";
         public List<string> Commands => new List<string>();
         public TypeResponse Type => TypeResponse.Text;
-        public Access Access => Access.Admin;
+        public AccessCommand Access => Access.Admin;
 
         public object Execute(Models.Message msg)
         {

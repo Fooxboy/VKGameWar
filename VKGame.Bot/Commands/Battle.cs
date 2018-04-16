@@ -472,6 +472,9 @@ namespace VKGame.Bot.Commands
             if (!battle.IsActive) return "❌ Эта битва уже закончилась! Вы не можете вступить в неё. Посмотрите другие битвы, напишите: список";
             if (battle.IsStart) return "❌ Эта битва уже началась! Вы не можете вступить в неё! Посмотрите другие битвы, напишите: список";
 
+            if (battle.Creator == msg.from_id) return "❌ Вы не можете вступить в свою же битву!";
+
+
             if (!Notifications.RemovePaymentCard(Convert.ToInt32(battle.Found), msg.from_id, "вступление в битву"))
                 return $"❌ У Вас не хватает монет на балансе. Необходимо: {battle.Found} ";
             
