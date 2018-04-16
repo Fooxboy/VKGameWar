@@ -17,7 +17,7 @@ namespace VKGame.Bot.Api
 
         public long Id => id;
 
-        public string Name => (string) DB.GetFromId(id, "Name");
+        public string Name => (string) DB.GetFromId(id, "Body");
 
         public bool IsActive
         {
@@ -27,7 +27,7 @@ namespace VKGame.Bot.Api
         
         public bool IsStart
         {
-            get => Convert.ToBoolean((long) DB.GetFromId(id, "isStart"));
+            get => Convert.ToBoolean((long) DB.GetFromId(id, "isPlay"));
             set => DB.EditFromId(id, "isStart", Convert.ToInt64(value));
         }
         
@@ -70,6 +70,7 @@ namespace VKGame.Bot.Api
                 var battles = new List<long>();
                 while (rider.Read())
                 {
+                    
                     var battle = new Api.Battles((long)rider["Id"]);
 
                     if (battle.IsActive && !battle.IsStart)
@@ -98,7 +99,10 @@ namespace VKGame.Bot.Api
                 var members = new Dictionary<long,long>();
                 var membersArray = membersStr.Split(',');
                 var hpArray = hpStr.Split(',');
-                
+                Logger.NewMessage(membersStr + "а " + hpStr);
+                Logger.NewMessage(membersArray[0] + "а " + hpArray[0]);
+                Logger.NewMessage(membersArray.Length + "а " + hpArray.Length);
+
                 for (var i = 0; i < membersArray.Length; i++)
                     members.Add(Convert.ToInt64(membersArray[i]), Convert.ToInt64(hpArray[i]));
 
