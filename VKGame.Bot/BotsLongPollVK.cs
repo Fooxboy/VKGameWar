@@ -49,7 +49,6 @@ namespace VKGame.Bot
 
                     if(json != null)
                     {
-                        //Logger.WriteDebug(json);
                         Models.RootBotsLongPollVK responseLongPoll = null;
                         try
                         {
@@ -58,7 +57,6 @@ namespace VKGame.Bot
                         }
                         catch
                         {
-                            //Logger.WriteDebug("Получение Key, Server, Ts...");
                             var modelKeyAndTs = GetKeyAndTs();
                             var response = modelKeyAndTs.response;
                             Key = response.key;
@@ -70,7 +68,6 @@ namespace VKGame.Bot
 
                         if (responseLongPoll.updates == null)
                         {
-                            //Logger.WriteDebug("Получение Key, Server, Ts...");
                             var modelKeyAndTs = GetKeyAndTs();
                             var response = modelKeyAndTs.response;
                             Key = response.key;
@@ -116,10 +113,10 @@ namespace VKGame.Bot
 
         private string Request()
         {
-            var url = $"{Server}?act=a_check&key={Key}&ts={Ts}&wait=10";
+            var url = $"{Server}?act=a_check&key={Key}&ts={Ts}&wait=20";
             var json = String.Empty;
             var request = HttpWebRequest.Create(url);
-            request.Timeout = 15000;
+            request.Timeout = 30000;
             var response = request.GetResponse();
             using (var stream = response.GetResponseStream())
             {

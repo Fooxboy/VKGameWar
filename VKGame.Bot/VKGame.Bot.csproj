@@ -16,7 +16,7 @@
     <Folder Include="Files\ReferralsFiles\" />
     <Folder Include="Files\Registry\" />
     <Folder Include="Files\Temp\" />
-    <Folder Include="PublicAPI\Alina\" />
+    <Folder Include="PublicAPI\Yarik\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Language\Russian.Designer.cs">

@@ -2,6 +2,7 @@
 using System.Threading;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace VKGame.Bot.BackgroundProcess
 {
@@ -18,9 +19,8 @@ namespace VKGame.Bot.BackgroundProcess
            
             try
             {
-                TimerCallback tm = new TimerCallback(TriggerEndGameHelper);
-                // создаем таймер
-                Timer timer = new Timer(tm, ticketObject, 300000, Timeout.Infinite);
+                Task.Delay(300000);
+                TriggerEndGameHelper(ticketObject);
             }
             catch(Exception e)
             {
@@ -125,9 +125,8 @@ namespace VKGame.Bot.BackgroundProcess
         {
             try
             {
-                TimerCallback tm = new TimerCallback(RouletteHelper);
-                // создаем таймер
-                Timer timer = new Timer(tm, null, 120000, Timeout.Infinite);
+                Task.Delay(120000);
+                RouletteHelper(null);
             }
             catch(Exception e)
             {

@@ -22,7 +22,14 @@ namespace VKGame.Bot
 
         public static void NewError()
         {
-           Api.Statistics.SetValue("ErrorsDay");       
+            try
+            {
+                 Api.Statistics.SetValue("ErrorsDay");
+
+            }catch(Exception e)
+            {
+                Logger.WriteError(e);
+            }
         }
 
         public static void NewRegistation()

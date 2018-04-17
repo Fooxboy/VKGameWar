@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using VKGame.Bot.Helpers;
+using System.Threading.Tasks;
 
 namespace VKGame.Bot.BackgroundProcess
 {
@@ -35,20 +36,19 @@ namespace VKGame.Bot.BackgroundProcess
             }
             var builds = new Api.Builds(userId);
 
+
             Bot.Statistics.CreateSol(count);
             if(boost)
                 Api.Message.Send($"➡ Солдаты будут обучаться:  {(count * 20)/2} секунд", userId);
             else
             {
                 Api.Message.Send($"➡ Солдаты будут обучаться:  {count * 20} секунд", userId);
-
             }
 
             var turn = Bot.Common.TurnCreateSoildery;
 
             while (count > 0)
             {
-
                 try
                 {
                     if (turn.All(u => u.Id != userId))
@@ -59,9 +59,11 @@ namespace VKGame.Bot.BackgroundProcess
                     int time = 20000;
 
                     if (boost) time = time / 2;
-                    TimerCallback tm = new TimerCallback(CreateSoilderyHelper);
-                    // создаем таймер
-                    Timer timer = new Timer(tm, new ParamsArmy() { Resources = resources, Builds = builds, Count = count }, time, Timeout.Infinite);
+                    Task.Delay(time);
+                    var soldiery = resources.Soldiery;
+                    soldiery++;
+                    resources.Soldiery = soldiery;
+                    if (resources.Soldiery > Commands.Buildings.Api.MaxSoldiery(builds.Apartments)) resources.Soldiery = Commands.Buildings.Api.MaxSoldiery(builds.Apartments);
                     --count;
                 }
                 catch(Exception e)
@@ -150,10 +152,11 @@ namespace VKGame.Bot.BackgroundProcess
                     if (count < 0) break;
                     var time = 60000;
                     if(boost) time = time / 2;
-
-                    TimerCallback tm = new TimerCallback(CreateTanksHelper);
-                    // создаем таймер
-                    Timer timer = new Timer(tm, new ParamsArmy() { Resources= resources, Builds = builds, Count= count}, time, Timeout.Infinite);
+                    Task.Delay(time);
+                    var tanks = resources.Tanks;
+                    tanks++;
+                    resources.Tanks = tanks;
+                    if (resources.Tanks > Commands.Buildings.Api.MaxTanks(builds.Hangars)) resources.Tanks = Commands.Buildings.Api.MaxTanks(builds.Hangars);
                     --count;
                 }
                 catch (Exception e)
