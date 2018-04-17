@@ -45,10 +45,18 @@ namespace VKGame.Bot.BackgroundProcess
                         }
 
                         var userTopAll = usersTop.OrderByDescending(u => u.Value);
-                        for(var i=0; i <9; i++)
+                        var i = 0;
+                        var listAh = new List<long>();
+                        foreach(var topUser in userTopAll)
                         {
-                           // Bot.Common.TopUsers.Add(userTopAll);
+                            if (i == 10) break;
+                            listAh.Add(topUser.Key);
+                            i++;
                         }
+
+                        var tops = new Api.Tops();
+                        tops.Users = listAh;
+                        tops.DateUpdate = DateTime.Now.ToString();
                     }
                 }catch(Exception e)
                 {

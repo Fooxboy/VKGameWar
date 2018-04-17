@@ -58,7 +58,7 @@ namespace VKGame.Bot.Commands
         [Attributes.Trigger("кланов")]
         public static string TopClans(Models.Message msg)
         {
-            return null;
+            return "❌ Топ кланов пока что недоступен.";
         }
 
         private string GetTopText()
