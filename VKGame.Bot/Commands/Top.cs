@@ -26,13 +26,33 @@ namespace VKGame.Bot.Commands
         [Attributes.Trigger("игроков")]
         public static string TopUsers(Models.Message msg)
         {
-            var allUsers = Api.User.AllList;
-            foreach(var userId in allUsers)
-            {
-                var registry = new Api.Registry(userId);
-            }
+            var tops = new Api.Tops();
+            var topsUser = tops.Users;
+            string usersTopString = string.Empty;
 
-            return null;
+            foreach(var userId in topsUser)
+            {
+                var user = new Api.User(userId);
+                var registry = new Api.Registry(userId);
+
+                usersTopString += $"😀 [id{user.Id}|{user.Name}]" +
+                                 $"\n 🔝 Уровень: {user.Level} [{user.Experience}/ {user.Level *100}]" +
+                                 $"\n 🏹 Выграл боёв: {registry.CountWinBattles}" +
+                                 $"\n 🚬 Проиграл боёв: {registry.CountLoserBattle}" +
+                                 $"\n 🔫 Всего боёв: {registry.CountBattles}" +
+                                 $"\n ✔ Дата регистрации: {registry.DateReg}" +
+                                 $"\n";
+
+            }
+            if (topsUser.Count == 0) usersTopString = "😎 Лучших пользователей пока что нет.";
+
+            return $"\n 👍 СПИСОК ЛУЧШИХ ИГРОКОВ" +
+                $"\n" +
+                $"\n 🔄 Последнее обновление: {tops.DateUpdate}" +
+                $"\n" +
+                $"\n{usersTopString}" +
+                $"\n" +
+                $"\n ❤ Хочешь попасть сюда? Скорее играй и выиигрывай!";
         }
 
         [Attributes.Trigger("кланов")]
