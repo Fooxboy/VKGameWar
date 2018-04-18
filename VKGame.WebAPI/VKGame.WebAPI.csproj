@@ -5,7 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Areas\publicAPI\Data\" />
+    <Folder Include="Areas\publicAPI\Views\" />
     <Folder Include="wwwroot\" />
+    <Folder Include="Models\" />
   </ItemGroup>
 
   <ItemGroup>

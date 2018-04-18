@@ -33,8 +33,15 @@ namespace VKGame.WebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseMvc();
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                  name: "areas",
+                  template: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+                );
+            });
         }
     }
 }
