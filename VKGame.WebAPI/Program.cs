@@ -20,6 +20,7 @@ namespace VKGame.WebAPI
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .UseUrls("http://localhost:5789/")
                 .Build();
     }
 }

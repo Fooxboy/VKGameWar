@@ -36,7 +36,6 @@ namespace VKGame.Bot.BackgroundProcess
             }
             var builds = new Api.Builds(userId);
 
-
             Bot.Statistics.CreateSol(count);
             if(boost)
                 Api.Message.Send($"➡ Солдаты будут обучаться:  {(count * 20)/2} секунд", userId);
@@ -59,7 +58,7 @@ namespace VKGame.Bot.BackgroundProcess
                     int time = 20000;
 
                     if (boost) time = time / 2;
-                    Task.Delay(time);
+                    Thread.Sleep(time);
                     var soldiery = resources.Soldiery;
                     soldiery++;
                     resources.Soldiery = soldiery;
@@ -152,7 +151,7 @@ namespace VKGame.Bot.BackgroundProcess
                     if (count < 0) break;
                     var time = 60000;
                     if(boost) time = time / 2;
-                    Task.Delay(time);
+                    Thread.Sleep(time);
                     var tanks = resources.Tanks;
                     tanks++;
                     resources.Tanks = tanks;

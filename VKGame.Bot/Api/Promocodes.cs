@@ -11,7 +11,7 @@
  
          public Promocodes(string promo)
          {
-             DB = new Database.Data("Credits");
+             DB = new Database.Data("Promocodes");
              this.promo = promo;
          }
  
@@ -54,7 +54,7 @@
          public static void Create(string Promo, string Count, string money)
          {
              var db = new Database.Data("Promocodes");
-             var fields = new List<string>() { "Id", "MoneyCard", "Count"};
+             var fields = new List<string>() { "Promo", "MoneyCard", "Count"};
              var value = new List<string>() {Promo, money, Count };
              Database.Data.Add(fields, value, "Promocodes");
          }

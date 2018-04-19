@@ -142,7 +142,7 @@ namespace VKGame.Bot.Commands
             long battleId = 0;
 
             Statistics.BattleCompetition();
-            if (competition.FreeBattle)
+            if (competition.FreeBattle ==0)
             {
                 var registry = new Api.Registry(user.Id);
                 ++registry.CountCreateBattles;
@@ -150,29 +150,27 @@ namespace VKGame.Bot.Commands
                 long userHp = 0;
                 var price = 0;
                 var builds = new Api.Builds(user.Id);
-               // userHp = Bot.Commands.Battle.Api.HpUser(user.Id, user, builds);
-               // battleId = Api.Battles.NewBattle(user.Id, $"соревнование {competition.Name}", userHp, price);
-              //  user.IdBattle = battleId;
-              //  competition.FreeBattle = battleId;
-               // Api.User.SetUser(user);
+                userHp = Bot.Commands.Battle.API.HpUser(user.Id);
+                battleId = Api.Battles.Create($"соревнование {competition.Name}", user.Id, price, userHp);
+                user.BattleId = battleId;
+                competition.FreeBattle = battleId;
               //  Api.Registry.SetRegistry(registry);
                 return "‼ Вы создали битву! Подождите пока кто-либо вступит!";
 
             }
             else
             {
-               // var battle = new Api.Battles(competition.FreeBattle);
-              //  var builds = new Api.Builds(user.Id);
-               // if (user.BattleId != 0) return "❌ Вы уже находитесь в другой битве.";
+               var battle = new Api.Battles(competition.FreeBattle);
+               var builds = new Api.Builds(user.Id);
+               if (user.BattleId != 0) return "❌ Вы уже находитесь в другой битве.";
 
-              //  user.IdBattle = battle.Id;
-              //  var userHp = Bot.Commands.Battle.Api.HpUser(user.Id, user, builds);
+               user.BattleId = battle.Id;
+               var userHp = Bot.Commands.Battle.API.HpUser(user.Id);
               //  battle.UserTwo = user.Id;
               //  battle.HpTwo = userHp;
               //  battle.IsStart = true;
-             //   competition.FreeBattle = battleId;
-               // Api.User.SetUser(user);
-               // Api.Message.Send("‼ К Вам в битву вступили! Вы атакуете первый! Атаковать так же как и в обычных битвах.", battle.Creator);
+                 competition.FreeBattle = 0;
+                Api.Message.Send("‼ К Вам в битву вступили! Вы атакуете первый! Атаковать так же как и в обычных битвах.", battle.Creator);
                 return "‼ Вы вступили в битву! Сейчас ход Вашего врага!";
             }
         }

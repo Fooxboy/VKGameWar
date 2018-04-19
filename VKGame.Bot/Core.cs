@@ -264,6 +264,16 @@ namespace VKGame.Bot
                         var core = new Core();
                         try
                         {
+                            var lastCommands = Common.LastCommand;
+                            try
+                            {
+                                var buffer = lastCommands[message.from_id];
+                                lastCommands[message.from_id] = Commands[0];
+                            }
+                            catch (KeyNotFoundException)
+                            {
+                                lastCommands.Add(message.from_id, Commands[0]);
+                            }
 
                             Api.Message.Send((string)Commands[0].Execute(message), message.from_id);
                         }

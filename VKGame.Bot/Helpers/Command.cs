@@ -21,7 +21,7 @@ namespace VKGame.Bot.Helpers
                         if (myAtr.Name.ToLower() == command.ToLower())
                         {
                             var user = new Api.User(message.from_id);
-                            if ((long) myAtr.Access < user.Access) return "❌ У Вас нет доступа к этой подкоманде!";
+                            if ((long) myAtr.Access > user.Access) return "❌ У Вас нет доступа к этой подкоманде!";
                             object result = method.Invoke(obj, new object[] {message});
                             return (string) result;
                         }

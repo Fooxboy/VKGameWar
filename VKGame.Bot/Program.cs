@@ -21,7 +21,7 @@ namespace VKGame.Bot
                 {
                     Logger.WriteDebug("Старт бота...");
                     //var config = Config.Get();
-                    const double Version = 1.4;
+                    const string Version = "1.5 beta";
                     Console.Title = $"War of the World  ver. {Version}";
 
                     Logger.WriteDebug("Создание экземпляра лонгпулла.");

@@ -144,10 +144,10 @@ namespace VKGame.Bot.Api
             set => DB.EditFromId(id, "IsEnd", Convert.ToInt64(value));
         }
         
-        public bool FreeBattle
+        public long FreeBattle
         {
-            get => Convert.ToBoolean((long)DB.GetFromId(id, "FreeBattle"));
-            set => DB.EditFromId(id, "FreeBattle", Convert.ToInt64(value));
+            get => (long)DB.GetFromId(id, "FreeBattle");
+            set => DB.EditFromId(id, "FreeBattle", value);
         }
 
         public static bool Check(long id) => Database.Data.CheckFromId(id, "Competitions");

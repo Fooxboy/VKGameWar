@@ -41,8 +41,10 @@ namespace VKGame.Bot
                 $"\n >>СООБЩЕНИЕ: {e.Message}" +
                 $"\n >>STACK TRACE: {e.StackTrace}");
             Console.ResetColor();
+            Api.Errors.Add(e);
+
         }
-        
+
         /// <summary>
         /// Дебаг-собщение
         /// </summary>

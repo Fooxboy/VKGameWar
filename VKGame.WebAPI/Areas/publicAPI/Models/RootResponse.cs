@@ -10,4 +10,10 @@ namespace VKGame.WebAPI.Areas.publicAPI.Models
         public bool result { get; set; }
         public T data { get; set; }
     }
+
+    public class RootResponse
+    {
+        public bool result { get; set; }
+        public object data { get; set; }
+    }
 }

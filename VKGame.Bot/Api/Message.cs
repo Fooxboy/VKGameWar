@@ -6,7 +6,7 @@ namespace VKGame.Bot.Api
     public static class Message
     {
         public static long Send(string text, long peerId)
-        {
+        {		
             try
             {
                 if (text == null) text = "❌ Команда ничего не вернула. Попробуйте ещё раз.";

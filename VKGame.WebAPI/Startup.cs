@@ -42,6 +42,30 @@ namespace VKGame.WebAPI
                   template: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
                 );
             });
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                  name: "areas1",
+                  template: "{area:exists}/{controller=Status}/{action=Index}/{id?}"
+                );
+            });
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                  name: "areas2",
+                  template: "{area:exists}/{controller=Army}/{action=Index}/{id?}"
+                );
+            });
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                  name: "areas3",
+                  template: "{area:exists}/{controller=Registration}/{action=Index}/{id?}"
+                );
+            });
         }
     }
 }

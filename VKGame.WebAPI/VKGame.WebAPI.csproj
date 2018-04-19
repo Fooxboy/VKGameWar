@@ -2,9 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <ApplicationIcon />
+    <Win32Resource />
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Areas\privateAPI\Data\" />
+    <Folder Include="Areas\privateAPI\Views\" />
     <Folder Include="Areas\publicAPI\Data\" />
     <Folder Include="Areas\publicAPI\Views\" />
     <Folder Include="wwwroot\" />
@@ -18,6 +22,12 @@
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="VKGame.Bot">
+      <HintPath>..\VKGame.Bot\bin\Lib\netcoreapp2.0\VKGame.Bot.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

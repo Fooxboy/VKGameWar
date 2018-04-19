@@ -13,6 +13,181 @@ namespace VKGame.Bot
 
         public static SqliteConnection ConnectionStat = null;
 
+        public static SqliteConnection ConnectionPublic = null;
+
+        public class Public
+        {
+            private const string ConnectionString = @"Filename=Files/Public.db;";
+            private string Table = null;
+
+            public Public(string table)
+            {
+                if (ConnectionPublic == null)
+                {
+                    ConnectionPublic = new SqliteConnection(ConnectionString);
+                    ConnectionPublic.Open();
+                }
+
+                Table = table;
+            }
+
+            public static void DeteleAll(string Table)
+            {
+                if (ConnectionPublic == null)
+                {
+                    ConnectionPublic = new SqliteConnection(ConnectionString);
+                    ConnectionPublic.Open();
+                }
+                string sql = $"DELETE FROM {Table}";
+                var command = new SqliteCommand(sql, ConnectionPublic);
+                command.ExecuteNonQuery();
+            }
+
+            public SqliteDataReader GetAll()
+            {
+                var sql = $"SELECT * FROM {Table}";
+                var command = new SqliteCommand(sql, ConnectionPublic);
+                var reader = command.ExecuteReader();
+                return reader;
+            }
+
+            public object GetFromId(object id, string field)
+            {
+                var sql = $"SELECT {field} FROM {Table} WHERE Id='{id}'";
+                var command = new SqliteCommand(sql, ConnectionPublic);
+                var result = command.ExecuteScalar();
+                return result;
+            }
+
+            public object GetFromKey(object key, object value, string field)
+            {
+                var sql = $"SELECT {field} FROM {Table} WHERE {key}='{value}'";
+                var command = new SqliteCommand(sql, ConnectionPublic);
+                var result = command.ExecuteScalar();
+                return result;
+            }
+
+            public object GetFromKey(string key)
+            {
+                var sql = $"SELECT Value FROM {Table} WHERE Key='{key}'";
+                var command = new SqliteCommand(sql, ConnectionPublic);
+                var result = command.ExecuteScalar();
+                return result;
+            }
+
+            public void EditFromId(object id, string field, object value)
+            {
+                var sql = $"UPDATE {Table}  SET `{field}`='{value}' WHERE `Id`='{id}';";
+                var command = new SqliteCommand(sql, ConnectionPublic);
+                command.ExecuteNonQuery();
+
+            }
+
+            public void EditFromKey(object key, object valueKey, string field, object value)
+            {
+                var sql = $"UPDATE {Table}  SET `{field}`='{value}' WHERE `{key}`='{valueKey}';";
+                var command = new SqliteCommand(sql, ConnectionPublic);
+                command.ExecuteNonQuery();
+            }
+
+            public void EditFromKey(string key, object value)
+            {
+                var sql = $"UPDATE {Table}  SET `Value`='{value}' WHERE `Key`='{key}';";
+                var command = new SqliteCommand(sql, ConnectionPublic);
+                command.ExecuteNonQuery();
+            }
+
+            public static bool CheckFromId(object id, string Table)
+            {
+                string sql = $"SELECT * FROM `{Table}` WHERE Id = '{id}'";
+                if (ConnectionPublic == null)
+                {
+                    ConnectionPublic = new SqliteConnection(ConnectionString);
+                    ConnectionPublic.Open();
+                }
+
+                var command = new SqliteCommand(sql, ConnectionPublic);
+                var reader = command.ExecuteReader();
+                bool response = reader.Read();
+                reader.Close();
+                return response;
+            }
+
+            public static bool CheckFromKey(object key, string value, string Table)
+            {
+                string sql = $"SELECT * FROM `{Table}` WHERE {key} = '{value}'";
+
+                if (ConnectionPublic == null)
+                {
+                    ConnectionPublic = new SqliteConnection(ConnectionString);
+                    ConnectionPublic.Open();
+                }
+                var command = new SqliteCommand(sql, ConnectionPublic);
+                var reader = command.ExecuteReader();
+                bool response = reader.Read();
+                reader.Close();
+                return response;
+            }
+
+            public static bool CheckFromKey(string key, string Table)
+            {
+                string sql = $"SELECT * FROM `{Table}` WHERE key = '{key}'";
+
+                if (ConnectionPublic == null)
+                {
+                    ConnectionPublic = new SqliteConnection(ConnectionString);
+                    ConnectionPublic.Open();
+                }
+                var command = new SqliteCommand(sql, ConnectionPublic);
+                var reader = command.ExecuteReader();
+                bool response = reader.Read();
+                reader.Close();
+                return response;
+            }
+
+            public void DeleteFromId(object id)
+            {
+                string sql = $"DELETE FROM {Table} WHERE Id='{id}'";
+                var command = new SqliteCommand(sql, ConnectionPublic);
+                command.ExecuteNonQuery();
+            }
+
+            public void DeleteFromId(string key)
+            {
+                string sql = $"DELETE FROM {Table} WHERE Key='{key}'";
+                var command = new SqliteCommand(sql, ConnectionPublic);
+                command.ExecuteNonQuery();
+            }
+
+            public void DeleteFromKey(object key, string value)
+            {
+                string sql = $"DELETE FROM {Table} WHERE {key}='{value}'";
+                var command = new SqliteCommand(sql, ConnectionPublic);
+                command.ExecuteNonQuery();
+            }
+
+            public static void Add(List<string> fields, List<string> values, string Table)
+            {
+                var fieldsText = string.Empty;
+                var valuesText = string.Empty;
+
+                foreach (var field in fields) fieldsText += $"`{field}`, ";
+                foreach (var value in values) valuesText += $"'{value}', ";
+                fieldsText = fieldsText.Substring(0, fieldsText.Length - 2);
+                valuesText = valuesText.Substring(0, valuesText.Length - 2);
+
+                string sql = $@"INSERT INTO {Table} ({fieldsText}) VALUES ({valuesText});";
+                if (ConnectionPublic == null)
+                {
+                    ConnectionPublic = new SqliteConnection(ConnectionString);
+                    ConnectionPublic.Open();
+                }
+
+                var command = new SqliteCommand(sql, ConnectionPublic);
+                command.ExecuteNonQuery();
+            }
+
+        }
 
         public class Stat
         {

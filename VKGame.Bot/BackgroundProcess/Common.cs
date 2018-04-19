@@ -83,6 +83,7 @@ namespace VKGame.Bot.BackgroundProcess
         {
             while(true)
             {
+
                 try
                 {
                     if(DateTime.Now.Hour == 23 || DateTime.Now.Hour == 12)
@@ -139,6 +140,8 @@ namespace VKGame.Bot.BackgroundProcess
                     Bot.Statistics.NewError();
                     Logger.WriteError(e);
                 }
+                Thread.Sleep(3600000);
+
             }
 
         }

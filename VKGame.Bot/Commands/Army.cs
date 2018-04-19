@@ -46,7 +46,7 @@ namespace VKGame.Bot.Commands
             }
             public static bool CreateSoldiery(int count, long userId, bool boost = false)
             {
-                new Task(() => BackgroundProcess.Army.CreateSoldiery(new Models.DataCreateSoldiery() { UserId = userId, Count = count, Boost = boost})).Start();
+                new Thread(new ParameterizedThreadStart(BackgroundProcess.Army.CreateSoldiery)).Start(new Models.DataCreateSoldiery() { UserId = userId, Count = count, Boost = boost });
                 return true;
             }
 
@@ -56,7 +56,7 @@ namespace VKGame.Bot.Commands
 
             public static bool CreateTanks(int count, long userId, bool boost = false)
             {
-                new Task(() => BackgroundProcess.Army.CreateTanks(new Models.DataCreateSoldiery() { UserId = userId, Count = count, Boost = boost})).Start();
+                new Thread(new ParameterizedThreadStart(BackgroundProcess.Army.CreateTanks)).Start(new Models.DataCreateSoldiery() { UserId = userId, Count = count, Boost = boost });
                 return true;
             }
         }
