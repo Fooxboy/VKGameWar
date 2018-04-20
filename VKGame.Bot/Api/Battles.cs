@@ -48,6 +48,22 @@ namespace VKGame.Bot.Api
             DB.EditFromId(id, "HpMembers", hpStr);
         }
 
+        //Types:
+        //1 - обычная битва
+        //2 - соревнование
+        //3 - бой с ботом.
+        public long Type
+        {
+            get
+            {
+                const long defaultValue = 1;
+                var result = DB.GetFromId(id, "Type");
+                if (result is DBNull) return defaultValue;
+                return (long)result;
+            }
+            set => DB.EditFromId(id, "Type", value);
+        }
+
         public static bool Check(long id) => Database.Data.CheckFromId(id, "Battles");
 
         public static long Create(string name, long user, long price, long hp)

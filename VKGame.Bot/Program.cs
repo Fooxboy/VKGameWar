@@ -20,7 +20,6 @@ namespace VKGame.Bot
                 try
                 {
                     Logger.WriteDebug("Старт бота...");
-                    //var config = Config.Get();
                     const string Version = "1.5 beta";
                     Console.Title = $"War of the World  ver. {Version}";
 

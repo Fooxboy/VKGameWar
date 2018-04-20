@@ -75,6 +75,29 @@ namespace VKGame.Bot.Api
             }
             set => DB.EditFromId(id, "Level", value);
         }
+
+        public List<long> Gifts
+        {
+            get
+            {
+                var result = (string)DB.GetFromId(id, "Gifts");
+                var list = new List<long>();
+                if (result == "")
+                    return list;
+                string[] arrayResult = result.Split(',');
+                foreach (var ids in arrayResult)
+                    list.Add(Int64.Parse(ids));
+                return list;
+            }
+            set
+            {
+                List<long> gifts = value;
+                string memberStr = string.Empty;
+                foreach (var gift in gifts) memberStr += $"{gift},";
+                memberStr = memberStr.Remove(memberStr.Length - 1);
+                DB.EditFromId(id, "Gifts", memberStr);
+            }
+        }
         
         public long BattleId
         {

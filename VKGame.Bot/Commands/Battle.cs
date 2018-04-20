@@ -9,18 +9,18 @@ namespace VKGame.Bot.Commands
 {
     public class Battle : ICommand
     {
-        public string Name => "Бой";
-        public string Arguments => "(), (вариант_выбора)";
-        public string Caption => "Раздел предназначен для проведения боёв.";
-        public TypeResponse Type => TypeResponse.Text;
+        public override string Name => "Бой";
+        public override string Arguments => "(), (вариант_выбора)";
+        public override string Caption => "Раздел предназначен для проведения боёв.";
+        public override TypeResponse Type => TypeResponse.Text;
 
-        public List<string> Commands =>
+        public override List<string>  Commands =>
             new List<string>() {"бот", "атака", "вступить", "покинуть", "мой", "создать", "список"};
 
-        public Access Access => Access.User;
+        public override Access Access => Access.User;
 
 
-        public object Execute(Models.Message msg)
+        public override object Execute(Models.Message msg)
         {
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
@@ -34,7 +34,6 @@ namespace VKGame.Bot.Commands
 
         public static class API
         {
-
             public static long HpUser(long userId)
             {
                 var builds = new Api.Builds(userId);
@@ -56,41 +55,65 @@ namespace VKGame.Bot.Commands
             {
                 Statistics.JoinBattle();
                 var battle = new Api.Battles(idBattle);
-                var user = new Api.User(userId);
-                var registry = new Api.Registry(userId);
-                user.BattleId = idBattle;
-                registry.CountBattles += 1;
-                battle.AddMember(userId, API.HpUser(userId));
-                battle.Found *= 2;
-                battle.IsStart = true;
+                if(battle.Type == 1)
+                {
+                    var user = new User(userId);
+                    var registry = new Api.Registry(userId);
+                    user.BattleId = idBattle;
+                    registry.CountBattles += 1;
+                    battle.AddMember(userId, API.HpUser(userId));
+                    battle.Found *= 2;
+                    battle.IsStart = true;
+                }else if(battle.Type == 2)
+                {
+                    var user = new User(userId);
+                    var registry = new Api.Registry(userId);
+                    user.BattleId = idBattle;
+                    registry.CountBattles += 1;
+                    battle.AddMember(userId, API.HpUser(userId));
+                    battle.Found *= 2;
+                    battle.IsStart = true;
+                }
+                else if(battle.Type == 3)
+                {
+                    battle.AddMember(0, API.HpUser(userId));
+                    battle.Found *= 2;
+                    battle.IsStart = true;
+                }
+                
             }
 
-            public static long SoldieryHp = 10;
+            public const long SoldieryHp = 10;
             
-            public static long TanksHp = 10;
+            public const long TanksHp = 10;
 
-            public static long OneLvlSoldiery = 50;
+            public const long OneLvlSoldiery = 50;
 
-            public static long OneLevlTanks = 50;
+            public const long OneLevlTanks = 50;
 
-            public static long ResourceSoldiery = 5;
+            public const long ResourceSoldiery = 5;
 
-            public static long ResourceTanks = 5;
+            public const long ResourceTanks = 5;
 
             public static void EndBattle(long battleId, long winner)
             {
                 var battle = new Api.Battles(battleId);
-                foreach (var member in battle.Members)
+
+                if(battle.Type != 3)
                 {
-                    var user = new Api.User(member.Key);
-                    user.BattleId = 0;
-                    if (member.Key == winner)
+                    foreach (var member in battle.Members)
                     {
-                        user.Experience += 10;
-                        var registry = new Api.Registry(member.Key);
-                        registry.CountWinBattles += 1;
+                        var user = new User(member.Key);
+                        user.BattleId = 0;
+                        if (member.Key == winner)
+                        {
+                            user.Experience += 10;
+                            var registry = new Api.Registry(member.Key);
+                            registry.CountWinBattles += 1;
+                        }
                     }
                 }
+                
                 battle.IsActive = false;
 
                 new Task(() =>
@@ -100,13 +123,103 @@ namespace VKGame.Bot.Commands
             
             public static long Create(long userId, string nameBattle, long price)
             {
-                var user = new Api.User(userId);
-                var registry = new Api.Registry(userId);
+                var user = new User(userId);
+                var registry = new Registry(userId);
                 registry.CountBattles += 1;
                 registry.CountCreateBattles += 1;
-                var id = Api.Battles.Create(nameBattle, userId, price, API.HpUser(userId));
+                var id = Battles.Create(nameBattle, userId, price, HpUser(userId));
                 user.BattleId = id;
                 return id;
+            }
+
+            public static void BotAttack(long userId)
+            {
+                var user = new User(userId);
+                var battleId = user.Id;
+                var battle = new Battles(battleId);
+
+                var choise = new Random().Next(1, 3);
+                if (choise == 1)
+                {
+                    var typeBuilds = string.Empty;
+                    var buildsVrag = new Builds(userId);
+                    var lol = new Random().Next(1, 8);
+                    if (lol == 1)
+                    {
+                        buildsVrag.Apartments -= 1;
+                        typeBuilds = "Жилой дом";
+                    }
+                    else if (lol == 2)
+                    {
+                        buildsVrag.Eatery -= 1;
+                        typeBuilds = "Столовую";
+                    }
+                    else if (lol == 3)
+                    {
+                        buildsVrag.Hangars -= 1;
+                        typeBuilds = "Ангар";
+                    }
+                    else if (lol == 4)
+                    {
+                        buildsVrag.PowerGenerators -= 1;
+                        typeBuilds = "Энергостаницию";
+                    }
+                    else if (lol == 5)
+                    {
+                        buildsVrag.WarehouseEat -= 1;
+                        typeBuilds = "Холодильник";
+                    }
+                    else if (lol == 6)
+                    {
+                        buildsVrag.WarehouseEnergy -= 1;
+                        typeBuilds = "Батарею";
+                    }
+                    else if (lol == 7)
+                    {
+                        buildsVrag.WarehouseWater -= 1;
+                        typeBuilds = "Бочку с водой";
+                    }
+                    else if (lol == 8)
+                    {
+                        buildsVrag.WaterPressureStation -= 1;
+                        typeBuilds = "Водонапорную башню";
+                    }
+
+                    new Task(() => Api.Message.Send($"💣 Упс! Вам бот нанёс урон по заданию! И Вы потеряли {typeBuilds}." +
+                                                    "\n❓ Если у Вас количество зданий - 0 или меньше, то скорее купите новые!" +
+                                                    "\n❗ Скорее отвечайте: бой атака <количество> <тип войска>", user.Id)).Start();
+                }else if(choise ==2)
+                {
+                    new Task(() =>
+                  Api.Message.Send($"🤣 Ха-ха-ха!Бот не смог в Вас попасть! Так держать!" +
+                                   $"\n ❗ Скорее отвечайте: бой атака <количество> <тип войска>", userId)).Start();
+                    
+                }else if(choise == 3)
+                {
+                    int count = new Random().Next(5, 15);
+                    var levels = new Levels(user.Id);
+                    long coutHpArmy = 0;
+                    coutHpArmy += count * API.SoldieryHp;
+                    coutHpArmy += levels.Soldiery * API.OneLvlSoldiery;
+                    var members = battle.Members;
+                    var hp = members[userId] - coutHpArmy;
+                    battle.SetHp(userId, hp);
+
+                    if(hp <0 || hp == 0)
+                    {
+                        new Task(() =>
+                        Message.Send("😭 Вас разграмили! Вы проиграли! В следующей битве повезёт больше!", userId)).Start();
+                        user.BattleId = 0;
+                    }else
+                    {
+                        new Task(() => Api.Message.Send($"💣 ВАМ НАНЕСЁН УДАР! Урон: {coutHpArmy}" +
+                                               $"\n ❤ Ваше здоровье: [{hp}/{API.HpUser(userId)}]" +
+                                               $"\n ❗ Скорее отвечайте: бой атака <количество> <тип войска>", userId)).Start();
+                    }
+
+                   
+                }
+
             }
 
             public static long ChoiseUser(long user1, long user2)
@@ -135,6 +248,32 @@ namespace VKGame.Bot.Commands
                     else return user2;
                 }
             } 
+        }
+
+        [Attributes.Trigger("бот")]
+        public static string BattleBot(Models.Message msg)
+        {
+            var messageArray = msg.body.Split(' ');
+            var user = new User(msg.from_id);
+            if (user.BattleId != 0)
+                return "❌ Вы не можете начать новую битву, потому что Вы уже учавствуте в другой битве.";
+            int price;
+            try
+            {
+                price = Int32.Parse(messageArray[2]);
+            }catch(FormatException) { return "❌ Сумма должна быть числом!"; }
+            catch(IndexOutOfRangeException) { return "❌ Вы не указали сумму. Пример: Бой бот 1234"; }
+
+            if (!Notifications.RemovePaymentCard(price, user.Id, "бой с ботом"))
+                return $"❌ Извините, у Вас нет необходиой суммы на банковском счету. Необходимо: {price}";
+            var battleId = API.Create(user.Id, $"Bot vs {user.Name}", price);
+
+            var battle = new Battles(battleId);
+            battle.Type = 3;
+            API.JoinToBattle(0, battle.Id);
+            battle.UserAttack = user.Id;
+
+            return $"🏹 Вы успешно создали новую битву с ботом! Атака происходит так же, как и при обычном бое.";
         }
 
         
@@ -176,13 +315,13 @@ namespace VKGame.Bot.Commands
             long countHpArmy = 0;
             long countResoures = 0;
             string typeResourses = String.Empty;
-            var levels = new Api.Levels(msg.from_id);
+            var levels = new Levels(msg.from_id);
             
             if (typeArmy.ToLower() == "солдат")
             {
                 if (resources.Soldiery < count) return "❌ У Вас нет необходимого количества солдат.";
                 countHpArmy += count * API.SoldieryHp;
-                countHpArmy += count * API.OneLvlSoldiery;
+                countHpArmy +=  levels.Soldiery * API.OneLvlSoldiery;
                 countResoures += count * API.ResourceSoldiery;
                 typeResourses = "🍕";
                 if (resources.Food < countResoures)
@@ -194,7 +333,7 @@ namespace VKGame.Bot.Commands
             {
                 if (resources.Tanks < count) return "❌ У Вас нет необходимого количества танков.";
                 countHpArmy += count * API.TanksHp;
-                countHpArmy += count * API.OneLevlTanks;
+                countHpArmy += levels.Tanks * API.OneLevlTanks;
                 countResoures += count * API.ResourceTanks;
                 typeResourses = "💧";
                 if (resources.Water < countResoures)
@@ -218,9 +357,28 @@ namespace VKGame.Bot.Commands
             {
                 if (member.Key != msg.from_id) vrag = member.Key;
             }
+
+            User userVrag = null;
+            Api.Skills skillsVrag = null ;
+
+            if(battle.Type == 1)
+            {
+                 userVrag = new Api.User(vrag);
+                 skillsVrag = new Api.Skills(vrag);
+            }else if(battle.Type == 2)
+            {
+                userVrag = new User(vrag);
+                skillsVrag = new Api.Skills(vrag);
+            }else if(battle.Type == 3)
+            {
+                userVrag = new Api.User(msg.from_id);
+                skillsVrag = new Api.Skills(msg.from_id);
+            }else
+            {
+                userVrag = new Api.User(msg.from_id);
+                skillsVrag = new Api.Skills(msg.from_id);
+            }
             
-            var userVrag = new Api.User(vrag);
-            var skillsVrag = new Api.Skills(vrag);
 
             var resourcesStr = $"❗ На атаку вы потратили: {countResoures} {typeResourses}";
             var myHp = $"❤ Ваше здоровье: [{members[msg.from_id]}/{API.HpUser(msg.from_id)}]";
@@ -280,115 +438,213 @@ namespace VKGame.Bot.Commands
                 var kek = r.Next(1, 3);
                 if (kek == 2)
                 {
-                    var buildsVrag = new Builds(vrag);
-                    var lol = r.Next(1, 8);
-                    if (lol == 1)
+                    if(battle.Type == 1)
                     {
-                        buildsVrag.Apartments -= 1;
-                        typeBuilds = "Жилой дом";
-                    }else if (lol == 2)
+                        var buildsVrag = new Builds(vrag);
+                        var lol = r.Next(1, 8);
+                        if (lol == 1)
+                        {
+                            buildsVrag.Apartments -= 1;
+                            typeBuilds = "Жилой дом";
+                        }
+                        else if (lol == 2)
+                        {
+                            buildsVrag.Eatery -= 1;
+                            typeBuilds = "Столовую";
+                        }
+                        else if (lol == 3)
+                        {
+                            buildsVrag.Hangars -= 1;
+                            typeBuilds = "Ангар";
+                        }
+                        else if (lol == 4)
+                        {
+                            buildsVrag.PowerGenerators -= 1;
+                            typeBuilds = "Энергостаницию";
+                        }
+                        else if (lol == 5)
+                        {
+                            buildsVrag.WarehouseEat -= 1;
+                            typeBuilds = "Холодильник";
+                        }
+                        else if (lol == 6)
+                        {
+                            buildsVrag.WarehouseEnergy -= 1;
+                            typeBuilds = "Батарею";
+                        }
+                        else if (lol == 7)
+                        {
+                            buildsVrag.WarehouseWater -= 1;
+                            typeBuilds = "Бочку с водой";
+                        }
+                        else if (lol == 8)
+                        {
+                            buildsVrag.WaterPressureStation -= 1;
+                            typeBuilds = "Водонапорную башню";
+                        }
+
+                        new Task(() => Api.Message.Send($"💣 Упс! Вам противник нанёс урон по заданию! И Вы потеряли {typeBuilds}." +
+                                                        "\n❓ Если у Вас количество зданий - 0 или меньше, то скорее купите новые!" +
+                                                        "\n❗ Скорее отвечайте: бой атака <количество> <тип войска>", vrag)).Start();
+                    }else if(battle.Type == 2)
                     {
-                        buildsVrag.Eatery -= 1;
-                        typeBuilds = "Столовую";
-                    }else if (lol == 3)
+                        var buildsVrag = new Builds(vrag);
+                        var lol = r.Next(1, 8);
+                        if (lol == 1)
+                        {
+                            buildsVrag.Apartments -= 1;
+                            typeBuilds = "Жилой дом";
+                        }
+                        else if (lol == 2)
+                        {
+                            buildsVrag.Eatery -= 1;
+                            typeBuilds = "Столовую";
+                        }
+                        else if (lol == 3)
+                        {
+                            buildsVrag.Hangars -= 1;
+                            typeBuilds = "Ангар";
+                        }
+                        else if (lol == 4)
+                        {
+                            buildsVrag.PowerGenerators -= 1;
+                            typeBuilds = "Энергостаницию";
+                        }
+                        else if (lol == 5)
+                        {
+                            buildsVrag.WarehouseEat -= 1;
+                            typeBuilds = "Холодильник";
+                        }
+                        else if (lol == 6)
+                        {
+                            buildsVrag.WarehouseEnergy -= 1;
+                            typeBuilds = "Батарею";
+                        }
+                        else if (lol == 7)
+                        {
+                            buildsVrag.WarehouseWater -= 1;
+                            typeBuilds = "Бочку с водой";
+                        }
+                        else if (lol == 8)
+                        {
+                            buildsVrag.WaterPressureStation -= 1;
+                            typeBuilds = "Водонапорную башню";
+                        }
+
+                        new Task(() => Api.Message.Send($"💣 Упс! Вам противник нанёс урон по заданию! И Вы потеряли {typeBuilds}." +
+                                                        "\n❓ Если у Вас количество зданий - 0 или меньше, то скорее купите новые!" +
+                                                        "\n❗ Скорее отвечайте: бой атака <количество> <тип войска>", vrag)).Start();
+                    }else if(battle.Type == 3)
                     {
-                        buildsVrag.Hangars -= 1;
-                        typeBuilds = "Ангар";
-                    }else if (lol == 4)
+
+                    }
+                    
+                    if(battle.Type == 1 || battle.Type == 2)
                     {
-                        buildsVrag.PowerGenerators -= 1;
-                        typeBuilds = "Энергостаницию";
-                    }else if (lol == 5)
+                        battle.UserAttack = vrag;
+                        return $"👍 Отличный удар! Вы нанесли критический урон и забрали у врага {typeBuilds}! Кажется, кому-то скоро нужно покупать новое здание:)" +
+                          $"\n {resourcesStr}" +
+                          $"\n {myHp}";
+                    }else
                     {
-                        buildsVrag.WarehouseEat -= 1;
-                        typeBuilds = "Холодильник";
-                    }else if (lol == 6)
+                        API.BotAttack(user.Id);
+                        return $"👍 Отличный удар! Вы нанесли критический урон и забрали у бота одно здание!" +
+                            $"\n {resourcesStr}" +
+                            $"\n {myHp}";
+                    }               
+                }
+                
+                if(kek == 1 || kek ==3)
+                {
+                    if(battle.Type ==1 || battle.Type ==2)
                     {
-                        buildsVrag.WarehouseEnergy -= 1;
-                        typeBuilds = "Батарею";
-                    }else if (lol == 7)
+                        new Task(() =>
+                       Message.Send($"💣 Воу-Воу! Противник Вам нанёс урон по зданию! Здоровье зданий уменьшелось!" +
+                                        $"\n❗ Скорее отвечайте: бой атака <количество> <тип войска>", vrag)).Start();
+                        battle.UserAttack = vrag;
+                        return $"⚔ Ну почти.. Ты попал противнику в здание и нанёс по нем урон!" +
+                               $"\n{resourcesStr}" +
+                               $"\n {myHp}";
+                    }else
                     {
-                        buildsVrag.WarehouseWater -= 1;
-                        typeBuilds = "Бочку с водой";
-                    }else if (lol == 8)
-                    {
-                        buildsVrag.WaterPressureStation -= 1;
-                        typeBuilds = "Водонапорную башню";
+                        return $"⚔ Ну почти.. Ты попал боту в здание и нанёс по нем урон!" +
+                               $"\n{resourcesStr}" +
+                               $"\n {myHp}";
                     }
 
-                    new Task(() => Api.Message.Send($"💣 Упс! Вам противник нанёс урон по заданию! И Вы потеряли {typeBuilds}." +
-                                                    "\n❓ Если у Вас количество зданий - 0 или меньше, то скорее купите новые!" +
-                                                    "\n❗ Скорее отвечайте: бой атака <количество> <тип войска>", vrag)).Start();
-                    battle.UserAttack = vrag;
-                    return $"👍 Отличный удар! Вы нанесли критический урон и забрали у врага {typeBuilds}! Кажется, кому-то скоро нужно покупать новое здание:)" +
-                           $"\n {resourcesStr}" +
-                           $"\n {myHp}";
                 }
-                
-                if(kek == 1)
-                {
-                    
-                    new Task(()=>
-                        Api.Message.Send($"💣 Воу-Воу! Противник Вам нанёс урон по зданию! Здоровье зданий уменьшелось!" +
-                                         $"\n❗ Скорее отвечайте: бой атака <количество> <тип войска>", vrag)).Start();
-                    battle.UserAttack = vrag;
-                    return $"⚔ Ну почти.. Ты попал противнику в здание и нанёс по нем урон!" +
-                           $"\n{resourcesStr}" +
-                           $"\n {myHp}";
-                }
-                
-                if (kek == 3)
-                {
-                    new Task(()=>
-                        Api.Message.Send($"💣 Воу-Воу! Противник Вам нанёс урон по зданию! Здоровье зданий уменьшелось!" +
-                                         $"\n❗ Скорее отвечайте: бой атака <количество> <тип войска>", vrag)).Start();
-                    battle.UserAttack = vrag;
-
-                    return $"⚔ Ну почти.. Ты попал противнику в здание и нанёс по нем урон!" +
-                           $"\n{resourcesStr}" +
-                           $"\n {myHp}";
-                }
-
             }
 
             if (chaise == 2)
             {
-                new Task(()=> 
-                    Api.Message.Send($"🤣 Ха-ха-ха! Ваш враг не смог в Вас попасть! Так держать!" +
-                                     $"\n ❗ Скорее отвечайте: бой атака <количество> <тип войска>", vrag)).Start();
-                battle.UserAttack = vrag;
-                return $"😢 Нуу было близко! Вы промазали! Попробуйте в следующий раз." +
-                       $"\n {resourcesStr}" +
-                       $"\n {myHp}";
+
+                if(battle.Type == 1 || battle.Type == 2)
+                {
+                    new Task(() =>
+                   Api.Message.Send($"🤣 Ха-ха-ха! Ваш враг не смог в Вас попасть! Так держать!" +
+                                    $"\n ❗ Скорее отвечайте: бой атака <количество> <тип войска>", vrag)).Start();
+                    battle.UserAttack = vrag;
+                    return $"😢 Нуу было близко! Вы промазали! Попробуйте в следующий раз." +
+                           $"\n {resourcesStr}" +
+                           $"\n {myHp}";
+                }else
+                {
+                    API.BotAttack(user.Id);
+                    return $"😢 Нуу было близко! Вы промазали! Попробуйте в следующий раз." +
+                          $"\n {resourcesStr}" +
+                          $"\n {myHp}";
+                }        
             }
 
             if (chaise == 3)
             {
-                var hpVrag = members[vrag]- countHpArmy;
-                if (hpVrag < 0 || hpVrag < 0)
+                var hpVrag = members[vrag] - countHpArmy;
+                if (hpVrag < 0 || hpVrag == 0)
                 {
                     //player win
-                    
-                    var registryVrag = new Api.Registry(vrag);
-                    registryVrag.CountLoserBattle += 1;
-                    
-                    new Task(()=> Api.Message.Send("😭 Вас разграмили! Вы проиграли! В следующей битве повезёт больше!", vrag)).Start();
-                    API.EndBattle(battle.Id, msg.from_id);
-                    return resourcesStr;
+
+                    if (battle.Type == 1)
+                    {
+                        var registryVrag = new Registry(vrag);
+                        registryVrag.CountLoserBattle += 1;
+
+                        new Task(() =>
+                        Api.Message.Send("😭 Вас разграмили! Вы проиграли! В следующей битве повезёт больше!", vrag)).Start();
+                        API.EndBattle(battle.Id, msg.from_id);
+                        return resourcesStr;
+
+                    }
+                    else if (battle.Type == 2)
+                    {
+                        var registryVrag = new Registry(vrag);
+                        registryVrag.CountLoserBattle += 1;
+
+                    }
+                    else if (battle.Type == 3)
+                    {
+                        API.EndBattle(battle.Id, msg.from_id);
+                    }
                 }
-                
+
                 battle.SetHp(vrag, hpVrag);
+
+                if(battle.Type == 3)
+                {
+                    API.BotAttack(user.Id);
+                    return $"✨ Прямо  в яблочко! Вы нанесли противнику {countHpArmy} урона!" +
+                       $"\n {resourcesStr}" +
+                       $"\n {myHp}";
+                }
 
                 new Task(() => Api.Message.Send($"💣 ВАМ НАНЕСЁН УДАР! Урон: {countHpArmy}" +
                                                 $"\n ❤ Ваше здоровье: [{hpVrag}/{API.HpUser(vrag)}]" +
                                                 $"\n ❗ Скорее отвечайте: бой атака <количество> <тип войска>", vrag)).Start();
-                
+
                 battle.UserAttack = vrag;
                 return $"✨ Прямо  в яблочко! Вы нанесли противнику {countHpArmy} урона!" +
                        $"\n {resourcesStr}" +
                        $"\n {myHp}";
             }
-
             return "❌ Произошла неизвестная ошибка, при выполнении. Статус неизвестен.";
         }
         
@@ -582,7 +838,8 @@ namespace VKGame.Bot.Commands
                    "\n " +
                    "\n ⚔ Бой список -- выводит список доступных битв." +
                    "\n ✨ Бой создать (цена) (название) -- создание собственной битвы." +
-                   "\n 😎 Бой вступить (ID) -- вступить в уже созданную битву. ";
+                   "\n 😎 Бой вступить (ID) -- вступить в уже созданную битву." +
+                   "\n 🔫 Бой бот (цена) -- создаёт битву с ботом. ";
         }
 
         

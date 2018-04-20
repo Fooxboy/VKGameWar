@@ -14,18 +14,32 @@ namespace VKGame.Bot
         /// <param name="Сообщение"></param>
         public static void WriteWaring(object message)
         {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            var time = DateTime.Now;
-            Console.WriteLine($"[{time}]=> {message}");
-            Console.ResetColor();
+            try
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                var time = DateTime.Now;
+                Console.WriteLine($"[{time}]=> {message}");
+                Console.ResetColor();
+            }catch(Exception e)
+            {
+                WriteError(e);
+            }
+            
         }
 
         public static void NewMessage(object message)
         {
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            var time = DateTime.Now;
-            Console.WriteLine($"[{time}]=> {message}");
-            Console.ResetColor();
+            try
+            {
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                var time = DateTime.Now;
+                Console.WriteLine($"[{time}]=> {message}");
+                Console.ResetColor();
+            }catch(Exception e)
+            {
+                WriteError(e);
+            }
+           
         }
         
         /// <summary>
@@ -34,14 +48,47 @@ namespace VKGame.Bot
         /// <param name="Сообщение"></param>
         public static void WriteError(Exception e)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            var time = DateTime.Now;
-            Console.WriteLine($"[{time}]=>" +
-                $"\n >>ИСКЛЮЧЕНИЕ: {e.GetType().Name}" +
-                $"\n >>СООБЩЕНИЕ: {e.Message}" +
-                $"\n >>STACK TRACE: {e.StackTrace}");
-            Console.ResetColor();
-            Api.Errors.Add(e);
+            try
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                var time = DateTime.Now;
+                Console.WriteLine($"[{time}]=>" +
+                    $"\n >>ИСКЛЮЧЕНИЕ: {e.GetType().Name}" +
+                    $"\n >>СООБЩЕНИЕ: {e.Message}" +
+                    $"\n >>STACK TRACE: {e.StackTrace}");
+                Console.ResetColor();
+                Api.Errors.Add(e);
+            }catch(Exception)
+            {
+                try
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    var time = DateTime.Now;
+                    Console.WriteLine($"[{time}]=>" +
+                        $"\n >>ИСКЛЮЧЕНИЕ: {e.GetType().Name}" +
+                        $"\n >>СООБЩЕНИЕ: {e.Message}" +
+                        $"\n >>STACK TRACE: {e.StackTrace}");
+                    Console.ResetColor();
+                }
+                catch (Exception)
+                {
+                    try
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        var time = DateTime.Now;
+                        Console.WriteLine($"[{time}]=>" +
+                            $"\n >>ИСКЛЮЧЕНИЕ: {e.GetType().Name}" +
+                            $"\n >>СООБЩЕНИЕ: {e.Message}" +
+                            $"\n >>STACK TRACE: {e.StackTrace}");
+                        Console.ResetColor();
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                }
+            }
+            
 
         }
 
@@ -51,10 +98,17 @@ namespace VKGame.Bot
         /// <param name="Сообщение"></param>
         public static void WriteDebug(object message)
         {
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            var time = DateTime.Now;
-            Console.WriteLine($"[{time}]=> {message}");
-            Console.ResetColor();
+            try
+            {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                var time = DateTime.Now;
+                Console.WriteLine($"[{time}]=> {message}");
+                Console.ResetColor();
+            }catch(Exception e)
+            {
+                WriteError(e);
+            }
+            
         }
     }
 }

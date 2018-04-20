@@ -30,7 +30,11 @@ namespace VKGame.Bot.Api
                 string membersStr = (string)DB.GetFromId(id, "Ref");
                 string[] membersArray = membersStr.Split(',');
                 List<long> members = new List<long>();
-                foreach (var member in membersArray) members.Add(Int64.Parse(member));
+                if(membersArray.Length !=1)
+                {
+                    foreach (var member in membersArray) members.Add(Int64.Parse(member));
+
+                }
                 return members;
             }
             set

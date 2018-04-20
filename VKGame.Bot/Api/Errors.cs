@@ -10,13 +10,20 @@ namespace VKGame.Bot.Api
 
         public Errors()
         {
-            DB = new Database.Stat("Bugs");
+            DB = new Database.Stat("Errors");
         }
 
         public static void Add(Exception e)
         {
-            Database.Stat.Add(new List<string> { "Exception", "Text", "Date", "StackTrace" },
-                new List<string>() { e.ToString(), e.Message, DateTime.Now.ToString(), e.StackTrace }, "Errors");
+            if(e is System.Net.WebException)
+            {
+
+            }else
+            {
+                Database.Stat.Add(new List<string> { "Exception", "Text", "Date", "StackTrace" },
+                new List<string>() { e.GetType().Name, e.Message, DateTime.Now.ToString(), e.StackTrace }, "Errors");
+            }
+            
         }
     }
 }

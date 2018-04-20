@@ -19,13 +19,16 @@ namespace VKGame.Bot.BackgroundProcess
                     {
                         foreach (var idCompetition in listCompetitions)
                         {
-                            var competition = new Api.Competitions(idCompetition);
-                            if (!competition.IsEnd)
+                            if(idCompetition != 0)
                             {
-                                competition.Time = competition.Time - 1;
-                                if (competition.Time == 0)
-                                    Commands.Competitions.EndCompetition(competition.Id);
-                            }            
+                                var competition = new Api.Competitions(idCompetition);
+                                if (!competition.IsEnd)
+                                {
+                                    competition.Time = competition.Time - 1;
+                                    if (competition.Time == 0)
+                                        Commands.Competitions.EndCompetition(competition.Id);
+                                }
+                            }                   
                         }
                     }
                 }catch(Exception e)
