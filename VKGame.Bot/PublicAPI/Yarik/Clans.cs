@@ -22,6 +22,90 @@ namespace VKGame.Bot.PublicAPI.Yarik
             return result;
         }
 
+        public static object SetBattleId(string clan, string value)
+        {
+            if (!Check(clan))
+                return new Error()
+                {
+                    Code = 4,
+                    Message = "Клан с таким ID не зарегестирован."
+                };
+
+            var db = new Database.Public("Clans");
+
+            db.EditFromKey("Id", clan, "BattleId", value);
+            return true;
+        }
+
+        public static object GetMembers(string clan)
+        {
+            if (!Check(clan))
+                return new Error()
+                {
+                    Code = 4,
+                    Message = "Клан с таким ID не зарегестирован."
+                };
+            var db = new Database.Public("Clans");
+
+            var strMembers = (string)db.GetFromKey("Id", clan, "Level");
+
+            string[] membersArray = strMembers.Split(',');
+            List<long> members = new List<long>();
+            foreach (var member in membersArray) members.Add(Int64.Parse(member));
+            return members;
+        }
+
+        public static object AddMember(string clan, long user)
+        {
+            if (!Check(clan))
+                return new Error()
+                {
+                    Code = 4,
+                    Message = "Клан с таким ID не зарегестирован."
+                };
+
+            var members = (List<long>)GetMembers(clan);
+            members.Add(user);
+            SetMembers(clan, members);
+            return true;
+        }
+
+        public static object Remove(string clan, long user)
+        {
+            if (!Check(clan))
+                return new Error()
+                {
+                    Code = 4,
+                    Message = "Клан с таким ID не зарегестирован."
+                };
+
+            var members = (List<long>)GetMembers(clan);
+            members.Remove(user);
+            SetMembers(clan, members);
+            return true;
+        }
+
+        public static object SetMembers(string clan, List<long> members)
+        {
+            if (!Check(clan))
+                return new Error()
+                {
+                    Code = 4,
+                    Message = "Клан с таким ID не зарегестирован."
+                };
+
+            var db = new Database.Public("Clans");
+
+            string memberStr = string.Empty;
+            foreach (var member in members)
+                memberStr += $"{member},";
+
+            memberStr = memberStr.Remove(memberStr.Length - 1);
+            db.EditFromKey("Id", clan, "Members", memberStr);
+
+            return true;
+        }
+
         public static object SetFound(string clan, long found)
         {
             if (!Check(clan))

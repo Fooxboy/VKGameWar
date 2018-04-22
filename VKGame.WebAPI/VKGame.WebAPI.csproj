@@ -26,7 +26,7 @@
 
   <ItemGroup>
     <Reference Include="VKGame.Bot">
-      <HintPath>..\VKGame.Bot\bin\Lib\netcoreapp2.0\VKGame.Bot.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Libs\VKGame.Bot.dll</HintPath>
     </Reference>
   </ItemGroup>
 
