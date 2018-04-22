@@ -59,6 +59,8 @@ namespace VKGame.Bot.PublicAPI.Yarik
             Clans.SetIsSearchBattle(clanId, 0);
             Clans.SetIsSearchBattle(clanEnemy, 0);
 
+            //Устанавливаем значения isStartBattle
+
             //Генерируем публичный ID битвы для обоих кланов.
             byte[] hash = Encoding.ASCII.GetBytes($"{clanId}vs{clanEnemy}_in_{DateTime.Now}");
             MD5 md5 = new MD5CryptoServiceProvider();

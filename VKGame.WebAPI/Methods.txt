@@ -1,0 +1,134 @@
+
+===================================================================================================
+
+КЛАНЫ:
+
+-Значение id всегда string.
+
+localhost:5789/publicAPI/clan/treasury  - получение / изменение казны
+Параметры: 
+- id - ID клана
+- count (integer) - установка фонда.
+count - необязательный параметр.
+Резултат:
+При указании count: boolean
+Без указания count: integer
+
+localhost:5789/publicAPI/clan/battleId - получение / изменеие id битвы
+Параметры:
+- id - ID клана 
+- battle(string) - установка id битвы
+battle - необязательный параметр.
+Результат:
+При указании battle: boolean
+Без указания battle: string
+
+localhost:5789/publicAPI/clan/members  - получение списка Id участников
+Параметры:
+- id - ID клана.
+Результат:
+Массив integer
+
+localhost:5789/publicAPI/clan/addMember - добавление участника в клна
+Параметры: 
+- id - ID клана
+- user(integer) - пользователь, которого нужно добавить.
+Результат: 
+boolean
+
+localhost:5789/publicAPI/clan/removeMember - удаление участника из клана
+Параметры:
+- id - ID клана
+- user(integer) - пользователь, которого нужно удалить.
+Результат:
+boolean
+
+
+localhost:5789/publicAPI/clan/check - проверка существования клана
+Параметры:
+- id - ID клана
+Результат:
+boolean
+
+localhost:5789/publicAPI/clan/level - получение / изменение уровня клана
+Параметры:
+- id - ID клана
+- value(integer) - значение уровня клана
+value - необязательный параметр
+Результат:
+При указании value: boolean
+Без указания value: integer
+
+(сервисный метод)
+localhost:5789/publicAPI/clan/isSearchBattle - полчение / измение статуса клана для подбора битв.
+Параметры:
+- id - ID клана
+- status(boolean) - значение статуса подбора битв.
+status - необязательный параметр.
+Результат:
+boolean
+
+(Устарело)
+localhost:5789/publicAPI/clan/countMembers - получение / изменение количества участников
+Параметры:
+- id - ID клана
+- value(boolean) - значение количетсва участников.
+value - необязательный параметр
+Результат:
+integer or boolean
+
+(сервисный метод)
+localhost:5789/publicAPI/clan/isStartBattle - полчение / измение статуса старта битвы в клане.
+Параметры:
+- id - ID клана 
+- status(boolean) - значение статуса.
+status - необязательный параметр.
+Результат:
+boolean
+
+localhost:5789/publicAPI/clan/name - полчение / измение имени клана
+Параметры:
+- id - ID клана
+- value(string) - имя.
+value - необязательный параметр.
+Результат:
+При указании value: boolean
+Без указания value: string
+
+БИТВЫ:
+
+id - всегда string
+
+localhost:5789/publicAPI/battle/check - проверка существования битвы
+Параметры: 
+ - id - ID битвы.
+Результат: 
+boolean
+
+localhost:5789/publicAPI/battle/clanOne - получение id первого клана учавстующего в войне.
+Параметры: 
+- id - ID битвы
+Результат:
+integer
+
+localhost:5789/publicAPI/battle/clanTwo - получение id второго клана учавстующего в войне.
+параметры:
+- id - ID битвы
+Результат:
+integer
+
+localhost:5789/publicAPI/battle/clanEnemy - получение id клана, который воюет против клана с переданным id
+Параметры:
+- id - ID битвы
+- clan(string) - ID клана, для которого нужно определить противника.
+Результат:
+integer
+
+localhost:5789/publicAPI/battle/start - поиск или установка в очередь клановых боёв
+Параметры: 
+- clan(string) - id клана, который начинает клановую битву.
+Результат:
+объект CreateBattle 
+
+
+======================================================================================================

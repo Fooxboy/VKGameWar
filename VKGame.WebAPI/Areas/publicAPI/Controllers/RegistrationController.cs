@@ -29,8 +29,7 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
 
         public IActionResult army(long id)
         {
-            var reg = new Bot.PublicAPI.Yarik.Registration();
-            var result = reg.Army(id);
+            var result = Bot.PublicAPI.Yarik.Registration.Army(id);
             var model = new RootResponse() { result = true };
             if (result is Bot.PublicAPI.Models.IError) model.result = false;
             model.data = result;
