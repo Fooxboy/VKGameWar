@@ -106,7 +106,7 @@ namespace VKGame.Bot.Commands
             var text = "лол";
             if (access.ToLower() == "принять")
             {
-                //TODO: допилить создание клановых боев.
+                //таTODO: допилить создание клановых боев.
 
             }
             else if (access.ToLower() == "отклонить")
