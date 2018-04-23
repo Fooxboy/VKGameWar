@@ -12,14 +12,13 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
 {
     [Produces("application/json")]
     [Area("publicAPI")]
-    public class BattleController : Controller
+    public class UserController : Controller
     {
-        public IActionResult start(string clan)
+        public IActionResult money(long id, int value)
         {
             try
             {
-
-                if (clan is null || clan == string.Empty)
+                if (id == 0)
                 {
                     return Json(new RootResponse<IError>()
                     {
@@ -32,18 +31,28 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
                     });
                 }
 
-                var result = Bot.PublicAPI.Yarik.Battle.Create(clan);
-                var model = new RootResponse() { result = true };
-                if (result is IError) model.result = false;
-                model.data = result;
-                return Json(model);
+                if(value == 0)
+                {
+                    var result = Bot.PublicAPI.Yarik.Users.Money(id);
+                    var model = new RootResponse() { result = true };
+                    if (result is IError) model.result = false;
+                    model.data = result;
+                    return Json(model);
+                }else
+                {
+                    var result = Bot.PublicAPI.Yarik.Users.Money(id);
+                    var model = new RootResponse() { result = true };
+                    if (result is IError) model.result = false;
+                    model.data = result;
+                    return Json(model);
+                }
             }
             catch (Exception e)
             {
                 var model = new RootResponse<Models.Error>()
                 {
                     result = false,
-                    data = new WebAPI.Areas.publicAPI.Models.Error()
+                    data = new Models.Error()
                     {
                         Code = 10,
                         Message = $"Внутренняя ошибка сервера." +
@@ -54,12 +63,11 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
             }
         }
 
-        public IActionResult check(string id)
+        public IActionResult units(long id)
         {
             try
             {
-
-                if (id is null || id == string.Empty)
+                if (id == 0)
                 {
                     return Json(new RootResponse<IError>()
                     {
@@ -72,18 +80,19 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
                     });
                 }
 
-                var result = Bot.PublicAPI.Yarik.Battle.Check(id);
+                var result = Bot.PublicAPI.Yarik.Users.GetArmy(id);
                 var model = new RootResponse() { result = true };
                 if (result is IError) model.result = false;
                 model.data = result;
                 return Json(model);
+
             }
             catch (Exception e)
             {
                 var model = new RootResponse<Models.Error>()
                 {
                     result = false,
-                    data = new WebAPI.Areas.publicAPI.Models.Error()
+                    data = new Models.Error()
                     {
                         Code = 10,
                         Message = $"Внутренняя ошибка сервера." +
@@ -94,12 +103,11 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
             }
         }
 
-        public IActionResult clanOne(string id)
+        public IActionResult editUnitLvl(long id, int type, int lvl)
         {
             try
             {
-
-                if (id is null || id == string.Empty)
+                if (id == 0 || type == 0 || lvl == 0)
                 {
                     return Json(new RootResponse<IError>()
                     {
@@ -112,7 +120,7 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
                     });
                 }
 
-                var result = Bot.PublicAPI.Yarik.Battle.GetClanOne(id);
+                var result = Bot.PublicAPI.Yarik.Users.EditUnit(id, type, lvl);
                 var model = new RootResponse() { result = true };
                 if (result is IError) model.result = false;
                 model.data = result;
@@ -134,12 +142,11 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
             }
         }
 
-        public IActionResult clanTwo(string id)
+        public IActionResult editUnitStatus(long id, int type, bool status)
         {
             try
             {
-
-                if (id is null || id == string.Empty)
+                if (id == 0 || type == 0)
                 {
                     return Json(new RootResponse<IError>()
                     {
@@ -152,7 +159,7 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
                     });
                 }
 
-                var result = Bot.PublicAPI.Yarik.Battle.GetClanTwo(id);
+                var result = Bot.PublicAPI.Yarik.Users.EditStatusUnit(id, type, status);
                 var model = new RootResponse() { result = true };
                 if (result is IError) model.result = false;
                 model.data = result;
@@ -174,12 +181,11 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
             }
         }
 
-        public IActionResult clanEnemy(string id, string clan)
+        public IActionResult check(long id)
         {
             try
             {
-
-                if (id is null || id == string.Empty || clan is null || clan == string.Empty)
+                if (id == 0)
                 {
                     return Json(new RootResponse<IError>()
                     {
@@ -192,7 +198,7 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
                     });
                 }
 
-                var result = Bot.PublicAPI.Yarik.Battle.GetClanEnemy(id, clan);
+                var result = Bot.PublicAPI.Yarik.Users.Check(id);
                 var model = new RootResponse() { result = true };
                 if (result is IError) model.result = false;
                 model.data = result;

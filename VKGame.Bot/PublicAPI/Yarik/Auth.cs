@@ -13,6 +13,12 @@ namespace VKGame.Bot.PublicAPI.Yarik
 
         }
 
-        public string NoAccess => Newtonsoft.Json.JsonConvert.SerializeObject(new Models.Error() { Code = 9, Message = "У Вас нет доступа к этому методу." });
+        public string NoAccess => Newtonsoft.Json.JsonConvert.SerializeObject(new RootResponse() { result = false, data = new Models.Error() { Code = 9, Message = "У Вас нет доступа к этому методу." } });
+    }
+
+    public class RootResponse
+    {
+        public bool result { get; set; }
+        public object data { get; set; }
     }
 }

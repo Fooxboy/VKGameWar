@@ -10,8 +10,19 @@ namespace VKGame.Bot.PublicAPI.Yarik
     {
         public static object Money(long userId)
         {
+            if (!Check(userId))
+                return new Models.Error() { Code = 12, Message = "Этот пользователь не зарегестирован." };
             var db = new Database.Public("Users");
             return (long)db.GetFromId(userId, "Money");
+        }
+
+        public static object SetMoney(long userId, int count)
+        {
+            if (!Check(userId))
+                return new Models.Error() { Code = 12, Message = "Этот пользователь не зарегестирован." };
+            var db = new Database.Public("Users");
+            db.EditFromId(userId, "Money", count);
+            return true;
         }
 
         public static object GetArmy(long userId)

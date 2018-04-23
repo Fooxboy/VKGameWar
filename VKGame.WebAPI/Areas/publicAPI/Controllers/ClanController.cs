@@ -18,6 +18,20 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
         {
             try
             {
+
+                if (id is null || id == string.Empty)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
+
                 if (count == 0)
                 {
                     var result = Bot.PublicAPI.Yarik.Clans.GetFound(id);
@@ -55,6 +69,20 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
         {
             try
             {
+
+                if (id is null || id == string.Empty)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
+
                 if (battle is null)
                 {
                     var result = Bot.PublicAPI.Yarik.Clans.GetBattleId(id);
@@ -93,6 +121,20 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
         {
             try
             {
+
+                if (id is null || id == string.Empty)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
+
                 var result = Bot.PublicAPI.Yarik.Clans.GetMembers(id);
                 var model = new RootResponse() { result = true };
                 if (result is IError) model.result = false;
@@ -120,6 +162,20 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
         {
             try
             {
+
+                if (id is null || id == string.Empty || user == 0)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
+
                 var result = Bot.PublicAPI.Yarik.Clans.AddMember(id, user);
                 var model = new RootResponse() { result = true };
                 if (result is IError) model.result = false;
@@ -146,6 +202,20 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
         {
             try
             {
+
+                if (id is null || id == string.Empty || user == 0)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
+
                 var result = Bot.PublicAPI.Yarik.Clans.Remove(id, user);
                 var model = new RootResponse() { result = true };
                 if (result is IError) model.result = false;
@@ -172,6 +242,19 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
         {
             try
             {
+                if (id is null || id == string.Empty)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
+
                 var result = Bot.PublicAPI.Yarik.Clans.Check(id);
                 var model = new RootResponse() { result = true };
                 if (result is IError) model.result = false;
@@ -198,7 +281,21 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
         {
             try
             {
-                if(value ==0)
+
+                if (id is null || id == string.Empty)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
+
+                if (value ==0)
                 {
                     var result = Bot.PublicAPI.Yarik.Clans.Level(id);
                     var model = new RootResponse() { result = true };
@@ -231,6 +328,20 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
 
         public IActionResult isSearchBattle(string id, bool status=false)
         {
+
+            if (id is null || id == string.Empty)
+            {
+                return Json(new RootResponse<IError>()
+                {
+                    result = false,
+                    data = new Models.Error()
+                    {
+                        Code = 13,
+                        Message = "Не указан обязательный параметр."
+                    }
+                });
+            }
+
             try
             {
                 return Json(new RootResponse() { result = false, data = new Models.Error() { Code = 8, Message = "Этот сервесный метод временно недоступен." } });
@@ -253,6 +364,20 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
 
         public IActionResult countMembers(string id, int value=0)
         {
+
+            if (id is null || id == string.Empty)
+            {
+                return Json(new RootResponse<IError>()
+                {
+                    result = false,
+                    data = new Models.Error()
+                    {
+                        Code = 13,
+                        Message = "Не указан обязательный параметр."
+                    }
+                });
+            }
+
             try
             {
                 if(value == 0)
@@ -314,7 +439,20 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
         {
             try
             {
-                if(value is null)
+                if (id is null || id == string.Empty)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
+
+                if (value is null)
                 {
                     var result = Bot.PublicAPI.Yarik.Clans.GetName(id);
                     var model = new RootResponse() { result = true };

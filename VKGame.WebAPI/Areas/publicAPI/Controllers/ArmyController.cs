@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VKGame.WebAPI.Areas.publicAPI.Models;
+using VKGame.Bot.PublicAPI.Models;
+using VKGame.Bot.PublicAPI;
 
 namespace VKGame.WebAPI.Areas.publicAPI.Controllers
 {
@@ -17,7 +19,7 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
             var model = new Models.RootResponse<Models.Error>()
             {
                 result = false,
-                data = new Error()
+                data = new Models.Error()
                 {
                     Code = 404,
                     Message = "Не найдена запрошеная страница."
@@ -28,59 +30,121 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
 
         public IActionResult check(long id)
         {
-            var result = Bot.PublicAPI.Yarik.Army.Check(id);
-
-            var model = new RootResponse()
+            try
             {
-                result = true,
-                data = result
-            };
-            return Json(model);
-        }
 
-        public IActionResult edit_count(long id, int type, int count)
-        {
-            var result = Bot.PublicAPI.Yarik.Army.EditCount(id, type, count);
-            var model = new RootResponse() { result = true};
-            if (result is Bot.PublicAPI.Models.IError) model.result = false;
-            model.data = result;
-            return Json(model);
-        }
+                if (id== 0)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
 
-        public IActionResult edit_level(long id, int type, int lvl)
-        {
-            var result = Bot.PublicAPI.Yarik.Army.EditLevel(id, type, lvl);
-            var model = new RootResponse() { result = true };
-            if (result is Bot.PublicAPI.Models.IError) model.result = false;
-            model.data = result;
-            return Json(model);
-        }
-
-        public IActionResult current(long id)
-        {
-            var result = Bot.PublicAPI.Yarik.Army.Current(id);
-            var model = new RootResponse() { result = true };
-            if (result is Bot.PublicAPI.Models.IError) model.result = false;
-            model.data = result;
-            return Json(model);
-        }
-
-        public IActionResult levels(long id)
-        {
-            var result = Bot.PublicAPI.Yarik.Army.Levels(id);
-            var model = new RootResponse() { result = true };
-            if (result is Bot.PublicAPI.Models.IError) model.result = false;
-            model.data = result;
-            return Json(model);
+                var result = Bot.PublicAPI.Yarik.Army.Check(id);
+                var model = new RootResponse() { result = true };
+                if (result is IError) model.result = false;
+                model.data = result;
+                return Json(model);
+            }
+            catch (Exception e)
+            {
+                var model = new RootResponse<Models.Error>()
+                {
+                    result = false,
+                    data = new WebAPI.Areas.publicAPI.Models.Error()
+                    {
+                        Code = 10,
+                        Message = $"Внутренняя ошибка сервера." +
+                        $"\n {e.ToString()}"
+                    }
+                };
+                return Json(model);
+            }
         }
 
         public IActionResult count(long id)
         {
-            var result = Bot.PublicAPI.Yarik.Army.Count(id);
-            var model = new RootResponse() { result = true };
-            if (result is Bot.PublicAPI.Models.IError) model.result = false;
-            model.data = result;
-            return Json(model);
+            try
+            {
+
+                if (id == 0)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
+
+                var result = Bot.PublicAPI.Yarik.Army.GetCount(id);
+                var model = new RootResponse() { result = true };
+                if (result is IError) model.result = false;
+                model.data = result;
+                return Json(model);
+            }
+            catch (Exception e)
+            {
+                var model = new RootResponse<Models.Error>()
+                {
+                    result = false,
+                    data = new WebAPI.Areas.publicAPI.Models.Error()
+                    {
+                        Code = 10,
+                        Message = $"Внутренняя ошибка сервера." +
+                        $"\n {e.ToString()}"
+                    }
+                };
+                return Json(model);
+            }
+        }
+
+        public IActionResult countEdit(long id, int type, int value)
+        {
+            try
+            {
+                if (type == 0 || value == 0)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
+               
+                var result = Bot.PublicAPI.Yarik.Army.EditCount(id, type, value);
+                var model = new RootResponse() { result = true };
+                if (result is IError) model.result = false;
+                model.data = result;
+                return Json(model);
+            }
+            catch (Exception e)
+            {
+                var model = new RootResponse<Models.Error>()
+                {
+                    result = false,
+                    data = new WebAPI.Areas.publicAPI.Models.Error()
+                    {
+                        Code = 10,
+                        Message = $"Внутренняя ошибка сервера." +
+                        $"\n {e.ToString()}"
+                    }
+                };
+                return Json(model);
+            }
         }
     }
 }

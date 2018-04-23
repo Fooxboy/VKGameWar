@@ -18,13 +18,14 @@ namespace VKGame.WebAPI
         public async Task InvokeAsync(HttpContext context)
         {
             var token = context.Request.Query["token"];
-            if (true)
+            var auth = new Bot.PublicAPI.Yarik.Auth();
+            if (auth.checkToken(token))
             {
                 await _next.Invoke(context);
 
             }else
             {
-                await context.Response.WriteAsync("tokenL");
+                await context.Response.WriteAsync(auth.NoAccess);
             }
         }
     }
