@@ -124,7 +124,7 @@ localhost:5789/publicAPI/battle/clanEnemy - получение id клана, к
 Результат:
 integer
 
-localhost:5789/publicAPI/battle/start - поиск или установка в очередь клановых боёв
+localhost:5789/publicAPI/battle/start - поиск или постановка клана в очередь клановых боёв
 Параметры: 
 - clan(string) - id клана, который начинает клановую битву.
 Результат:
