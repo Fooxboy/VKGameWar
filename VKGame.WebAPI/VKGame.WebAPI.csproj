@@ -6,6 +6,13 @@
     <Win32Resource />
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>true</Optimize>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <DocumentationFile></DocumentationFile>
+    <LangVersion>7</LangVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <Folder Include="Areas\privateAPI\Data\" />
     <Folder Include="Areas\privateAPI\Views\" />

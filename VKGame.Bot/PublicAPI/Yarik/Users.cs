@@ -53,6 +53,54 @@ namespace VKGame.Bot.PublicAPI.Yarik
             return true;
         }
 
+        public static object upLevelUnit(long user, int type)
+        {
+            if (!Check(user))
+                return new Models.Error() { Code = 2, Message = "Пользователя с армией нет в базе данных." };
+            var db = new Database.Public("Army");
+            var armys = JsonConvert.DeserializeObject<Models.Units>((string)db.GetFromId(user, "Units"));
+            var value = armys.Army.FindAll(u => (int)u.Type == type).FirstOrDefault();
+            if (value is null)
+                return new Models.Error() { Code = 1, Message = "Неизвестный тип армии." };
+            armys.Army.Remove(value);
+
+            value.Level += 1;
+
+            armys.Army.Add(value);
+            SetArmy(user, armys);
+            return true;
+        }
+
+        public static object unitForType(long user, int type)
+        {
+            if (!Check(user))
+                return new Models.Error() { Code = 2, Message = "Пользователя с армией нет в базе данных." };
+            var db = new Database.Public("Army");
+            var armys = JsonConvert.DeserializeObject<Models.Units>((string)db.GetFromId(user, "Units"));
+            var value = armys.Army.FindAll(u => (int)u.Type == type).FirstOrDefault();
+            if (value is null)
+                return new Models.Error() { Code = 1, Message = "Неизвестный тип армии." };
+            return value;
+        }
+
+        public static object openUnit(long user, int type)
+        {
+            if (!Check(user))
+                return new Models.Error() { Code = 2, Message = "Пользователя с армией нет в базе данных." };
+            var db = new Database.Public("Army");
+            var armys = JsonConvert.DeserializeObject<Models.Units>((string)db.GetFromId(user, "Units"));
+            var value = armys.Army.FindAll(u => (int)u.Type == type).FirstOrDefault();
+            if (value is null)
+                return new Models.Error() { Code = 1, Message = "Неизвестный тип армии." };
+            armys.Army.Remove(value);
+
+            value.isOpen = true;
+
+            armys.Army.Add(value);
+            SetArmy(user, armys);
+            return true;
+        }
+
         public static object EditStatusUnit(long user, int type, bool status)
         {
             if (!Check(user))

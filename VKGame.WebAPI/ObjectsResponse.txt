@@ -16,7 +16,7 @@ UnitsList (localhost:5789/publicAPI/user/units)
  Army(массив объектов Unit) - Массив объектов юнитов.
 
  
- Unit ()
+ Unit (localhost:5789/publicAPI/user/unitFromType)
  - Объект представляющий определённого юнита.
  Поля:
  Name(string) - имя юнита.
@@ -30,7 +30,8 @@ UnitsList (localhost:5789/publicAPI/user/units)
  Поля:
  List(Массив объектов SpecificCount) - Массив объектов количества юнитов.
  
- SpecificCount()
+ 
+ SpecificCount(localhost:5789/publicAPI/army/countFromType)
  -Содержит количество готовой армии для определённого типа армии
  Поля:
  Id(Integer) - Тип армии

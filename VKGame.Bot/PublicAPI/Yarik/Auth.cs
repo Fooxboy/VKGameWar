@@ -6,7 +6,7 @@ namespace VKGame.Bot.PublicAPI.Yarik
 {
     public class Auth
     {
-        public bool checkToken(string token) => Database.Stat.CheckFromKey(token, "Tokens");
+        public bool checkToken(string token) => Database.Public.CheckFromKey(token, "Tokens");
 
         public void AccessToken(string token)
         {

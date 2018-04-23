@@ -15,6 +15,7 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
     [Area("publicAPI")]
     public class RegistrationController : Controller
     {
+
         public IActionResult Index()
         {
             var model = new Models.RootResponse<Models.Error>()

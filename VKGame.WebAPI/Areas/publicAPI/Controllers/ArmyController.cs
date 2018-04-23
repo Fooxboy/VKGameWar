@@ -68,6 +68,45 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
             }
         }
 
+        public IActionResult countFromType(long id, int type)
+        {
+            try
+            {
+                if (id == 0 || type == 0)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
+
+                var result = Bot.PublicAPI.Yarik.Army.GetCountForType(id, type);
+                var model = new RootResponse() { result = true };
+                if (result is IError) model.result = false;
+                model.data = result;
+                return Json(model);
+            }
+            catch (Exception e)
+            {
+                var model = new RootResponse<Models.Error>()
+                {
+                    result = false,
+                    data = new WebAPI.Areas.publicAPI.Models.Error()
+                    {
+                        Code = 10,
+                        Message = $"Внутренняя ошибка сервера." +
+                        $"\n {e.ToString()}"
+                    }
+                };
+                return Json(model);
+            }
+        }
+
         public IActionResult count(long id)
         {
             try

@@ -14,6 +14,21 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
     [Area("publicAPI")]
     public class UserController : Controller
     {
+
+        public IActionResult Index()
+        {
+            var model = new Models.RootResponse<Models.Error>()
+            {
+                result = false,
+                data = new Models.Error()
+                {
+                    Code = 404,
+                    Message = "Не найдена запрошеная страница."
+                }
+            };
+            return Json(model);
+        }
+
         public IActionResult money(long id, int value)
         {
             try
@@ -40,12 +55,129 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
                     return Json(model);
                 }else
                 {
-                    var result = Bot.PublicAPI.Yarik.Users.Money(id);
+                    var result = Bot.PublicAPI.Yarik.Users.SetMoney(id, value);
                     var model = new RootResponse() { result = true };
                     if (result is IError) model.result = false;
                     model.data = result;
                     return Json(model);
                 }
+            }
+            catch (Exception e)
+            {
+                var model = new RootResponse<Models.Error>()
+                {
+                    result = false,
+                    data = new Models.Error()
+                    {
+                        Code = 10,
+                        Message = $"Внутренняя ошибка сервера." +
+                        $"\n {e.ToString()}"
+                    }
+                };
+                return Json(model);
+            }
+        }
+
+        public IActionResult unitLvlUp(long id, int type)
+        {
+            try
+            {
+                if (id == 0 || type == 0)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
+
+                var result = Bot.PublicAPI.Yarik.Users.upLevelUnit(id, type);
+                var model = new RootResponse() { result = true };
+                if (result is IError) model.result = false;
+                model.data = result;
+                return Json(model);
+            }
+            catch (Exception e)
+            {
+                var model = new RootResponse<Models.Error>()
+                {
+                    result = false,
+                    data = new Models.Error()
+                    {
+                        Code = 10,
+                        Message = $"Внутренняя ошибка сервера." +
+                        $"\n {e.ToString()}"
+                    }
+                };
+                return Json(model);
+            }
+        }
+
+        public IActionResult unitOpen(long id, int type)
+        {
+            try
+            {
+                if (id == 0 || type == 0)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
+
+                var result = Bot.PublicAPI.Yarik.Users.openUnit(id, type);
+                var model = new RootResponse() { result = true };
+                if (result is IError) model.result = false;
+                model.data = result;
+                return Json(model);
+            }
+            catch (Exception e)
+            {
+                var model = new RootResponse<Models.Error>()
+                {
+                    result = false,
+                    data = new Models.Error()
+                    {
+                        Code = 10,
+                        Message = $"Внутренняя ошибка сервера." +
+                        $"\n {e.ToString()}"
+                    }
+                };
+                return Json(model);
+            }
+        }
+
+        public IActionResult unitFromType(long id, int type)
+        {
+            try
+            {
+                if (id == 0 || type == 0)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
+
+                var result = Bot.PublicAPI.Yarik.Users.unitForType(id, type);
+                var model = new RootResponse() { result = true };
+                if (result is IError) model.result = false;
+                model.data = result;
+                return Json(model);
             }
             catch (Exception e)
             {

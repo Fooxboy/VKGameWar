@@ -15,6 +15,21 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
     [Area("publicAPI")]
     public class DamageController : Controller
     {
+
+        public IActionResult Index()
+        {
+            var model = new Models.RootResponse<Models.Error>()
+            {
+                result = false,
+                data = new Models.Error()
+                {
+                    Code = 404,
+                    Message = "Не найдена запрошеная страница."
+                }
+            };
+            return Json(model);
+        }
+
         public IActionResult Soildery(long value)
         {
             try

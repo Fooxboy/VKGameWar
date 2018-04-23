@@ -29,6 +29,7 @@ namespace VKGame.WebAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseMiddleware<ErrorMiddleware>();
             app.UseMiddleware<TokenMiddleware>();
             if (env.IsDevelopment())
             {
@@ -64,6 +65,38 @@ namespace VKGame.WebAPI
                 routes.MapRoute(
                   name: "areas3",
                   template: "{area:exists}/{controller=Registration}/{action=Index}/{id?}"
+                );
+            });
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                  name: "areas4",
+                  template: "{area:exists}/{controller=Battle}/{action=Index}/{id?}"
+                );
+            });
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                  name: "areas5",
+                  template: "{area:exists}/{controller=Clan}/{action=Index}/{id?}"
+                );
+            });
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                  name: "areas6",
+                  template: "{area:exists}/{controller=Damage}/{action=Index}/{id?}"
+                );
+            });
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                  name: "areas7",
+                  template: "{area:exists}/{controller=User}/{action=Index}/{id?}"
                 );
             });
         }
