@@ -16,6 +16,7 @@ namespace VKGame.Bot.Commands
     {
         public override string Name => "Казино";
         public override string Arguments => "(), (вариант_выбора)";
+        public override string HelpUrl => "сслыка недоступна";
 
         public override string Caption =>
             "Раздел с казино! Если написать Казино без аргуменов, то вы попадёте на главый экран казино.";

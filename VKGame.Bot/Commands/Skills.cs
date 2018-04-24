@@ -12,7 +12,9 @@ namespace VKGame.Bot.Commands
         public override TypeResponse Type => TypeResponse.Text;
         public override List<string> Commands => new List<string>() {"улучшить"};
         public override Access Access => Access.User;
-        
+        public override string HelpUrl => "сслыка недоступна";
+
+
         public override object Execute(Message msg)
         {
             var messageArray = msg.body.Split(' ');

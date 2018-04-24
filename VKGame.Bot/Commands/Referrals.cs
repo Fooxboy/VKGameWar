@@ -12,6 +12,7 @@ namespace VKGame.Bot.Commands
         public override TypeResponse Type => TypeResponse.Text;
         public override List<string> Commands => new List<string>();
         public override Access Access => Access.User;
+        public override string HelpUrl => "сслыка недоступна";
 
 
         public override object Execute(Models.Message msg)

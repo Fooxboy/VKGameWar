@@ -2,19 +2,16 @@
 
 namespace VKGame.Bot
 {
-    public class ICommand
+    public abstract class ICommand
     {
-        public virtual string Name { get; }
-        public virtual string Arguments { get; }
-        public virtual string Caption { get; }
-        public virtual TypeResponse Type { get; }
-        public virtual string HelpUrl { get; }
-        public virtual object Execute(Models.Message msg)
-        {
-            return "❌ Команда не имеет обработчик.";
-        }
-        public virtual List<string> Commands { get; }
-        public virtual  Access Access { get; }
+        public abstract string Name { get; }
+        public abstract string Arguments { get; }
+        public abstract string Caption { get; }
+        public abstract TypeResponse Type { get; }
+        public abstract string HelpUrl { get; }
+        public abstract object Execute(Models.Message msg);
+        public abstract List<string> Commands { get; }
+        public abstract Access Access { get; }
 
         [Attributes.Trigger("помощь")]
         public object Help(Models.Message msg)

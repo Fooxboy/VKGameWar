@@ -13,6 +13,7 @@ namespace VKGame.Bot.Commands
         public override string Arguments => "(), (вариант_выбора)";
         public override string Caption => "Раздел предназначен для проведения боёв.";
         public override TypeResponse Type => TypeResponse.Text;
+        public override string HelpUrl => "сслыка недоступна";
 
         public override List<string>  Commands =>
             new List<string>() {"бот", "атака", "вступить", "покинуть", "мой", "создать", "список"};

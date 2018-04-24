@@ -42,9 +42,10 @@ namespace VKGame.Bot
             new Commands.Admin.Stat(),
             new Commands.Admin.System(),
             new Skills(),
-            new Bot.Commands.Admin.Bugs(),
+            new Commands.Admin.Bugs(),
             new Top(),
-            new Commands.Admin.AccessCommand()
+            new Commands.Admin.AccessCommand(),
+            new Gifts()
         };
         
         private ICommand Proccesing(string text)
