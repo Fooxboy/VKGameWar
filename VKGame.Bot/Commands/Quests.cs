@@ -8,15 +8,15 @@ namespace VKGame.Bot.Commands
 {
     public class Quests :ICommand
     {
-        public string Name => "Квесты";
-        public string Caption => "Здесь можно получить специальные задания!";
-        public string Arguments => "(), (Вариант выбора)";
-        public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string>() {"старт", "покинуть", "прогресс" };
-        public Access Access => Access.User;
+        public override string Name => "Квесты";
+        public override string Caption => "Здесь можно получить специальные задания!";
+        public override string Arguments => "(), (Вариант выбора)";
+        public override TypeResponse Type => TypeResponse.Text;
+        public override List<string> Commands => new List<string>() {"старт", "покинуть", "прогресс" };
+        public override Access Access => Access.User;
 
 
-        public object Execute(Message msg)
+        public override object Execute(Message msg)
         {
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)

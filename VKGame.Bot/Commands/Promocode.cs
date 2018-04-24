@@ -13,12 +13,12 @@ namespace VKGame.Bot.Commands
 {
     public class Promocode:ICommand
     {
-        public string Name => "Промокод";
-        public string Caption =>"Раздел предназначен для работы с промокодами.";
-        public string Arguments => "(промокод)";
-        public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string>();
-        public Access Access => Access.User;
+        public override string Name => "Промокод";
+        public override string Caption =>"Раздел предназначен для работы с промокодами.";
+        public override string Arguments => "(промокод)";
+        public override TypeResponse Type => TypeResponse.Text;
+        public override List<string> Commands => new List<string>();
+        public override Access Access => Access.User;
 
 
         public object Execute(Models.Message msg) 

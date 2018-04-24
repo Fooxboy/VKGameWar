@@ -8,8 +8,21 @@ namespace VKGame.Bot
     {
         public long Id => 0;
 
-        public bool RunForReboot => false;
+        public bool RunForReboot
+        {
+            get => false;
+            set
+            {
+            }
+        }
 
-        public bool PlayInRulette => false;
+        public bool PlayInRulette
+        {
+            get => false;
+            set
+            {
+            }
+        }
+
     }
 }

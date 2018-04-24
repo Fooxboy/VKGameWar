@@ -12,16 +12,15 @@ namespace VKGame.Bot.Commands
     /// </summary>
     public class Start: ICommand
     {
-        public string Name => "Старт";
-        public string Arguments => "";
-        public string Caption => "Команда для регистрации в игре.";
-        public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string>();
-        public Access Access => Access.User;
+        public override string  Name => "Старт";
+        public override string  Arguments => "";
+        public override string Caption => "Команда для регистрации в игре.";
+        public override TypeResponse Type => TypeResponse.Text;
+        public override List<string> Commands => new List<string>();
+        public override Access Access => Access.User;
 
 
-        [Attributes.Trigger("Старт")]
-        public object Execute(Models.Message msg)
+        public override object Execute(Models.Message msg)
         {
             var messageArray = msg.body.Split(' ');
             long referral = 0;

@@ -12,14 +12,14 @@ namespace VKGame.Bot.Commands
     /// </summary>
     public class Army : ICommand
     {
-        public string Name => "Армия";
-        public string Caption => "Этот раздел предназначен для управления Вашей армией.";
-        public string Arguments => "(), (вариант_выбора)";
-        public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string>() {"создать", "обучить", "улучшить"};
-        public Access Access => Access.User;
+        public override string Name => "Армия";
+        public override string Caption => "Этот раздел предназначен для управления Вашей армией.";
+        public override string Arguments => "(), (вариант_выбора)";
+        public override TypeResponse Type => TypeResponse.Text;
+        public override List<string> Commands => new List<string>() {"создать", "обучить", "улучшить"};
+        public override Access Access => Access.User;
 
-        public object Execute(Models.Message msg)
+        public override object Execute(Models.Message msg)
         {
             var messageArray = msg.body.Split(' ');
             var notify = String.Empty;

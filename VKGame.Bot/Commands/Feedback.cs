@@ -6,12 +6,12 @@ namespace VKGame.Bot.Commands
 {
     public class Feedback :ICommand
     {
-        public string Name => "Отзыв";
-        public string Caption => "Раздел для написании отзывов и предложений по боту.";
-        public string Arguments => "(Ваш отзыв или предложение)";
-        public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string>();
-        public Access Access => Access.User;
+        public override string Name => "Отзыв";
+        public override string Caption => "Раздел для написании отзывов и предложений по боту.";
+        public override string Arguments => "(Ваш отзыв или предложение)";
+        public override TypeResponse Type => TypeResponse.Text;
+        public override List<string> Commands => new List<string>();
+        public override Access Access => Access.User;
 
         public object Execute(Models.Message msg)
         {

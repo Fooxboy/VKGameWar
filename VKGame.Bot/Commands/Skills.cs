@@ -6,14 +6,14 @@ namespace VKGame.Bot.Commands
 {
     public class Skills: ICommand
     {
-        public string Name => "Навыки";
-        public string Arguments => "(), (Вариант_выбора)";
-        public string Caption => "Здесь Вы сможете улучшть свои навыки и посмотреть их список.";
-        public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string>() {"улучшить"};
-        public Access Access => Access.User;
+        public override string Name => "Навыки";
+        public override string Arguments => "(), (Вариант_выбора)";
+        public override string Caption => "Здесь Вы сможете улучшть свои навыки и посмотреть их список.";
+        public override TypeResponse Type => TypeResponse.Text;
+        public override List<string> Commands => new List<string>() {"улучшить"};
+        public override Access Access => Access.User;
         
-        public object Execute(Message msg)
+        public override object Execute(Message msg)
         {
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)

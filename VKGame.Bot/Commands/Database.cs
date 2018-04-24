@@ -9,15 +9,15 @@ namespace VKGame.Bot.Commands
 {
     public class Database : ICommand
     {
-        public string Name => "Бд";
-        public string Arguments => "";
-        public string Caption => "";
-        public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string>() { "изменить", "получить", "sql" };
-        public Access Access => Access.Admin;
+        public override string Name => "Бд";
+        public override string Arguments => "";
+        public override string Caption => "";
+        public override TypeResponse Type => TypeResponse.Text;
+        public override List<string> Commands => new List<string>() { "изменить", "получить", "sql" };
+        public override Access Access => Access.Admin;
 
 
-        public object Execute(Message msg)
+        public override object Execute(Message msg)
         {
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)

@@ -10,15 +10,15 @@ namespace VKGame.Bot.Commands
 {
     public class ExecuteCode:ICommand
     {
-        public string Name => "exe";
-        public string Caption => "ааа";
-        public string Arguments => "ааа";
-        public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string>();
-        public Access Access => Access.Admin;
+        public override string Name => "exe";
+        public override string Caption => "ааа";
+        public override string Arguments => "ааа";
+        public override TypeResponse Type => TypeResponse.Text;
+        public override List<string> Commands => new List<string>();
+        public override Access Access => Access.Admin;
 
 
-        public object Execute(Message msg)
+        public override object Execute(Message msg)
         {
             var messageArray = msg.body.Split(' ');
 

@@ -79,7 +79,6 @@ namespace VKGame.Bot
                     var lastCommands = Common.LastCommand;
                     try
                     {
-                        var buffer = lastCommands[msg.from_id];
                         lastCommands[msg.from_id] = command;
                     }catch(KeyNotFoundException)
                     {

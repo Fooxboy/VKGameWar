@@ -5,15 +5,15 @@ namespace VKGame.Bot.Commands
 {
     public class Buildings : ICommand
     {
-        public string Name => "Постройки";
-        public string Arguments => "(), (Вариант_выбора)";
-        public string Caption => "Раздел для управления Вашими зданиями.";
-        public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string> {"цены", "купить", "продать" };
-        public Access Access => Access.User;
+        public override string Name => "Постройки";
+        public override string Arguments => "(), (Вариант_выбора)";
+        public override string Caption => "Раздел для управления Вашими зданиями.";
+        public override TypeResponse Type => TypeResponse.Text;
+        public override List<string> Commands => new List<string> {"цены", "купить", "продать" };
+        public override Access Access => Access.User;
 
 
-        public object Execute(Models.Message msg)
+        public override object Execute(Models.Message msg)
         {
             var notify = String.Empty;
             if (Common.Notification == null) notify = $"Последнее обновление: {DateTime.Now}";

@@ -19,7 +19,7 @@ namespace VKGame.WebAPI
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<Startup>()
                 .UseApplicationInsights()
-                .UseUrls("http://*:5789;http://localhost:5789")
+                .UseUrls("http://*:5789")
                 .Build();
             host.Run();
 

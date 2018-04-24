@@ -5,13 +5,13 @@ namespace VKGame.Bot.Commands
 {
     public class Top :ICommand
     {
-        public string Name => "Топ";
-        public string Arguments => "(вариант выбора)";
-        public string Caption => "Зал славы. Здесь можно узнать лучших игроков и лучшии кланы в игре.";
-        public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string>() {"игроков", "кланов"};
-        public Access Access => Access.User;
-        public object Execute(Message msg)
+        public override string Name => "Топ";
+        public override string Arguments => "(вариант выбора)";
+        public override string Caption => "Зал славы. Здесь можно узнать лучших игроков и лучшии кланы в игре.";
+        public override TypeResponse Type => TypeResponse.Text;
+        public override List<string> Commands => new List<string>() {"игроков", "кланов"};
+        public override Access Access => Access.User;
+        public override object Execute(Message msg)
         {
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)

@@ -6,15 +6,15 @@ namespace VKGame.Bot.Commands
 {
     public class Sections:ICommand
     {
-        public string Name => "Разделы";
-        public string Caption => "Раздел предназначен для вывода списка разделов.";
-        public string Arguments => "()";
-        public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string>();
-        public Access Access => Access.User;
+        public override string Name => "Разделы";
+        public override string Caption => "Раздел предназначен для вывода списка разделов.";
+        public override string Arguments => "()";
+        public override TypeResponse Type => TypeResponse.Text;
+        public override List<string> Commands => new List<string>();
+        public override Access Access => Access.User;
 
 
-        public object Execute(Models.Message msg)
+        public override object Execute(Models.Message msg)
         {
             var listCommand = new List<ICommand>()
             {

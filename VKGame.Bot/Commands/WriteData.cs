@@ -11,16 +11,16 @@ namespace VKGame.Bot.Commands
     /// </summary>
     public class WriteData:ICommand
     {
-        public string Name => "!";
-        public string Caption => "Используется для ввода данных. Например, при смени имени.";
-        public string Arguments => "(данные)";
-        public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string>();
-        public Access Access => Access.User;
+        public override string Name => "!";
+        public override string Caption => "Используется для ввода данных. Например, при смени имени.";
+        public override string Arguments => "(данные)";
+        public override TypeResponse Type => TypeResponse.Text;
+        public override List<string> Commands => new List<string>();
+        public override Access Access => Access.User;
 
 
         [NotNull]
-        public object Execute(Models.Message msg)
+        public override object Execute(Models.Message msg)
         {
             string text = "";
             string[] arrayText = msg.body.Split(' ');

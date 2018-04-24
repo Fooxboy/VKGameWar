@@ -6,15 +6,15 @@ namespace VKGame.Bot.Commands
 {
     public class Boxes : ICommand
     {
-        public string Name => "Кейсы";
-        public string Caption => "Здесь Вы можете посмотреть и управлять вашими кейсами!";
-        public string Arguments => "(), (Вариант_выбора)";
-        public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string>() {"купить", "открыть"};
-        public Access Access => Access.User;
+        public override string Name => "Кейсы";
+        public override string Caption => "Здесь Вы можете посмотреть и управлять вашими кейсами!";
+        public override string Arguments => "(), (Вариант_выбора)";
+        public override TypeResponse Type => TypeResponse.Text;
+        public override List<string> Commands => new List<string>() {"купить", "открыть"};
+        public override Access Access => Access.User;
 
 
-        public object Execute(Models.Message msg)
+        public override object Execute(Models.Message msg)
         {
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)

@@ -9,15 +9,15 @@ namespace VKGame.Bot.Commands
     /// </summary>
     public class Home:ICommand
     {
-        public string Name => "Домой";
-        public string Arguments => "()";
-        public string Caption => "Возвращает на Ваш домашний экран!";
-        public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string>();
-        public Access Access => Access.User;
+        public override string Name => "Домой";
+        public override string Arguments => "()";
+        public override string Caption => "Возвращает на Ваш домашний экран!";
+        public override TypeResponse Type => TypeResponse.Text;
+        public override List<string> Commands => new List<string>();
+        public override Access Access => Access.User;
 
 
-        public object Execute(Message msg)
+        public override object Execute(Message msg)
         {
             var notify = String.Empty;
             if (Common.Notification == null) notify = $"Последнее обновление данных: {DateTime.Now}";

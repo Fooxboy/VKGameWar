@@ -12,21 +12,21 @@ namespace VKGame.Bot.Commands
     /// <summary>
     /// Казино
     /// </summary>
-    public class Casino:ICommand
+    public  class Casino:ICommand
     {
-        public string Name => "Казино";
-        public string Arguments => "(), (вариант_выбора)";
+        public override string Name => "Казино";
+        public override string Arguments => "(), (вариант_выбора)";
 
-        public string Caption =>
+        public override string Caption =>
             "Раздел с казино! Если написать Казино без аргуменов, то вы попадёте на главый экран казино.";
 
-        public TypeResponse Type => TypeResponse.Text;
+        public override TypeResponse Type => TypeResponse.Text;
 
-        public List<string> Commands => new List<string>() { "карты", "билет", "рулетка"};
-        public Access Access => Access.User;
+        public override List<string> Commands => new List<string>() { "карты", "билет", "рулетка"};
+        public override Access Access => Access.User;
 
 
-        public object Execute(Models.Message msg)
+        public override object Execute(Models.Message msg)
         {
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)

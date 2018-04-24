@@ -7,15 +7,15 @@ namespace VKGame.Bot.Commands
 {
     public class Competitions : ICommand
     {
-        public string Name => "Соревнования";
-        public string Arguments => "(), (Вариант_выбора)";
-        public string Caption => "Здесь можно узнать о новых соревнованиях и поучаствовать в них!";
-        public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string>() {"список","бой", "участвовать", "создать" };
-        public Access Access => Access.User;
+        public override string Name => "Соревнования";
+        public override string Arguments => "(), (Вариант_выбора)";
+        public override string Caption => "Здесь можно узнать о новых соревнованиях и поучаствовать в них!";
+        public override TypeResponse Type => TypeResponse.Text;
+        public override List<string> Commands => new List<string>() {"список","бой", "участвовать", "создать" };
+        public override Access Access => Access.User;
 
 
-        public object Execute(Models.Message msg)
+        public override object Execute(Models.Message msg)
         {
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)

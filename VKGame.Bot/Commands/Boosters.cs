@@ -6,14 +6,14 @@ namespace VKGame.Bot.Commands
 {
     public class Boosters :ICommand
     {
-        public string Name => "Усилители";
-        public string Arguments => "(), (Вариант_выбора)";
-        public string Caption => "Здесь можно купить усилители или настроить их использование.";
-        public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string>(){"купить"};
-        public Access Access => Access.User;
+        public override string Name => "Усилители";
+        public override string Arguments => "(), (Вариант_выбора)";
+        public override string Caption => "Здесь можно купить усилители или настроить их использование.";
+        public override TypeResponse Type => TypeResponse.Text;
+        public override List<string> Commands => new List<string>(){"купить"};
+        public override Access Access => Access.User;
         
-        public object Execute(Message msg)
+        public override object Execute(Message msg)
         {
             throw new System.NotImplementedException();
         }

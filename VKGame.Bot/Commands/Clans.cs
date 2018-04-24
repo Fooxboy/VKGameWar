@@ -7,15 +7,15 @@ namespace VKGame.Bot.Commands
 {
     public class Clans : ICommand
     {
-        public string Name => "Клан";
-        public string Caption => "Здесь можно управлять своим кланом!";
-        public string Arguments => "(), (Вариант_выбора)";
-        public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string>() { "исключить", "создать", "запрос", "бой", "инфо", "распустить", "покинуть", "вступить"  };
-        public Access Access => Access.User;
+        public override string Name => "Клан";
+        public override string Caption => "Здесь можно управлять своим кланом!";
+        public override string Arguments => "(), (Вариант_выбора)";
+        public override TypeResponse Type => TypeResponse.Text;
+        public override List<string> Commands => new List<string>() { "исключить", "создать", "запрос", "бой", "инфо", "распустить", "покинуть", "вступить"  };
+        public override Access Access => Access.User;
 
 
-        public object Execute(Models.Message msg)
+        public override object Execute(Models.Message msg)
         {
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)

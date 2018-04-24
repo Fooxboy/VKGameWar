@@ -8,14 +8,14 @@ namespace VKGame.Bot.Commands
 {
     public class Bug: ICommand
     {
-        public string Name => "Баг";
-        public string Caption => "Раздел предназначен для уведомлении администрации о багах в игре.";
-        public string Arguments => "(Описание бага)";
-        public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string>();
-        public Access Access => Access.User;
+        public override string Name => "Баг";
+        public override string Caption => "Раздел предназначен для уведомлении администрации о багах в игре.";
+        public override string Arguments => "(Описание бага)";
+        public override TypeResponse Type => TypeResponse.Text;
+        public override List<string> Commands => new List<string>();
+        public override Access Access => Access.User;
 
-        public object Execute(Models.Message msg)
+        public override object Execute(Models.Message msg)
         {
             var messageArray = msg.body.Split(' ');
 
