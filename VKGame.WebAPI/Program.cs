@@ -14,13 +14,15 @@ namespace VKGame.WebAPI
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
-        }
-
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+            var host = new WebHostBuilder()
+                .UseKestrel()
+                .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<Startup>()
-                .UseUrls("http://localhost:5789/")
+                .UseApplicationInsights()
+                .UseUrls("http://*:5789;http://localhost:5789")
                 .Build();
+            host.Run();
+
+        }
     }
 }

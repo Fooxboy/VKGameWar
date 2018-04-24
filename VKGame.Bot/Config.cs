@@ -8,7 +8,7 @@ namespace VKGame.Bot
 {
     public class Config
     {
-        public string Version { get; set; } = "1.4";
+        public string Version { get; set; } = "1.5";
         public bool IsDebug { get; set; } = true;
 
         public static Config Get()
