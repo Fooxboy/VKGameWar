@@ -4,6 +4,7 @@ using System.Text;
 using System.Linq;
 using VKGame.Bot.PublicAPI.Models;
 using System.Security.Cryptography;
+using Newtonsoft.Json;
 
 namespace VKGame.Bot.PublicAPI.Yarik
 {
@@ -82,6 +83,54 @@ namespace VKGame.Bot.PublicAPI.Yarik
             Database.Public.Add(fields, values, "Battles");
 
             return new CreateResponse() { Status = 1, Id = clanEnemy, Name = (string)Clans.GetName(clanEnemy)};
+        }
+
+        public static object CheckMemberChoise(string battleId, long userId)
+        {
+            if (!Check(battleId))
+                return new Error() { Code = 6, Message = "Не найдена битва с таким ID." };
+            if (!Users.Check(userId))
+                return new Error() { Code = 12, Message = "Этот пользователь не зарегестирован." };
+            var members = (List<long>)GetMembersChoise(battleId);
+            return members.Any(u => u == userId);
+        }
+
+        public static bool CheckMemberChoiseBool(string battleId, long userId)
+        {
+            var members = (List<long>)GetMembersChoise(battleId);
+            return members.Any(u => u == userId);
+        }
+
+        public static object AddMembersChoise(string battleId, long userId)
+        {
+            if (!Check(battleId))
+                return new Error() { Code = 6, Message = "Не найдена битва с таким ID." };
+            if(!Users.Check(userId))
+                return new Error() { Code = 12, Message = "Этот пользователь не зарегестирован." };
+
+            var db = new Database.Public("Battles");
+
+            var members = (List<long>)GetMembersChoise(battleId);
+
+            members.Add(userId);
+
+            var json = JsonConvert.SerializeObject(members);
+
+            db.EditFromKey("Id", battleId, "UsersLose", json);
+            return true;
+        }
+
+        public static object GetMembersChoise(string battleId)
+        {
+            if (!Check(battleId))
+                return new Error() { Code = 6, Message = "Не найдена битва с таким ID." };
+
+            var db = new Database.Public("Battles");
+            var value = (string)db.GetFromKey("Id", battleId, "UsersLose");
+            if (value == "") return new List<long> { };
+
+            var obj = JsonConvert.DeserializeObject<List<long>>(value);
+            return obj;
         }
 
         //поиск по уровню.

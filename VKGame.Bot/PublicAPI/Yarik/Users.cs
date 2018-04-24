@@ -31,7 +31,13 @@ namespace VKGame.Bot.PublicAPI.Yarik
                 return new Models.Error() { Code = 12, Message = "Этот пользователь не зарегестирован." };
 
             var db = new Database.Public("Users");
-            return (string)db.GetFromId(userId, "Units");
+            var obj = JsonConvert.DeserializeObject<Models.Units>((string)db.GetFromId(userId, "Units"));
+            return obj;
+        }
+
+        public static object Choise()
+        {
+
         }
 
         public static object EditUnit(long user, int type, int level = -1)
