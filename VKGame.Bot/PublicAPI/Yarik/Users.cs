@@ -35,9 +35,41 @@ namespace VKGame.Bot.PublicAPI.Yarik
             return obj;
         }
 
-        public static object Choise()
+        public static object GetChoise(string clan, string battleId)
         {
+            if (!Battle.Check(battleId))
+                return new Models.Error() { Code = 6, Message = "Не найдена битва с таким ID." };
 
+            if (!Clans.Check(clan))
+                return new Models.Error()
+                {
+                    Code = 4,
+                    Message = "Клан с таким ID не зарегестирован."
+                };
+
+            var clanEnemy = Battle.GetClanEnemy(battleId, clan);
+            if (clanEnemy is Models.IError) return clanEnemy;
+            var members = Clans.GetMembers((string)clanEnemy);
+            if (members is Models.IError) return members;
+            var memberss = (List<long>)members;
+            var model = new Models.ChoiseMembers()
+            {
+                @List = new List<Models.ChoiseMember>() 
+            };
+            for (int i = 0; memberss.Count > i; i++)
+            {
+                model.List.Add(new Models.ChoiseMember()
+                {
+                    Number = i,
+                    User = new Models.User()
+                    {
+                        Id = memberss[i],
+                        Money = (int)Users.Money(memberss[i]),
+                        Units = (Models.Units)Users.GetArmy(memberss[i])
+                    }
+                });
+            }
+            return model;
         }
 
         public static object EditUnit(long user, int type, int level = -1)
