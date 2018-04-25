@@ -35,48 +35,13 @@ namespace VKGame.Bot.PublicAPI.Yarik
             return obj;
         }
 
-        public static object GetChoise(string clan, string battleId)
-        {
-            if (!Battle.Check(battleId))
-                return new Models.Error() { Code = 6, Message = "Не найдена битва с таким ID." };
-
-            if (!Clans.Check(clan))
-                return new Models.Error()
-                {
-                    Code = 4,
-                    Message = "Клан с таким ID не зарегестирован."
-                };
-
-            var clanEnemy = Battle.GetClanEnemy(battleId, clan);
-            if (clanEnemy is Models.IError) return clanEnemy;
-            var members = Clans.GetMembers((string)clanEnemy);
-            if (members is Models.IError) return members;
-            var memberss = (List<long>)members;
-            var model = new Models.ChoiseMembers()
-            {
-                @List = new List<Models.ChoiseMember>() 
-            };
-            for (int i = 0; memberss.Count > i; i++)
-            {
-                model.List.Add(new Models.ChoiseMember()
-                {
-                    Number = i,
-                    User = new Models.User()
-                    {
-                        Id = memberss[i],
-                        Money = (int)Users.Money(memberss[i]),
-                        Units = (Models.Units)Users.GetArmy(memberss[i])
-                    }
-                });
-            }
-            return model;
-        }
+        
 
         public static object EditUnit(long user, int type, int level = -1)
         {
             if (!Check(user))
                 return new Models.Error() { Code = 2, Message = "Пользователя с армией нет в базе данных." };
-            var db = new Database.Public("Army");
+            var db = new Database.Public("Users");
             var armys = JsonConvert.DeserializeObject<Models.Units>((string)db.GetFromId(user, "Units"));
             var value = armys.Army.FindAll(u => (int)u.Type == type).FirstOrDefault();
             if (value is null)
@@ -95,7 +60,7 @@ namespace VKGame.Bot.PublicAPI.Yarik
         {
             if (!Check(user))
                 return new Models.Error() { Code = 2, Message = "Пользователя с армией нет в базе данных." };
-            var db = new Database.Public("Army");
+            var db = new Database.Public("Users");
             var armys = JsonConvert.DeserializeObject<Models.Units>((string)db.GetFromId(user, "Units"));
             var value = armys.Army.FindAll(u => (int)u.Type == type).FirstOrDefault();
             if (value is null)
@@ -113,9 +78,10 @@ namespace VKGame.Bot.PublicAPI.Yarik
         {
             if (!Check(user))
                 return new Models.Error() { Code = 2, Message = "Пользователя с армией нет в базе данных." };
-            var db = new Database.Public("Army");
-            var armys = JsonConvert.DeserializeObject<Models.Units>((string)db.GetFromId(user, "Units"));
-            var value = armys.Army.FindAll(u => (int)u.Type == type).FirstOrDefault();
+            var armyObject = GetArmy(user);
+            if (armyObject is Models.IError) return armyObject;
+            var army = (Models.Units)armyObject;
+            var value = army.Army.FindAll(u => (int)u.Type == type).FirstOrDefault();
             if (value is null)
                 return new Models.Error() { Code = 1, Message = "Неизвестный тип армии." };
             return value;
@@ -125,7 +91,7 @@ namespace VKGame.Bot.PublicAPI.Yarik
         {
             if (!Check(user))
                 return new Models.Error() { Code = 2, Message = "Пользователя с армией нет в базе данных." };
-            var db = new Database.Public("Army");
+            var db = new Database.Public("Users");
             var armys = JsonConvert.DeserializeObject<Models.Units>((string)db.GetFromId(user, "Units"));
             var value = armys.Army.FindAll(u => (int)u.Type == type).FirstOrDefault();
             if (value is null)
@@ -139,11 +105,47 @@ namespace VKGame.Bot.PublicAPI.Yarik
             return true;
         }
 
+        public static object GetBattleId(long user)
+        {
+            if (!Check(user))
+                return new Models.Error() { Code = 2, Message = "Пользователя с армией нет в базе данных." };
+            var db = new Database.Public("Users");
+            var value = (string)db.GetFromKey("Id", user, "BattleId");
+            return value;
+        }
+
+        public static object GetAttempts(long user)
+        {
+            if (!Check(user))
+                return new Models.Error() { Code = 2, Message = "Пользователя с армией нет в базе данных." };
+            var db = new Database.Public("Users");
+            var value = (long)db.GetFromKey("Id", user, "Attempts");
+            return value;
+        }
+
+        public static object SetAttempts(long user, int count)
+        {
+            if (!Check(user))
+                return new Models.Error() { Code = 2, Message = "Пользователя с армией нет в базе данных." };
+            var db = new Database.Public("Users");
+            db.EditFromKey("Id", user, "Attempts", count);
+            return true;
+        }
+
+        public static object SetBattleId(long user, string battleId)
+        {
+            if (!Check(user))
+                return new Models.Error() { Code = 2, Message = "Пользователя с армией нет в базе данных." };
+            var db = new Database.Public("Users");
+            db.EditFromKey("Id", user, "BattleId", battleId);
+            return true;
+        }
+
         public static object EditStatusUnit(long user, int type, bool status)
         {
             if (!Check(user))
                 return new Models.Error() { Code = 2, Message = "Пользователя с армией нет в базе данных." };
-            var db = new Database.Public("Army");
+            var db = new Database.Public("Users");
             var armys = JsonConvert.DeserializeObject<Models.Units>((string)db.GetFromId(user, "Units"));
             var value = armys.Army.FindAll(u => (int)u.Type == type).FirstOrDefault();
             armys.Army.Remove(value);

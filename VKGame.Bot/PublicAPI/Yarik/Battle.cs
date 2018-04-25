@@ -95,6 +95,52 @@ namespace VKGame.Bot.PublicAPI.Yarik
             return members.Any(u => u == userId);
         }
 
+
+        public static object Choised(string clan, string battleId, int choise)
+        {
+
+
+
+            return null;
+        }
+
+        public static object GetChoise(string clan, string battleId)
+        {
+            if (!Battle.Check(battleId))
+                return new Error() { Code = 6, Message = "Не найдена битва с таким ID." };
+
+            if (!Clans.Check(clan))
+                return new Error()
+                {
+                    Code = 4,
+                    Message = "Клан с таким ID не зарегестирован."
+                };
+
+            var clanEnemy = Battle.GetClanEnemy(battleId, clan);
+            if (clanEnemy is IError) return clanEnemy;
+            var members = Clans.GetMembers((string)clanEnemy);
+            if (members is IError) return members;
+            var memberss = (List<long>)members;
+            var model = new ChoiseMembers()
+            {
+                @List = new List<ChoiseMember>()
+            };
+            for (int i = 0; memberss.Count > i; i++)
+            {
+                model.List.Add(new ChoiseMember()
+                {
+                    Number = i,
+                    User = new User()
+                    {
+                        Id = memberss[i],
+                        Money = (int)Users.Money(memberss[i]),
+                        Units = (Models.Units)Users.GetArmy(memberss[i])
+                    }
+                });
+            }
+            return model;
+        }
+
         public static bool CheckMemberChoiseBool(string battleId, long userId)
         {
             var members = (List<long>)GetMembersChoise(battleId);
