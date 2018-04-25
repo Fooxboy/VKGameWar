@@ -96,11 +96,50 @@ namespace VKGame.Bot.PublicAPI.Yarik
         }
 
 
-        public static object Choised(string clan, string battleId, int choise)
+        public static object Choised(string clan, string battleId, long user, int choise)
         {
+            if (!Check(battleId))
+                return new Error() { Code = 6, Message = "Не найдена битва с таким ID." };
+            if (!Users.Check(user))
+                return new Error() { Code = 12, Message = "Этот пользователь не зарегестирован." };
+            if (!Clans.Check(clan))
+                return new Error()
+                {
+                    Code = 4,
+                    Message = "Клан с таким ID не зарегестирован."
+                };
+
+            var choiseds = (ChoiseMembers)GetChoise(clan, battleId);
+            var value = choiseds.List.FindAll(u => u.Number == choise).FirstOrDefault();
+            if(value == null) return 
+                    new Error() { Code = 14, Message = "Нет игрока с таким номером выбора." };
+            AddMembersChoise(battleId, value.User.Id);
+            var battleIdLs = CreateBattleLs(user, value.User.Id);
+            Users.SetBattleId(user, battleIdLs);
+            return true;
+        }
 
 
+        public static string CreateBattleLs(long userId, long enemy)
+        {
+            byte[] hash = Encoding.ASCII.GetBytes($"Battle_{userId}From{enemy}, {DateTime.Now.ToString()}");
+            MD5 md5 = new MD5CryptoServiceProvider();
+            byte[] hashenc = md5.ComputeHash(hash);
+            string result = "";
+            foreach (var b in hashenc)
+                result += b.ToString("x2");
 
+            var battleId = result.ToUpper();
+
+            var hpEnemy = GetUserHp(enemy);
+            var fields = new List<string>() { "Id", "Creator", "Enemy", "HpEnemy"};
+            var values = new List<string>() { battleId, userId.ToString(), enemy.ToString(), hpEnemy.ToString()};
+            Database.Public.Add(fields, values, "BattlesOneOnOne");
+            return battleId;
+        }
+
+        public static object GetUserHp(long userId)
+        {
             return null;
         }
 
@@ -127,16 +166,19 @@ namespace VKGame.Bot.PublicAPI.Yarik
             };
             for (int i = 0; memberss.Count > i; i++)
             {
-                model.List.Add(new ChoiseMember()
+                if(!(bool)CheckMemberChoise(battleId, memberss[i]))
                 {
-                    Number = i,
-                    User = new User()
+                    model.List.Add(new ChoiseMember()
                     {
-                        Id = memberss[i],
-                        Money = (int)Users.Money(memberss[i]),
-                        Units = (Models.Units)Users.GetArmy(memberss[i])
-                    }
-                });
+                        Number = i,
+                        User = new User()
+                        {
+                            Id = memberss[i],
+                            Money = (int)Users.Money(memberss[i]),
+                            Units = (Models.Units)Users.GetArmy(memberss[i])
+                        }
+                    });
+                }      
             }
             return model;
         }

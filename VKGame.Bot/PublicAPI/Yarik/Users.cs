@@ -105,6 +105,7 @@ namespace VKGame.Bot.PublicAPI.Yarik
             return true;
         }
 
+       
         public static object GetBattleId(long user)
         {
             if (!Check(user))
