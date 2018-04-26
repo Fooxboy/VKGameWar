@@ -8,6 +8,7 @@ namespace VKGame.Bot.PublicAPI.Models
     {
         public long Id { get; set; }
         public int Money { get; set; }
+        public int Protection { get; set; }
         public Units Units { get; set; }
     }
 }

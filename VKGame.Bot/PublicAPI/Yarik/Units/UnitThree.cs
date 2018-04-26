@@ -1,15 +1,15 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace VKGame.Bot.PublicAPI.Yarik.Units
 {
-    public class Soildery : IArmy
+    public class UnitThree: IArmy
     {
-        public string Name => "Солдат";
-        public Unit Type => Unit.Soildery;
+        public int Type => 3;
         public int Level { get; set; }
-        public long Damage => Yarik.Damage.Soildery + (Yarik.Damage.SoilderyLevel * Level);
+        public long Damage => Level + 1;
         public bool isOpen { get; set; }
         public long TimeCreate => 1000;
     }

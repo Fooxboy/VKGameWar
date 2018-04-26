@@ -15,6 +15,15 @@ namespace VKGame.Bot.PublicAPI.Yarik
             return Database.Public.CheckFromKey("Id", battleId, "Battles");
         }
 
+
+        public static object Attack(long userId, string clan, IArmy army)
+        {
+
+
+            return null;
+        }
+
+
         public static object GetClanOne(string battleId)
         {
             if (!Check(battleId))

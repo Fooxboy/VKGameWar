@@ -124,6 +124,38 @@ namespace VKGame.Bot.PublicAPI.Yarik
             return value;
         }
 
+        public static object GetObject(long user)
+        {
+            if (!Check(user))
+                return new Models.Error() { Code = 2, Message = "Пользователя с армией нет в базе данных." };
+            var model = new Models.User()
+            {
+                Id = user,
+                Money = (int)Users.Money(user),
+                Units = (Models.Units)Users.GetArmy(user),
+                Protection = (int) Users.GetProtection(user)
+            };
+            return model;
+        }
+
+        public static object GetProtection(long user)
+        {
+            if (!Check(user))
+                return new Models.Error() { Code = 2, Message = "Пользователя с армией нет в базе данных." };
+            var db = new Database.Public("Users");
+            var value = (long)db.GetFromKey("Id", user, "Protection");
+            return value;
+        }
+
+        public static object SetProtection(long user, int value)
+        {
+            if (!Check(user))
+                return new Models.Error() { Code = 2, Message = "Пользователя с армией нет в базе данных." };
+            var db = new Database.Public("Users");
+            db.EditFromKey("Id", user, "Protection", value);
+            return true;
+        }
+
         public static object SetAttempts(long user, int count)
         {
             if (!Check(user))
