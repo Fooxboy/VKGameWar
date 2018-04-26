@@ -139,12 +139,12 @@ namespace VKGame.Bot.Commands
                 var battleId = user.Id;
                 var battle = new Battles(battleId);
 
-                var choise = new Random().Next(1, 3);
+                var choise = new Random().Next(1, 4);
                 if (choise == 1)
                 {
                     var typeBuilds = string.Empty;
                     var buildsVrag = new Builds(userId);
-                    var lol = new Random().Next(1, 8);
+                    var lol = new Random().Next(1, 9);
                     if (lol == 1)
                     {
                         buildsVrag.Apartments -= 1;
@@ -197,7 +197,7 @@ namespace VKGame.Bot.Commands
                     
                 }else if(choise == 3)
                 {
-                    int count = new Random().Next(5, 15);
+                    int count = new Random().Next(5, 16);
                     var levels = new Levels(user.Id);
                     long coutHpArmy = 0;
                     coutHpArmy += count * API.SoldieryHp;
@@ -231,20 +231,20 @@ namespace VKGame.Bot.Commands
 
                 if (skills1.Fortuna == skills2.Fortuna)
                 {
-                    int choise = r.Next(1, 2);
+                    int choise = r.Next(1, 3);
                     if (choise == 1) return user1;
                     else if (choise == 2) return user2;
                 }
                 
                 if (skills1.Fortuna > skills2.Fortuna)
                 {
-                    var choise = r.Next(1, 3);
+                    var choise = r.Next(1, 4);
                     if (choise == 2) return user2;
                     else return user1;
                 }
                 else
                 {
-                    var choise = r.Next(1, 3);
+                    var choise = r.Next(1, 4);
                     if (choise == 2) return user1;
                     else return user2;
                 }
@@ -386,13 +386,13 @@ namespace VKGame.Bot.Commands
             
             
             var r = new Random();
-            int chaise = r.Next(1, 3);
+            int chaise = r.Next(1, 4);
             
             if (skills.Fortuna > skillsVrag.Fortuna)
             {
                 if (chaise == 2)
                 {
-                    chaise = r.Next(1, 3);
+                    chaise = r.Next(1, 4);
                     if (chaise == 2)
                     {
                         if (user.Level < userVrag.Level)
@@ -409,7 +409,7 @@ namespace VKGame.Bot.Commands
                     }
                 }else if (chaise == 1)
                 {
-                    var lol = r.Next(1, 5);
+                    var lol = r.Next(1, 6);
                     if (lol == 3) chaise = 3;
                     else
                     {
@@ -422,10 +422,10 @@ namespace VKGame.Bot.Commands
                 }
             }else if (skills.Fortuna == skillsVrag.Fortuna)
             {
-                chaise = r.Next(1, 3);
+                chaise = r.Next(1, 4);
             }else if (skills.Fortuna < skillsVrag.Fortuna)
             {
-                var loh = r.Next(1, 4);
+                var loh = r.Next(1, 5);
                 if (loh == 1) chaise = 1;
                 if (loh == 2) chaise = 2;
                 if (loh == 3) chaise = 2;
@@ -436,13 +436,13 @@ namespace VKGame.Bot.Commands
             {
                 string typeBuilds = String.Empty;
                 
-                var kek = r.Next(1, 3);
+                var kek = r.Next(1, 4);
                 if (kek == 2)
                 {
                     if(battle.Type == 1)
                     {
                         var buildsVrag = new Builds(vrag);
-                        var lol = r.Next(1, 8);
+                        var lol = r.Next(1, 9);
                         if (lol == 1)
                         {
                             buildsVrag.Apartments -= 1;
@@ -490,7 +490,7 @@ namespace VKGame.Bot.Commands
                     }else if(battle.Type == 2)
                     {
                         var buildsVrag = new Builds(vrag);
-                        var lol = r.Next(1, 8);
+                        var lol = r.Next(1, 9);
                         if (lol == 1)
                         {
                             buildsVrag.Apartments -= 1;
@@ -841,8 +841,6 @@ namespace VKGame.Bot.Commands
                    "\n ✨ Бой создать (цена) (название) -- создание собственной битвы." +
                    "\n 😎 Бой вступить (ID) -- вступить в уже созданную битву." +
                    "\n 🔫 Бой бот (цена) -- создаёт битву с ботом. ";
-        }
-
-        
+        }    
     }
 }

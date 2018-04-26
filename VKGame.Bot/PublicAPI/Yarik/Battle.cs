@@ -16,11 +16,57 @@ namespace VKGame.Bot.PublicAPI.Yarik
         }
 
 
-        public static object Attack(long userId, string clan, IArmy army)
+        public static object Attack(long userId, string clan, IArmy army, int count)
         {
+            if (!((bool)Clans.GetIsStartBattle(clan)))
+                return new Error() { Code = 18, Message = "Клан не находится в битве." };
+
+            var userBattleObject = Users.GetBattleId(userId);
+            if (userBattleObject is IError) return (IError)userBattleObject;
+            var battleId = (string)userBattleObject;
+            if(battleId== "0")
+                return new Error() { Code = 16, Message = "Пользователь не участвует в битве." };
+            var countForUserObject =  Army.GetCountForType(userId, army.Type);
+            if (countForUserObject is IError) return (IError)countForUserObject;
+            var countForUser = (int)countForUserObject;
+            if(count > countForUser)
+                return new Error() { Code = 17, Message = "У Пользователя недостаточно армии." };
+            var enemyHp = GetHpEnemyLs(battleId);
+
+            var r = new Random();
+
+            var mainChance = r.Next(1, 4);
+
+            if(mainChance == 2)
+            {
+                return 2;
+            }
+
+
 
 
             return null;
+        }
+
+        public static object GetEnemyLs(string battleIdLs)
+        {
+            var db = new Database.Public("BattlesOneOnOne");
+            var value = (long)db.GetFromKey("Id", battleIdLs, "Enemy");
+            return value;
+        }
+
+        public static object GetHpEnemyLs(string battleIdLs)
+        {
+            var db = new Database.Public("BattlesOneOnOne");
+            var value = (long)db.GetFromKey("Id", battleIdLs, "HpEnemy");
+            return value;
+        }
+
+        public static object SetHpEnemyLs(string battleIdLs, int value)
+        {
+            var db = new Database.Public("BattlesOneOnOne");
+            db.EditFromKey("Id", battleIdLs, "HpEnemy", value);
+            return true ;
         }
 
 
@@ -149,7 +195,7 @@ namespace VKGame.Bot.PublicAPI.Yarik
 
         public static object GetUserHp(long userId)
         {
-            return null;
+            throw new Exception("не получен хп пользователя");
         }
 
         public static object GetChoise(string clan, string battleId)

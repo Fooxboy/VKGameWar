@@ -43,6 +43,11 @@ namespace VKGame.Bot.PublicAPI.Yarik
             return value;
         }
 
+        public static object GetSummaryDamage(long user, IArmy army)
+        {
+            return null;
+        }
+
         public static object EditCount(long userId, int type, int count)
         {
             if (!Check(userId))
