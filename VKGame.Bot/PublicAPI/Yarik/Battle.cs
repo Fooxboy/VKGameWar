@@ -37,13 +37,26 @@ namespace VKGame.Bot.PublicAPI.Yarik
 
             var mainChance = r.Next(1, 4);
 
+            //чел промазол.
             if(mainChance == 2)
             {
                 return 2;
             }
 
+            //чел попал
+            var chanceAttackToBarracks = r.Next(1, 5);
+            var enemy = (long)GetEnemyLs(battleId);
 
+            var chanseLoseWhereUpLevel = 2;
+            if((int)Users.GetProtection(enemy) < (int)Users.GetProtection(userId))
+            {
+                chanceAttackToBarracks = r.Next(1, 4);
+            }
 
+            
+
+            //уровень защиты игрока.
+            if (chanceAttackToBarracks == 1) return 2;
 
             return null;
         }
