@@ -124,6 +124,21 @@ namespace VKGame.Bot.PublicAPI.Yarik
             return value;
         }
 
+        public static object OutMoney(long user, int count)
+        {
+            if (!Check(user))
+                return new Models.Error() { Code = 2, Message = "Пользователя с армией нет в базе данных." };
+            var money = (int) Money(user);
+            if(money == 0)
+                return new Models.Error() { Code = 19, Message = "Пользователь не имеет денег для вывода." };
+            if(money < count)
+                return new Models.Error() { Code = 20, Message = "У пользователя недостаточно денег для вывода." };
+
+            money -= count;
+            SetMoney(user, money);
+            return true;
+        }
+
         public static object GetObject(long user)
         {
             if (!Check(user))

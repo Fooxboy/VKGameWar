@@ -11,5 +11,6 @@ namespace VKGame.Bot.PublicAPI.Yarik.Units
         public long Damage => Level + 1;
         public bool isOpen { get; set; }
         public long TimeCreate => 1000;
+        public int Price => Level*20;
     }
 }

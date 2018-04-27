@@ -11,5 +11,6 @@ namespace VKGame.Bot.PublicAPI.Yarik
         long Damage { get; }
         bool isOpen { get; set; }
         long TimeCreate { get; }
+        int Price { get;}
     }
 }

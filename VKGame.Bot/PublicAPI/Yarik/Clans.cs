@@ -22,6 +22,24 @@ namespace VKGame.Bot.PublicAPI.Yarik
             return result;
         }
 
+        public static object EndBattle(string clan)
+        {
+            if (!Check(clan))
+                return new Error()
+                {
+                    Code = 4,
+                    Message = "Клан с таким ID не зарегестирован."
+                };
+            SetBattleId(clan, "0");
+            var members = (List<long>)GetMembers(clan);
+            foreach(var member in members)
+            {
+                Users.SetBattleId(member, "0");
+            }
+
+            return true;
+        }
+
         public static object SetBattleId(string clan, string value)
         {
             if (!Check(clan))

@@ -22,6 +22,25 @@ namespace VKGame.Bot.PublicAPI.Yarik
             db.EditFromId(userId, "CurrentCount", stringCounts);
         }
 
+        public static object ResetCount(long userId)
+        {
+            var model = new Models.Count();
+            var list = new List<Models.SpecificCount>();
+            list.Add(new Models.SpecificCount() { Id = 1, Count = 0 });
+            list.Add(new Models.SpecificCount() { Id = 2, Count = 0 });
+            list.Add(new Models.SpecificCount() { Id = 3, Count = 0 });
+            list.Add(new Models.SpecificCount() { Id = 4, Count = 0 });
+            list.Add(new Models.SpecificCount() { Id = 5, Count = 0 });
+            model.List = list;
+            SetCount(userId, model);
+            return true;
+        }
+
+        public static object Create(long userId, IArmy type)
+        {
+
+        }
+
         public static object GetCount(long userId)
         {
             if (!Check(userId))
@@ -29,6 +48,19 @@ namespace VKGame.Bot.PublicAPI.Yarik
             var db = new Database.Public("Army");
             var countStr = (string)db.GetFromId(userId, "CurrentCount");
             return JsonConvert.DeserializeObject<Models.Count>(countStr);
+        }
+
+        public static object SetPrice(long userId, int price)
+        {
+            var db = new Database.Public("Army");
+            db.EditFromId(userId, "Price", price);
+            return true;
+        }
+
+        public static object GetPrice(long userId)
+        {
+            var db = new Database.Public("Army");
+            return (long)db.GetFromId(userId, "Price");
         }
 
         public static object GetCountForType(long userId, int type)

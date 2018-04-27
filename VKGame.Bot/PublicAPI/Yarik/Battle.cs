@@ -16,6 +16,14 @@ namespace VKGame.Bot.PublicAPI.Yarik
         }
 
 
+        public static object Lose(long userId, string clan)
+        {
+            var attempts = (int)Users.GetAttempts(userId);
+            Users.SetAttempts(userId, --attempts);
+            return true;
+        }
+
+
         public static object Attack(long userId, string clan, IArmy army, int count)
         {
             if (!((bool)Clans.GetIsStartBattle(clan)))
@@ -76,12 +84,17 @@ namespace VKGame.Bot.PublicAPI.Yarik
                 Users.SetAttempts(userId, --countAttemps);
 
                 int money = 0;
+                money += 10000;
+                money += (int)Army.GetPrice(userId);
+                money += 100 * (int)Clans.Level(clan);
+
                 var moneys = (int)Users.Money(userId);
                 moneys += money;
                 Users.SetMoney(userId, moneys);
                 var found = (int)Clans.GetFound(clan);
                 found += money;
                 Clans.SetFound(clan,found);
+                
                 return new Attack() { Status = 4, Money = money, HpEnemy = enemyHp };
             }
 
@@ -110,7 +123,6 @@ namespace VKGame.Bot.PublicAPI.Yarik
             db.EditFromKey("Id", battleIdLs, "HpEnemy", value);
             return true ;
         }
-
 
         public static object GetClanOne(string battleId)
         {
@@ -213,6 +225,16 @@ namespace VKGame.Bot.PublicAPI.Yarik
             AddMembersChoise(battleId, value.User.Id);
             var battleIdLs = CreateBattleLs(user, value.User.Id);
             Users.SetBattleId(user, battleIdLs);
+            var army = (Models.Count)Army.GetCount(user);
+            int price = 0;
+            foreach(var ar in army.List)
+            {
+                var units = (Models.Units)Users.GetArmy(user);
+                 var unit = units.Army[ar.Id -1];
+                price += ar.Count * unit.Price;
+            }
+            Army.SetPrice(user, price);
+
             return true;
         }
 
@@ -237,7 +259,15 @@ namespace VKGame.Bot.PublicAPI.Yarik
 
         public static object GetUserHp(long userId)
         {
-            throw new Exception("не получен хп пользователя");
+            var one = (int)Barracks.GetCount(userId, 1);
+            var two = (int)Barracks.GetCount(userId, 2);
+            var three = (int)Barracks.GetCount(userId, 3);
+            var four = (int)Barracks.GetCount(userId, 4);
+            var five = (int)Barracks.GetCount(userId, 5);
+
+            var sum = (one + two + three + four + four) * 100;
+            return sum;
+
         }
 
         public static object GetChoise(string clan, string battleId)
