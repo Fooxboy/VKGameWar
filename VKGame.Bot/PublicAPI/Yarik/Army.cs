@@ -38,7 +38,7 @@ namespace VKGame.Bot.PublicAPI.Yarik
 
         public static object Create(long userId, IArmy type)
         {
-
+            return null;
         }
 
         public static object GetCount(long userId)
