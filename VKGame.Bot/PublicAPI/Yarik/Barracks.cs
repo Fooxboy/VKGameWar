@@ -21,12 +21,28 @@ namespace VKGame.Bot.PublicAPI.Yarik
             long count = 0;
             try
             {
-                 count = (long)db.GetFromKey("Id", user, army);
+                 count = (long)db.GetFromId(user, army);
             }catch
             {
                 return new Models.Error() { Code = 15, Message = "Неизвестный тип армии." };
             }
             return count;
+        }
+
+        public static object SetCount(long user, int idArmy, int value)
+        {
+            var db = new Database.Public("Barracks");
+
+            string army = idArmy.
+                ToString().
+                Replace("1", "One").
+                Replace("2", "Two").
+                Replace("3", "Three").
+                Replace("4", "Four").
+                Replace("5", "Five");
+
+            db.EditFromId(user, army, value);
+            return true;
         }
 
     }

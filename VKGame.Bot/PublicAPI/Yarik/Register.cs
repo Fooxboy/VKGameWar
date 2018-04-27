@@ -30,6 +30,14 @@ namespace VKGame.Bot.PublicAPI.Yarik
             return true;
         }
 
+        public static object Barracks(long id)
+        {
+            var fields = new List<string> { "Id", "One", "Two", "Three", "Four", "Five" };
+            var values = new List<string> { id.ToString(), "1", "0", "0", "0", "0" };
+            Database.Public.Add(fields, values, "Barracks");
+            return true;
+        }
+
         public static object User(long id)
         {
             if(Users.Check(id))
@@ -38,10 +46,30 @@ namespace VKGame.Bot.PublicAPI.Yarik
             var objectArmy = new Models.Units() {
                 Army = new List<IArmy>()
                 {
-                    new Units.Soildery()
+                    new Units.UnitOne()
                     {
                         Level = 1,
                         isOpen = true
+                    },
+                    new Units.UnitTwo()
+                    {
+                         Level = 1,
+                        isOpen = false
+                    },
+                    new Units.UnitThree()
+                    {
+                         Level = 1,
+                        isOpen = false
+                    },
+                    new Units.UnitFour()
+                    {
+                         Level = 1,
+                        isOpen = false
+                    },
+                    new Units.UnitFive()
+                    {
+                         Level = 1,
+                        isOpen = false
                     }
                 }
             };
@@ -50,6 +78,7 @@ namespace VKGame.Bot.PublicAPI.Yarik
 
             Database.Public.Add(fields, values, "Users");
 
+            Barracks(id);
             Army(id);
 
             return true;

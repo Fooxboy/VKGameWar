@@ -31,7 +31,8 @@ namespace VKGame.Bot.PublicAPI.Yarik
             var countForUser = (int)countForUserObject;
             if(count > countForUser)
                 return new Error() { Code = 17, Message = "У Пользователя недостаточно армии." };
-            var enemyHp = GetHpEnemyLs(battleId);
+            var enemyHp = (int)GetHpEnemyLs(battleId);
+            var damage = (int)Army.GetSummaryDamage(userId, army);
 
             var r = new Random();
 
@@ -50,15 +51,43 @@ namespace VKGame.Bot.PublicAPI.Yarik
             var chanseLoseWhereUpLevel = 2;
             if((int)Users.GetProtection(enemy) < (int)Users.GetProtection(userId))
             {
-                chanceAttackToBarracks = r.Next(1, 4);
-            }
-
-            
+                chanseLoseWhereUpLevel = r.Next(1, 5);
+            }          
 
             //уровень защиты игрока.
-            if (chanceAttackToBarracks == 1) return 2;
+            if (chanceAttackToBarracks == 1) return new Models.Attack() { Status = 2};
+    
+            //атака на казармы
+            if(chanceAttackToBarracks == 3)
+            {
+                var choiseCasarm = r.Next(1,6);
+                var countB = (int)Barracks.GetCount(userId, choiseCasarm);
+                countB -= 1;
+                Barracks.SetCount(userId, choiseCasarm,  countB);
 
-            return null;
+                return new Attack() { Status = 3, IdBarrack = choiseCasarm };
+            }
+
+            enemyHp -= damage;
+            if(enemyHp <= 0)
+            {
+                //пользователь вин.
+                var countAttemps = (int)Users.GetAttempts(userId);
+                Users.SetAttempts(userId, --countAttemps);
+
+                int money = 0;
+                var moneys = (int)Users.Money(userId);
+                moneys += money;
+                Users.SetMoney(userId, moneys);
+                var found = (int)Clans.GetFound(clan);
+                found += money;
+                Clans.SetFound(clan,found);
+                return new Attack() { Status = 4, Money = money, HpEnemy = enemyHp };
+            }
+
+            SetHpEnemyLs(battleId, enemyHp);
+
+            return new Attack() { Status = 1, Damage = damage, HpEnemy = enemyHp };
         }
 
         public static object GetEnemyLs(string battleIdLs)
