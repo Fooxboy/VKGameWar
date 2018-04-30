@@ -6,17 +6,17 @@ namespace VKGame.Bot.Commands.Admin
 {
     public class Reboot : ICommand
     {
-        public string Name => "Перезагрузка";
-        public string Caption => "а";
-        public string Arguments => "()";
-        public TypeResponse Type => TypeResponse.Text;
-        public List<string> Commands => new List<string>();
-        public Access Access => Access.Admin;
+        public override string Name => "Перезагрузка";
+        public override string Caption => "а";
+        public override string Arguments => "()";
+        public override TypeResponse Type => TypeResponse.Text;
+        public override List<string> Commands => new List<string>();
+        public override Access Access => Access.Admin;
+        public override string HelpUrl => "недоступно";
 
-        public object Execute(Models.Message msg)
+        public override object Execute(Models.Message msg)
         {
-
-            return null;
+            return "Ошибка";
         }
     }
 }

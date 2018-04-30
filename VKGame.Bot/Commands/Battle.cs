@@ -84,9 +84,9 @@ namespace VKGame.Bot.Commands
                 
             }
 
-            public const long SoldieryHp = 10;
+            public const long SoldieryHp = 100;
             
-            public const long TanksHp = 10;
+            public const long TanksHp = 200;
 
             public const long OneLvlSoldiery = 50;
 

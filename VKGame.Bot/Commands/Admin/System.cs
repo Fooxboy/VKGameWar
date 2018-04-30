@@ -14,6 +14,7 @@ namespace VKGame.Bot.Commands.Admin
         public override List<string> Commands => new List<string>();
         public override TypeResponse Type => TypeResponse.Text;
         public override Access Access => Access.Admin;
+        public override string HelpUrl => "or";
 
         public override object Execute(Models.Message msg)
         {

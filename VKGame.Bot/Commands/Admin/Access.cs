@@ -6,17 +6,18 @@ namespace VKGame.Bot.Commands.Admin
 {
     public class AccessCommand : ICommand
     {
-        public string Name => "Доступ";
-        public string Arguments => "(), (вариант_выбора)";
-        public string Caption => "а";
-        public TypeResponse Type => TypeResponse.Text;
+        public override string Name => "Доступ";
+        public override string Arguments => "(), (вариант_выбора)";
+        public override string Caption => "а";
+        public override TypeResponse Type => TypeResponse.Text;
 
-        public List<string> Commands =>
+        public override List<string> Commands =>
             new List<string>() { "бот", "атака", "вступить", "покинуть", "мой", "создать", "список" };
 
-        public Access Access => Access.User;
+        public override string HelpUrl => "недоступно";
+        public override Access Access => Access.User;
 
-        public object Execute(Models.Message msg)
+        public override object Execute(Models.Message msg)
         {
             if (msg.from_id != 308764786) return "Вам недоступна текущая команда!";
             var messageArray = msg.body.Split(' ');

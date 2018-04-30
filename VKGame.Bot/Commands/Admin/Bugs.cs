@@ -5,14 +5,15 @@ namespace VKGame.Bot.Commands.Admin
 {
     public class Bugs :ICommand
     {
-        public string Name => "Баги";
-        public string Caption => "аа";
-        public string Arguments => "";
-        public List<string> Commands => new List<string>();
-        public TypeResponse Type => TypeResponse.Text;
-        public Access Access => Access.Admin;
+        public override string Name => "Баги";
+        public override string Caption => "аа";
+        public override string Arguments => "";
+        public override List<string> Commands => new List<string>();
+        public override TypeResponse Type => TypeResponse.Text;
+        public override string HelpUrl => "Недоступно";
+        public override Access Access => Access.Admin;
 
-        public object Execute(Models.Message msg)
+        public override object Execute(Models.Message msg)
         {
             
             var messageArray = msg.body.Split(' ');
