@@ -28,6 +28,87 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
             return Json(model);
         }
 
+        public IActionResult create(long user, int army, int count)
+        {
+            try
+            {
+                if (user == 0 || army == 0 || count ==0)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
+
+                var type = Bot.PublicAPI.Yarik.Army.ConvertToArmy(army);
+                if (type is null)
+                    return Json(new RootResponse() { result = false, data = new Models.Error() { Code = 23, Message = "Неизвестный тип армии." } });
+
+                var result = Bot.PublicAPI.Yarik.Army.Create(user, type, count);
+                var model = new RootResponse() { result = true };
+                if (result is IError) model.result = false;
+                model.data = result;
+                return Json(model);
+            }
+            catch (Exception e)
+            {
+                var model = new RootResponse<Models.Error>()
+                {
+                    result = false,
+                    data = new Models.Error()
+                    {
+                        Code = 10,
+                        Message = $"Внутренняя ошибка сервера." +
+                        $"\n {e.ToString()}"
+                    }
+                };
+                return Json(model);
+            }
+        }
+
+        public IActionResult createComplete(long user)
+        {
+            try
+            {
+                if (user == 0)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
+                var result = Bot.PublicAPI.Yarik.Army.CreateCompete(user);
+                var model = new RootResponse() { result = true };
+                if (result is IError) model.result = false;
+                model.data = result;
+                return Json(model);
+            }
+            catch (Exception e)
+            {
+                var model = new RootResponse<Models.Error>()
+                {
+                    result = false,
+                    data = new Models.Error()
+                    {
+                        Code = 10,
+                        Message = $"Внутренняя ошибка сервера." +
+                        $"\n {e.ToString()}"
+                    }
+                };
+                return Json(model);
+            }
+        }
+
         public IActionResult check(long id)
         {
             try

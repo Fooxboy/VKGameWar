@@ -19,6 +19,26 @@ namespace VKGame.Bot.PublicAPI.Yarik
                 {
                     Id= 1,
                     Count= 0
+                },
+                new Models.SpecificCount()
+                {
+                    Id= 2,
+                    Count= 0
+                },
+                new Models.SpecificCount()
+                {
+                    Id= 3,
+                    Count= 0
+                },
+                new Models.SpecificCount()
+                {
+                    Id= 4,
+                    Count= 0
+                },
+                new Models.SpecificCount()
+                {
+                    Id= 5,
+                    Count= 0
                 }
             }
             };

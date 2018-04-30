@@ -15,7 +15,7 @@ namespace VKGame.Bot.Commands
         public override string HelpUrl => "сслыка недоступна";
 
 
-        public object Execute(Models.Message msg)
+        public override object Execute(Models.Message msg)
         {
             var messageArray = msg.body.Split(' ');
 

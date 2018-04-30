@@ -99,6 +99,14 @@ namespace VKGame.WebAPI
                   template: "{area:exists}/{controller=User}/{action=Index}/{id?}"
                 );
             });
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                  name: "areas8",
+                  template: "{area:exists}/{controller=Barracks}/{action=Index}/{id?}"
+                );
+            });
         }
     }
 }
