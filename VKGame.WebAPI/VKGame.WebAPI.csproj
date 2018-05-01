@@ -4,6 +4,10 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <ApplicationIcon />
     <Win32Resource />
+    <Authors>Fooxboy</Authors>
+    <Company>Fooxboy</Company>
+    <Product>WebAPI</Product>
+    <Description>WebAPI from VKGame Bot</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -11,14 +11,8 @@ namespace VKGame.Bot.PublicAPI.Yarik
         {
             get
             {
-                var msg = "Не найдена запрошеная страница.";
-                Encoding srcEncodingFormat = Encoding.GetEncoding("Windows-1251");
-                Encoding dstEncodingFormat = Encoding.UTF8;
-                byte[] originalByteString = srcEncodingFormat.GetBytes(msg);
-                byte[] convertedByteString = Encoding.Convert(srcEncodingFormat,
-                dstEncodingFormat, originalByteString);
-                string finalString = dstEncodingFormat.GetString(convertedByteString);
-                return JsonConvert.SerializeObject(new RootResponse() { result = false, data = new Models.Error() { Code = 404, Message = finalString } });
+               
+                return JsonConvert.SerializeObject(new RootResponse() { result = false, data = new Models.Error() { Code = 404, Message = "No page found." } });
             }
         }
 
@@ -26,16 +20,8 @@ namespace VKGame.Bot.PublicAPI.Yarik
         {
             get
             {
-                var msg = "От сервера не поступило ответа.";
-                Encoding srcEncodingFormat = Encoding.GetEncoding("Windows-1251");
-                Encoding dstEncodingFormat = Encoding.UTF8;
-                byte[] originalByteString = srcEncodingFormat.GetBytes(msg);
-                byte[] convertedByteString = Encoding.Convert(srcEncodingFormat,
-                dstEncodingFormat, originalByteString);
-                string finalString = dstEncodingFormat.GetString(convertedByteString);
-
-
-                return JsonConvert.SerializeObject(new RootResponse() { result = false, data = new Models.Error() { Code = 400, Message =  finalString} });
+               
+                return JsonConvert.SerializeObject(new RootResponse() { result = false, data = new Models.Error() { Code = 400, Message = "Server is not available" } });
             }
         }
     }

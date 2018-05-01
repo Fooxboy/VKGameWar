@@ -135,6 +135,7 @@ namespace VKGame.Bot.PublicAPI.Yarik
 
             value.Count = count;
 
+            counts.List.Add(value);
             SetCount(userId, counts);
             return true;
         }

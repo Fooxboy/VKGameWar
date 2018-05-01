@@ -65,12 +65,26 @@ namespace VKGame.Bot.PublicAPI.Yarik
                 };
             var db = new Database.Public("Clans");
 
-            var strMembers = (string)db.GetFromKey("Id", clan, "Level");
+            var objMembers = db.GetFromKey("Id", clan, "Level");
 
-            string[] membersArray = strMembers.Split(',');
-            List<long> members = new List<long>();
-            foreach (var member in membersArray) members.Add(Int64.Parse(member));
-            return members;
+            if(objMembers is long)
+            {
+                List<long> members = new List<long>();
+                members.Add((long)objMembers);
+                return members;
+            }else
+            {
+                var strMembers = (string)objMembers;
+
+                string[] membersArray = strMembers.Split(',');
+                List<long> members = new List<long>();
+                foreach (var member in membersArray) members.Add(Int64.Parse(member));
+                return members;
+            }
+
+
+
+            
         }
 
         public static object AddMember(string clan, long user)
@@ -268,7 +282,7 @@ namespace VKGame.Bot.PublicAPI.Yarik
 
             var db = new Database.Public("Clans");
 
-            var result = (long)db.GetFromKey("Id", clan, "BattleId");
+            var result = (string)db.GetFromKey("Id", clan, "BattleId");
             return result;
         }
 
@@ -283,7 +297,7 @@ namespace VKGame.Bot.PublicAPI.Yarik
 
             var db = new Database.Public("Clans");
 
-            var result = (long)db.GetFromKey("Id", clan, "Name");
+            var result = (string)db.GetFromKey("Id", clan, "Name");
             return result;
         }
 

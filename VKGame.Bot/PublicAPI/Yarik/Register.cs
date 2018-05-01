@@ -108,7 +108,7 @@ namespace VKGame.Bot.PublicAPI.Yarik
         {
             if(Clans.Check(id))
                 return new Models.Error() { Code = 11, Message = "Этот клан уже зарегестрирован." };
-            Database.Public.Add(new List<string>() { "Id", "Name", "Members" }, new List<string>() { id, name, user.ToString()}, "Clans");
+            Database.Public.Add(new List<string>() { "Id", "Name", "Members" }, new List<string>() { id, name, $"{user}"}, "Clans");
 
             return true;
         }

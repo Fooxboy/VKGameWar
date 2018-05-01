@@ -17,14 +17,8 @@ namespace VKGame.Bot.PublicAPI.Yarik
         {
             get
             {
-                var message = "У Вас нет доступа к этому методу.";
-                Encoding srcEncodingFormat = Encoding.GetEncoding("Windows-1251");
-                Encoding dstEncodingFormat = Encoding.UTF8;
-                byte[] originalByteString = srcEncodingFormat.GetBytes(message);
-                byte[] convertedByteString = Encoding.Convert(srcEncodingFormat,
-                dstEncodingFormat, originalByteString);
-                string finalString = dstEncodingFormat.GetString(convertedByteString);
-                return Newtonsoft.Json.JsonConvert.SerializeObject(new RootResponse() { result = false, data = new Models.Error() { Code = 9, Message = finalString } });
+               
+                return Newtonsoft.Json.JsonConvert.SerializeObject(new RootResponse() { result = false, data = new Models.Error() { Code = 9, Message = "Can not access method." } });
             }
         }
     }

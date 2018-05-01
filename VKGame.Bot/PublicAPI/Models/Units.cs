@@ -6,6 +6,6 @@ namespace VKGame.Bot.PublicAPI.Models
 {
     public class Units
     {
-        public List<Yarik.IArmy> Army { get; set; }
+        public List<ArmyData> Army { get; set; }
     }
 }

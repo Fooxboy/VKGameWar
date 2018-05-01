@@ -29,12 +29,14 @@ namespace VKGame.WebAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseDeveloperExceptionPage();
             app.UseMiddleware<ErrorMiddleware>();
             app.UseMiddleware<TokenMiddleware>();
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                
             }
+
             app.UseMvc();
             app.UseMvc(routes =>
             {

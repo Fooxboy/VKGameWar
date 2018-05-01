@@ -27,11 +27,9 @@ namespace VKGame.Bot.PublicAPI.Yarik
 
         public static object GetArmy(long userId)
         {
-            if (!Check(userId))
-                return new Models.Error() { Code = 12, Message = "Этот пользователь не зарегестирован." };
-
             var db = new Database.Public("Users");
-            var obj = JsonConvert.DeserializeObject<Models.Units>((string)db.GetFromId(userId, "Units"));
+            var unitsString = (string)db.GetFromId(userId, "Units");
+            var obj = JsonConvert.DeserializeObject<Models.Units>(unitsString);
             return obj;
         }
 
@@ -91,6 +89,7 @@ namespace VKGame.Bot.PublicAPI.Yarik
         {
             if (!Check(user))
                 return new Models.Error() { Code = 2, Message = "Пользователя с армией нет в базе данных." };
+
             var db = new Database.Public("Users");
             var armys = JsonConvert.DeserializeObject<Models.Units>((string)db.GetFromId(user, "Units"));
             var value = armys.Army.FindAll(u => (int)u.Type == type).FirstOrDefault();

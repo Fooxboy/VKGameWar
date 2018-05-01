@@ -370,7 +370,7 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
                     });
                 }
 
-                var result = Bot.PublicAPI.Yarik.Users.GetProtection(id);
+                var result = Bot.PublicAPI.Yarik.Users.OutMoney(id, count);
                 var model = new RootResponse() { result = true };
                 if (result is IError) model.result = false;
                 model.data = result;
