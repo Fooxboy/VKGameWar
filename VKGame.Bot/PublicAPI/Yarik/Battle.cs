@@ -351,44 +351,61 @@ namespace VKGame.Bot.PublicAPI.Yarik
         //поиск по уровню.
         private static string SearchForLevels(int level, string clanId, bool plus)
         {
+            Console.WriteLine("Поиск по уровню.");
+            Console.WriteLine("Получение id кланов.");
             //Получение id кланов.
             var clansIds = Clans.GetClansIsSearchBattle();
 
+            Console.WriteLine($"получено {clansIds.Count}");
             if (clansIds.Count == 0)
                 return null;
+            Console.WriteLine("Создание объектов clan.");
             //создание объектов clan.
             var clans = new List<Clan>();
             foreach (var clanIdAll in clansIds)
                 clans.Add(new Clan(clanIdAll));
             var clan = new Clan(clanId);
 
+            Console.WriteLine("Поиск с одним и тем же уровнем.");
             //first step: поиск кланов с одним и тем же уровнем.
             var firstStep = clans.OrderBy(u => u.Level == level);
             if (firstStep.Count() != 0)
             {
+                Console.WriteLine("!=0.");
+                Console.WriteLine("поиск кланов с одним и тем же кол-вом участников.");
                 //поиск кланов с одним и тем же кол-вом участников.
                 firstStep = firstStep.OrderBy(u => u.CountMembers == clan.CountMembers);
                 if (firstStep.Count() != 0) return firstStep.FirstOrDefault().Id;
                 else
                 {
+                    Console.WriteLine("Увеличиваем подборку если кланов таких нет.");
+
                     //увеличиваем выборку, если таких кланов нет.
                     firstStep = firstStep.OrderBy(u => u.CountMembers >= clan.CountMembers && !(u.CountMembers > u.CountMembers * 1.5));
                     if (firstStep.Count() != 0)
                     {
+                        Console.WriteLine("сортируем по возрастанию.");
+
                         //Сортируем по возрастанию - первое значение - самое маленькое количество участников.
                         firstStep = firstStep.OrderBy(u => u.CountMembers);
                         if (firstStep.Count() != 0) return firstStep.FirstOrDefault().Id;
                         else
                         {
-                           //Если таких кланов нет - сортируем по уровню.
-                            if(plus)
+                            Console.WriteLine("сортируем по уровнб");
+
+                            //Если таких кланов нет - сортируем по уровню.
+                            if (plus)
                             {
+                                Console.WriteLine("больше");
+
                                 //больше
                                 if (level - clan.Level < 2)
                                     return SearchForLevels(++level, clanId, true);
                                 else return null;
                             }else
                             {
+                                Console.WriteLine("меньше.");
+
                                 //меньше
                                 if (clan.Level - level < 2)
                                     return SearchForLevels(--level, clanId, false);
@@ -398,16 +415,22 @@ namespace VKGame.Bot.PublicAPI.Yarik
                     }
                     else
                     {
+                        Console.WriteLine("уменьшаем если таких нет.");
+
                         //уменьшаем подборку если таких кланов нет.
                         firstStep = firstStep.OrderBy(u => u.CountMembers <= clan.CountMembers && !(u.CountMembers < u.CountMembers / 1.5));
 
                         if (firstStep.Count() != 0)
                         {
+                            Console.WriteLine("сортируем по убыванию.");
+
                             //Сортируем по убыванию - первое значение - самое большое количество участников.
                             firstStep = firstStep.OrderByDescending(u => u.CountMembers);
                             if (firstStep.Count() != 0) return firstStep.FirstOrDefault().Id;
                             else
                             {
+                                Console.WriteLine("Если таких кланов нет - сортируем по уровню");
+
                                 //Если таких кланов нет - сортируем по уровню.
                                 if (plus)
                                 {

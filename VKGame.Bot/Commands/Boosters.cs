@@ -16,7 +16,16 @@ namespace VKGame.Bot.Commands
 
         public override object Execute(Message msg)
         {
-            throw new System.NotImplementedException();
+            var messageArray = msg.body.Split(' ');
+            if (messageArray.Length == 1)
+                return GetBoostersText(msg.from_id);
+
+            var type = typeof(Boosters);
+            var result = Helpers.Command.CheckMethods(type, messageArray[1], msg);
+            if (result != null) return result;
+            var word = Common.SimilarWord(messageArray[1], Commands);
+            return $"❌ Неизвестная подкоманда." +
+                    $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
         }
 
         [Attributes.Trigger("настройка")]

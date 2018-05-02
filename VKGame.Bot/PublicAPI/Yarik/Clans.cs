@@ -310,7 +310,6 @@ namespace VKGame.Bot.PublicAPI.Yarik
             {
                 if((long)reader["isSearchBattle"] == 1)
                     list.Add((string)reader["Id"]);
-
             }
             return list;
         }

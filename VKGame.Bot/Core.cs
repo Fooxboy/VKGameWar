@@ -45,7 +45,8 @@ namespace VKGame.Bot
             new Commands.Admin.Bugs(),
             new Top(),
             new Commands.Admin.AccessCommand(),
-            new Gifts()
+            new Gifts(),
+            new Help()
         };
         
         private ICommand Proccesing(string text)

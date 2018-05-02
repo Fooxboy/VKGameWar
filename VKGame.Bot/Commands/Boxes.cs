@@ -23,7 +23,7 @@ namespace VKGame.Bot.Commands
             
             var type = typeof(Boxes);
             var result = Helpers.Command.CheckMethods(type, messageArray[1], msg);
-
+            if (result != null) return result;
             var word = Common.SimilarWord(messageArray[1], Commands);
             return $"❌ Неизвестная подкоманда." +
                     $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";

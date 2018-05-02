@@ -139,12 +139,8 @@ namespace VKGame.Bot
                 {
                     Statistics.NewError();
                     Logger.WriteError(e);
-                }
-                
-            }
-           
-        }
-
-        
+                }             
+            }          
+        }     
     }
 }
