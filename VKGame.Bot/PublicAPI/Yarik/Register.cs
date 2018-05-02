@@ -64,7 +64,7 @@ namespace VKGame.Bot.PublicAPI.Yarik
                 return new Models.Error() { Code = 3, Message = "Пользователь уже зарегестрирован." };
 
             var objectArmy = new Models.Units() {
-                Army = new List<IArmy>()
+                Army = new List<Models.ArmyData>()
                 {
                     new Units.UnitOne()
                     {

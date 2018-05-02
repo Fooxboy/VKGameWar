@@ -4,7 +4,7 @@ using System.Text;
 
 namespace VKGame.Bot.PublicAPI.Yarik.Units
 {
-    public class UnitOne : IArmy
+    public class UnitOne : Models.ArmyData, IArmy
     {
         public int Type => 1;
         public int Level { get; set; }
