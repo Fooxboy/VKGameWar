@@ -182,7 +182,7 @@ namespace VKGame.Bot.PublicAPI.Yarik
                 };
 
             var db = new Database.Public("Clans");
-            db.EditFromKey("Id", clan, "isSearch", value);
+            db.EditFromKey("Id", clan, "isSearchBattle", value);
             return true;
         }
 

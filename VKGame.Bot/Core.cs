@@ -269,11 +269,11 @@ namespace VKGame.Bot
                             try
                             {
                                 var buffer = lastCommands[message.from_id];
-                                lastCommands[message.from_id] = Commands[0];
+                                lastCommands[message.from_id] = new Start();
                             }
                             catch (KeyNotFoundException)
                             {
-                                lastCommands.Add(message.from_id, Commands[0]);
+                                lastCommands.Add(message.from_id, new Start());
                             }
 
                             Api.Message.Send((string)Commands[0].Execute(message), message.from_id);

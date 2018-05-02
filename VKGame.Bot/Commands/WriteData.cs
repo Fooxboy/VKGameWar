@@ -33,8 +33,8 @@ namespace VKGame.Bot.Commands
                 var command = lastcommand[msg.from_id];
                 var boosters = new Api.Boosters(msg.from_id);          
                 
-                if(command.Name.ToLower() == "старт") return Start.SetNick(msg, text);
-                else if (command.Name.ToLower() == "армия")
+                if(command  is Start) return Start.SetNick(msg, text);
+                else if (command is Army)
                 {
                     int count = 0;
                     int type = 0;
