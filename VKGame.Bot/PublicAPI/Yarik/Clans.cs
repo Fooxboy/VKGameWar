@@ -80,11 +80,7 @@ namespace VKGame.Bot.PublicAPI.Yarik
                 List<long> members = new List<long>();
                 foreach (var member in membersArray) members.Add(Int64.Parse(member));
                 return members;
-            }
-
-
-
-            
+            }       
         }
 
         public static object AddMember(string clan, long user)
@@ -209,9 +205,21 @@ namespace VKGame.Bot.PublicAPI.Yarik
                     Message = "Клан с таким ID не зарегестирован."
                 };
 
-            var db = new Database.Public("Clans");
+            var members = (List<long>)GetMembers(clan);
+            
+            return members.Count;
+        }
 
-            return (long)db.GetFromKey("Id", clan, "Level");
+        public static object GetObject(string clan)
+        {
+            if (!Check(clan))
+                return new Error()
+                {
+                    Code = 4,
+                    Message = "Клан с таким ID не зарегестирован."
+                };
+            IClan clanModel = new Clan(clan);
+            return clanModel;
         }
 
         public static List<string> AllClans()

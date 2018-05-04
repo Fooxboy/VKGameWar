@@ -30,7 +30,9 @@ namespace VKGame.Bot.PublicAPI.Yarik
                 return new Error() { Code = 18, Message = "Клан не находится в битве." };
 
             var userBattleObject = Users.GetBattleId(userId);
+#pragma warning disable S3247 // Duplicate casts should not be made
             if (userBattleObject is IError) return (IError)userBattleObject;
+
             var battleId = (string)userBattleObject;
             if(battleId== "0")
                 return new Error() { Code = 16, Message = "Пользователь не участвует в битве." };
@@ -87,6 +89,9 @@ namespace VKGame.Bot.PublicAPI.Yarik
                 money += 10000;
                 money += (int)Army.GetPrice(userId);
                 money += 100 * (int)Clans.Level(clan);
+                var enemyProtection = (int)Users.GetProtection(enemy);
+                var userProtection = (int)Users.GetProtection(userId);
+                money *= (enemyProtection / userProtection);
 
                 var moneys = (int)Users.Money(userId);
                 moneys += money;
@@ -482,6 +487,6 @@ namespace VKGame.Bot.PublicAPI.Yarik
             var result = SearchForLevels(clan.Level, clanId, true);
             return result;
         }
-
+#pragma warning restore S3247 // Duplicate casts should not be made
     }
 }
