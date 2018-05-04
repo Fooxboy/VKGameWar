@@ -17,32 +17,9 @@ namespace VKGame.Bot.Commands
 
         public override object Execute(Models.Message msg)
         {
-            var listCommand = new List<ICommand>()
-            {
-            new Start(),
-            new Home(),
-            new Casino(),
-            new Army(),
-            new Buildings(),
-            new Battle(),
-            new Store(),
-            new Promocode(),
-            new Bank(),
-            new Boxes(),
-            new Quests(),
-            new Referrals(),
-            new Clans(),
-            new Competitions(),
-            new Settings(),
-            new Sections(),
-            new Balance(),
-            new Feedback(),
-            new Bug(),
-            new Skills(),
-            new Top(),
-            new Gifts(),
-            new Help()
-            };
+            var user = new Api.User(msg.from_id);
+
+            var listCommand = Common.Commands;
 
             string text = $"➖➖➖➖➖➖➖➖➖➖➖➖" +
                 $"\nСПИСОК ДОСТУПНЫХ РАЗДЕЛОВ:" +
@@ -50,18 +27,21 @@ namespace VKGame.Bot.Commands
 
             foreach(var command in listCommand)
             {
-                string commandsInCommand = String.Empty;
-
-                foreach(var commandInCommand in command.Commands)
+                if ((int)command.Access <= user.Access)
                 {
-                    commandsInCommand += $"{commandInCommand}, ";
-                }
+                    string commandsInCommand = String.Empty;
 
-                text += $"\n 😀 Название: {command.Name}" +
+                    foreach (var commandInCommand in command.Commands)
+                    {
+                        commandsInCommand += $"{commandInCommand}, ";
+                    }
+
+                    text += $"\n 😀 Название: {command.Name}" +
                     $"\n 🎉 Аргументы: {command.Arguments}" +
                     $"\n ➡ Доступные подкоманды: {commandsInCommand}" +
                     $"\n ❓ Описание: {command.Caption}" +
                     $"\n";
+                }         
             }
 
             text += "\n➖➖➖➖➖➖➖➖➖➖➖➖";

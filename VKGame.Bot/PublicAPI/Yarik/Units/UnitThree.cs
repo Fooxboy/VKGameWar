@@ -7,11 +7,11 @@ namespace VKGame.Bot.PublicAPI.Yarik.Units
 {
     public class UnitThree : Models.ArmyData, IArmy
     {
-        public int Type => 3;
-        public int Level { get; set; }
-        public long Damage => Level + 1;
-        public bool isOpen { get; set; }
-        public long TimeCreate => 1000;
-        public int Price => 20 * Level;
+        public override int Type => 3;
+        public override int Level { get; set; }
+        public override long Damage => Level + 1;
+        public override bool isOpen { get; set; }
+        public override long TimeCreate => 1000;
+        public override int Price => 20 * Level;
     }
 }

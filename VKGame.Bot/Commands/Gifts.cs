@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace VKGame.Bot.Commands
 {
@@ -13,7 +15,7 @@ namespace VKGame.Bot.Commands
         public override string HelpUrl => "сслыка недоступна";
 
         public override List<string> Commands =>
-            new List<string>() { "список" , "открыть" };
+            new List<string>() { "список" , "открыть", "отправить" };
 
         public override Access Access => Access.User;
 
@@ -63,6 +65,57 @@ namespace VKGame.Bot.Commands
             gift.IsOpen = true;
 
             return $"🎁 Вы успешно открыли подарок! И получили: {gift.Price} монет!";
+        }
+
+        [Attributes.Trigger("отправить")]
+        public static string Send(Models.Message msg)
+        {
+            var messageArray = msg.body.Split(' ');
+
+            long userTo;
+            int price;
+
+            try
+            {
+                userTo = Int64.Parse(messageArray[2]);
+            }catch(FormatException)
+            {
+                return "❌ Неверный id пользователя.";
+            }catch(IndexOutOfRangeException)
+            {
+                return "❌ Вы не указали id пользователя. Например, подарки отправить id_пользователя сумма";
+            }
+
+            try
+            {
+                price = Int32.Parse(messageArray[2]);
+            }
+            catch (FormatException)
+            {
+                return "❌ Неверная сумма";
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return "❌ Вы не сумму. Например, подарки отправить id_пользователя сумма";
+            }
+
+            if (!Api.User.Check(userTo))
+                return "❌ Пользователь, id которого Вы указали, не зарегестрирован. Пригласи его в игру и получай с него монеты!" +
+                    "\n Подробнее в разделе Рефералы";
+            if (price > 500)
+                return "❌ Нельзя подарить больше 500 монет!";
+
+            if (!Notifications.RemovePaymentCard(price, msg.from_id, "Отправка подарка"))
+                return "❌ На Вашем счету недостаточно монет.";
+
+            //добавление подарка пользователю.
+            var userToObject = new Api.User(userTo);
+            var gifts = userToObject.Gifts;
+            var giftId = Api.Gifts.New(msg.from_id, userTo, price);
+            gifts.Add(giftId);
+            userToObject.Gifts = gifts;
+            new Task(() => Api.Message.Send($"🎁 Опа! А Вам подарок! Чтобы открыть его, напишите: Подарки открыть {giftId}", userTo)).Start();
+            return "🎁 Пользователь получил Ваш подарок!";
         }
 
         [Attributes.Trigger("список")]

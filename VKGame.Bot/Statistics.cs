@@ -17,7 +17,6 @@ namespace VKGame.Bot
         public static void InMessage()
         {
             Api.Statistics.SetValue("InMessageDay");
-
         }
 
         public static void NewError()

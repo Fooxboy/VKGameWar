@@ -6,6 +6,7 @@ using System.Net;
 using System.Linq;
 using Microsoft.Data.Sqlite;
 using VKGame.Bot.Models;
+using VKGame.Bot.Commands;
 
 namespace VKGame.Bot
 {
@@ -13,14 +14,54 @@ namespace VKGame.Bot
     /// Глобальные методы.
     /// </summary>
     public class Common
-    { 
-        
+    {      
         public static string GetToken()
         {
             return "89d513f60f1f26a711a376720a9dba0149ab2a283941b83fc1753c0a9fd54b2350be6ada97a44ee083de1";
         }
 
-        public static Bot.Models.Roulette Roulette = new Models.Roulette(){ Prices =  new List<RoulettePrices>(), Fund = 0};
+        //Все доступные команды.
+        public static readonly List<ICommand> Commands = new List<ICommand>()
+        {
+            new Start(),
+            new WriteData(),
+            new Home(),
+            new Casino(),
+            new Army(),
+            new Buildings(),
+            new Battle(),
+            new Store(),
+            new Promocode(),
+            new Bank(),
+            new Commands.Boxes(),
+            new Commands.Quests(),
+            new Commands.Referrals(),
+            new Clans(),
+            new Competitions(),
+            new Commands.Database(),
+            new ExecuteCode(),
+            new Settings(),
+            new Sections(),
+            new Balance(),
+            new Commands.Admin.News(),
+            new Commands.Admin.NotifyAll(),
+            new Commands.Admin.Reboot(),
+            new Feedback(),
+            new Commands.Bug(),
+            new Commands.Admin.Stat(),
+            new Commands.Admin.System(),
+            new Skills(),
+            new Commands.Admin.Bugs(),
+            new Top(),
+            new Commands.Admin.AccessCommand(),
+            new Gifts(),
+            new Help()
+        };
+
+
+        public static string GetMyToken => "ff9843ac13585ffc0ee35fd9ccbeae504187bf07e5e9b2a47490f2e9c1fdfd6c0664aeb4b3c2016878cb5";
+
+        public static Roulette Roulette = new Roulette(){ Prices =  new List<RoulettePrices>(), Fund = 0};
 
         public static string Notification = null;
 
@@ -89,7 +130,8 @@ namespace VKGame.Bot
                 "В соревнованиях можно хорошо заработать! Напиши: Соревнования",
                 "Нашли баг? Срочно опишите его в разделе БАГ. Использование: БАГ (сообщение о баге)",
                 "Хотите оставить отзыв? Напишите его! Отзыв (ваш отзыв)",
-                "Надоело долго ждать обучения армии? Используйте усилители! напишите: Усилители"
+                "Надоело долго ждать обучения армии? Используйте усилители! напишите: Усилители",
+                "Хочешь удивить своего друга или подругу? Подари подарок!"
             };
             var r = new Random();
             var i = r.Next(0, (ListHelp.Length -1));
@@ -102,7 +144,7 @@ namespace VKGame.Bot
             {
                 var VkApi = new VkApi();
 
-                string tokenMy = "ff9843ac13585ffc0ee35fd9ccbeae504187bf07e5e9b2a47490f2e9c1fdfd6c0664aeb4b3c2016878cb5";
+                string tokenMy = GetMyToken;
                 VkApi.Authorize(new ApiAuthParams
                 {
                     AccessToken = tokenMy,

@@ -12,42 +12,7 @@ namespace VKGame.Bot
     /// </summary>
     public class Core
     {
-        public static List<ICommand> Commands = new List<ICommand>()
-        {
-            new Start(),
-            new WriteData(),
-            new Home(),
-            new Casino(),
-            new Army(),
-            new Buildings(),
-            new Battle(),
-            new Store(),
-            new Promocode(),
-            new Bank(),
-            new Boxes(),
-            new Quests(),
-            new Referrals(),
-            new Clans(),
-            new Competitions(),
-            new Commands.Database(),
-            new ExecuteCode(),
-            new Settings(),
-            new Sections(),
-            new Balance(),
-            new Commands.Admin.News(),
-            new Commands.Admin.NotifyAll(),
-            new Commands.Admin.Reboot(),
-            new Feedback(),
-            new Bug(),
-            new Commands.Admin.Stat(),
-            new Commands.Admin.System(),
-            new Skills(),
-            new Commands.Admin.Bugs(),
-            new Top(),
-            new Commands.Admin.AccessCommand(),
-            new Gifts(),
-            new Help()
-        };
+        
         
         private ICommand Proccesing(string text)
         {

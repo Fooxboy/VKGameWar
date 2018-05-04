@@ -8,7 +8,7 @@ namespace VKGame.Bot
     {
         public static string Exe()
         {
-            return "Тест!!!";
+            return "тестовая функция.";
         }
     }
 }
