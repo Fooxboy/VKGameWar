@@ -37,7 +37,6 @@ namespace VKGame.Bot
 
                     if (Server == String.Empty || Key == String.Empty || Ts == 0)
                     {
-                        //Logger.WriteDebug("Получение Key, Server, Ts...");
                         var modelKeyAndTs = GetKeyAndTs();
                         var response = modelKeyAndTs.response;
                         Key = response.key;

@@ -158,6 +158,31 @@ namespace VKGame.Bot.Api
             }
             set => DB.EditFromId(id, "Access", value);
         }
+
+        public List<long> Friends
+        {
+            get
+            {
+                 List<long> defaultValue = new List<long>();
+                var result = DB.GetFromId(id, "Friends");
+                if (result is DBNull) return defaultValue;
+                if(result == "")
+                    return defaultValue;
+                var membersString = (string)result;
+                string[] arrayResult = membersString.Split(',');
+                foreach (var ids in arrayResult)
+                    defaultValue.Add(Int64.Parse(ids));
+                return defaultValue;
+            }
+            set
+            {
+                List<long> friends = value;
+                string memberStr = string.Empty;
+                foreach (var friend in friends) memberStr += $"{friend},";
+                memberStr = memberStr.Remove(memberStr.Length - 1);
+                DB.EditFromId(id, "Friends", memberStr);
+            }
+        }
         
         public long Quest
         {

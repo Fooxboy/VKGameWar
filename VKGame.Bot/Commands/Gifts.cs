@@ -88,7 +88,7 @@ namespace VKGame.Bot.Commands
 
             try
             {
-                price = Int32.Parse(messageArray[2]);
+                price = Int32.Parse(messageArray[3]);
             }
             catch (FormatException)
             {

@@ -61,7 +61,7 @@ namespace VKGame.Bot.Language {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на ебал весь МИР {a}.
+        ///   Ищет локализованную строку, похожую на hello, world.
         /// </summary>
         internal static string Hello {
             get {
