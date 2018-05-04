@@ -31,9 +31,7 @@ namespace VKGame.Bot.PublicAPI.Yarik
             var unitsString = (string)db.GetFromId(userId, "Units");
             var obj = JsonConvert.DeserializeObject<Models.Units>(unitsString);
             return obj;
-        }
-
-        
+        }   
 
         public static object EditUnit(long user, int type, int level = -1)
         {

@@ -46,7 +46,7 @@ namespace VKGame.Bot.Commands
             
             
             var skills = new Api.Skills(msg.from_id);
-            if (typeSkill == "Удача")
+            if (typeSkill.ToLower() == "удача")
             {
 
                 if (!Notifications.RemovePaymentCard(200, msg.from_id, "улучшение навыка"))
