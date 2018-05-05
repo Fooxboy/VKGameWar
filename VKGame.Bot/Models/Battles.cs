@@ -4,8 +4,6 @@ using System.Collections;
 
 namespace VKGame.Bot.Models
 {
-
-
     public class ActiveBattles 
     {
         public List<long> Battles {get;set;}
