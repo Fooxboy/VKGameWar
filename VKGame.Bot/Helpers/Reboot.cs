@@ -19,14 +19,12 @@ namespace VKGame.Bot.Helpers
 
         private static void SaveData()
         {
-
             var turnTanks = Bot.Common.TurnCreateTanks;
             var turnSoldiery = Bot.Common.TurnCreateSoildery;
             using(File.Create(@"Files/Temp/tempTanks.json"))
             {
 
             }
-
             using (File.Create(@"Files/Temp/tempSol.json"))
             {
 
@@ -43,16 +41,13 @@ namespace VKGame.Bot.Helpers
             {
                 writer.Write(jsonSoildery);
             }
-
-            var registryBot = new Bot.RegistryBot();
+            var registryBot = new RegistryBot();
             registryBot.RunForReboot = true;
-
         }
 
         public static void BotOnLinux()
         {
             SaveData();
-
             Process.Start("reboot.sh");
             Logger.WriteWaring("Перезагрузка...");
             Process.GetCurrentProcess().Kill();

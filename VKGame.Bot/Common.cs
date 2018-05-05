@@ -55,7 +55,8 @@ namespace VKGame.Bot
             new Top(),
             new Commands.Admin.AccessCommand(),
             new Gifts(),
-            new Help()
+            new Help(),
+            new Friends()
         };
 
 
@@ -73,9 +74,7 @@ namespace VKGame.Bot
         public static Dictionary<long, int> CountCreateArmyTanks = new Dictionary<long, int>();
 
         public static List<long> TopUsers = new List<long>();
-        
-
-
+       
         public static List<Models.UserTurnCreate> TurnCreateSoildery = new List<Models.UserTurnCreate>();
         public static List<Models.UserTurnCreate> TurnCreateTanks = new List<Models.UserTurnCreate>();
 
@@ -102,9 +101,7 @@ namespace VKGame.Bot
                 commandTop.Add(command, count);
             }
             string valueReturn = String.Empty;
-
             int lastValue = 0;
-
             foreach (var commandModel in commandTop)
             {
                 if (commandModel.Value > lastValue)
@@ -113,10 +110,8 @@ namespace VKGame.Bot
                     valueReturn = commandModel.Key;
                 }
             }
-
             return valueReturn;
         }
-
         public static string GetRandomHelp() 
         {
             string[] ListHelp =
@@ -131,7 +126,8 @@ namespace VKGame.Bot
                 "Нашли баг? Срочно опишите его в разделе БАГ. Использование: БАГ (сообщение о баге)",
                 "Хотите оставить отзыв? Напишите его! Отзыв (ваш отзыв)",
                 "Надоело долго ждать обучения армии? Используйте усилители! напишите: Усилители",
-                "Хочешь удивить своего друга или подругу? Подари подарок!"
+                "Хочешь удивить своего друга или подругу? Подари подарок!",
+                "Добавь своего друга в друзья в игре! Подробнее: друзья"
             };
             var r = new Random();
             var i = r.Next(0, (ListHelp.Length -1));
@@ -167,7 +163,6 @@ namespace VKGame.Bot
                     AccessToken = token,
                     UserId = 308764786
                 });
-
                 VkG = VkApi;
             }
             return VkG;

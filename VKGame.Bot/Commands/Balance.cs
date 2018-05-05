@@ -19,8 +19,7 @@ namespace VKGame.Bot.Commands
         {
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
-                return GetBalanceText(msg.from_id);
-            
+                return GetBalanceText(msg.from_id);       
             var type = typeof(Balance);
             var result = Helpers.Command.CheckMethods(type, messageArray[1], msg);
             if (result != null) return result;
@@ -46,7 +45,6 @@ namespace VKGame.Bot.Commands
             var count = Int32.Parse(messageArray[2]);
             if (userId == 0) return "Перешлите сообщение с ним.";
             Notifications.RemovePaymentCard(count, userId, "Админ");
-
             return $"Вы успешно сняли с баланса пользователя {count} монет";
         }
 
@@ -67,7 +65,6 @@ namespace VKGame.Bot.Commands
             var count = Int32.Parse(messageArray[2]);
             if (userId == 0) return "Перешлите сообщение с ним.";
             Notifications.EnterPaymentCard(count, userId, "Админ");
-
             return $"Вы успешно пополнили баланс пользователя на {count} монет";
         }
 
@@ -91,9 +88,7 @@ namespace VKGame.Bot.Commands
                     userId = userIdForw.Value;
                 }
             }
-
             if (userId == 0) return "Укажите ID пользователя или перешлите сообщение с ним.";
-
             return GetBalanceText(userId);
         }
 

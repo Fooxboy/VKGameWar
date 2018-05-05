@@ -60,8 +60,10 @@ namespace VKGame.Bot
                     var registryBot = new RegistryBot();
                     if(registryBot.RunForReboot)
                     {
+                        Logger.WriteDebug("Запуск после перезагрузки...");
                         var turnTankJson = String.Empty;
-                        using(var reader = new StreamReader(@"Files/Temp/tempTanks.json"))
+                        Logger.WriteDebug("Востановление данных...");
+                        using (var reader = new StreamReader(@"Files/Temp/tempTanks.json"))
                         {
                             turnTankJson = reader.ReadToEnd();
                         }
@@ -71,12 +73,14 @@ namespace VKGame.Bot
                             turnTankJson = reader.ReadToEnd();
                         }
 
+                        Logger.WriteDebug("Удаление временных файлов...");
                         File.Delete(@"Files/Temp/tempTanks.json");
                         File.Delete(@"Files/Temp/tempSol.json");
                         var turnTank = JsonConvert.DeserializeObject<List<Models.UserTurnCreate>>(turnTankJson);
                         var turnSol = JsonConvert.DeserializeObject<List<Models.UserTurnCreate>>(turnSolJson);
 
-                        foreach(var turnT in turnTank)
+                        Logger.WriteDebug("Запуск задач...");
+                        foreach (var turnT in turnTank)
                             new Task(() => BackgroundProcess.Army.CreateTanks(new Models.DataCreateSoldiery() { UserId = turnT.Id, Count = Convert.ToInt32(turnT.Count) })).Start();
 
                         foreach (var turnS in turnSol)
@@ -88,6 +92,7 @@ namespace VKGame.Bot
                         registryBot.RunForReboot = false;
                     }
 
+                    Logger.WriteDebug("Получение всех пользователей...");
                     var listUser = Api.User.AllList;
                     foreach (var user in listUser)
                     {
@@ -129,6 +134,7 @@ namespace VKGame.Bot
                     longpoll.UserJoinEvent += Core.JoinInGroup;
                     Process.GetCurrentProcess().Exited += Core.BotOffline;
 
+                    Logger.WriteDebug("Конец инициализации...");
                     var argumentsArg = Console.ReadLine();
                 }catch(Exception e)
                 {

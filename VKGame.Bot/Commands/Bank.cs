@@ -20,8 +20,7 @@ namespace VKGame.Bot.Commands
         {
             var messageArray = msg.body.Split(' ');
             if (messageArray.Length == 1)
-                return GetBankText(msg);
-            
+                return GetBankText(msg);          
             var type = typeof(Bank);
             var result = Helpers.Command.CheckMethods(type, messageArray[1], msg);
             if (result != null) return result;
@@ -87,9 +86,7 @@ namespace VKGame.Bot.Commands
             }
             if(count > (Api.SumCredit(user.Level))) return $"❌ Ваша сумма слишком большая. Вам доступно: {Api.SumCredit(user.Level)}. Чем больше уровень, тем больше размер кредита!";
             if(registry.Credit != 0) return "❌ На Вас ещё числится кредит!";
-
-            Api.NewCredit(msg.from_id, count);
-            
+            Api.NewCredit(msg.from_id, count);      
             return $"✅ Вы успешно взяли кредит в размере {count}, сумма снимется через 10 часов!";
         }
 

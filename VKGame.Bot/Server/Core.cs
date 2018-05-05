@@ -94,8 +94,6 @@ namespace VKGame.Bot.Server
         {
             return Statistics.GetAll();
         }
-
-
         public class InData
         {
             public string Method { get; set; }

@@ -8,21 +8,13 @@ namespace VKGame.Bot.PublicAPI.Yarik
 {
     public static class Army
     {
-
-        public static object ConvertToId(IArmy army)
-        {
-            return army.Type;
-        }
-
+        public static object ConvertToId(IArmy army) => army.Type;
         public static IArmy ConvertToArmy(int id)
         {
             var army = (Models.Units)Users.GetArmy(id);
             var armys = army.Army.FindAll(u => u.Type == id);
             var type = armys.FirstOrDefault();
-            if (type is null)
-                return null;
-            return type;
-            
+            return type;    
         }
 
         public static object CreateCompete(long userId)
@@ -31,7 +23,6 @@ namespace VKGame.Bot.PublicAPI.Yarik
             var count = (int)GetCountForType(userId, model.Type);
             count += model.Count;
             EditCount(userId, model.Type, count);
-
             return true;
         }
 
@@ -41,8 +32,7 @@ namespace VKGame.Bot.PublicAPI.Yarik
             var valueS = (string)db.GetFromId(userId, "Create");
             if(valueS == "")
                 return new Models.Error() { Code = 2, Message = "Пользователь не имеет армии, которая сейчас обучается." };
-            var model = JsonConvert.DeserializeObject<Models.CreateDBModel>(valueS);
-           
+            var model = JsonConvert.DeserializeObject<Models.CreateDBModel>(valueS);       
             return model;
         }
 
@@ -50,7 +40,7 @@ namespace VKGame.Bot.PublicAPI.Yarik
         {
             if (!Check(userId))
                 return new Models.Error() { Code = 2, Message = "Пользователя с армией нет в базе данных." };
-            var price = type.TimeCreate * count;
+            //var price = type.TimeCreate * count;
             var stroge = (int)Barracks.GetCount(userId, type.Type);
             if(stroge < ((Models.SpecificCount)GetCountForType(userId, type.Type)).Count + count)
                 return new Models.Error() { Code = 21, Message = "У пользователя нет места для новых солдат." };
@@ -58,7 +48,7 @@ namespace VKGame.Bot.PublicAPI.Yarik
             return time;
         }
 
-        public static bool Check(long user) => Bot.Database.Public.CheckFromId(user, "Army");
+        public static bool Check(long user) => Database.Public.CheckFromId(user, "Army");
 
         public static void SetCount(long userId, Models.Count count)
         {
@@ -132,9 +122,7 @@ namespace VKGame.Bot.PublicAPI.Yarik
             if (value is null)
                 return new Models.Error() { Code = 1, Message = "Неизвестный тип армии." };
             counts.List.Remove(value);
-
             value.Count = count;
-
             counts.List.Add(value);
             SetCount(userId, counts);
             return true;

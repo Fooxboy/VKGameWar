@@ -84,15 +84,11 @@ namespace VKGame.Bot.Commands
             if (typeArmy == "солдат") price = Api.priceUpgSoldiery;
             else if (typeArmy == "танки") price = Api.priceUpgTanks;
             else return $"❌ {typeArmy} не является типом армии! Доступные типы: солдат, танки";
-
             if (!Notifications.RemovePaymentCard(price, msg.from_id, "улучшение армии"))
-                return $"❌ На Вашем счету недостаточно монет! Необходимо: {price}. Узнать свой баланс - напишите: баланс";
-            
-            var levels = new Bot.Api.Levels(msg.from_id);
-            
+                return $"❌ На Вашем счету недостаточно монет! Необходимо: {price}. Узнать свой баланс - напишите: баланс";       
+            var levels = new Bot.Api.Levels(msg.from_id);        
             if (typeArmy == "солдат") ++levels.Soldiery;
-            else if (typeArmy == "танки") ++levels.Tanks;
-            
+            else if (typeArmy == "танки") ++levels.Tanks;      
             return "✅ Вы успешно провели улучшение армии!";
         }
 
@@ -102,9 +98,7 @@ namespace VKGame.Bot.Commands
             var messageArray = msg.body.Split(' ');  
             var user = new Bot.Api.User(msg.from_id);
             var resources = new Bot.Api.Resources(msg.from_id);
-
             var typeArmy = String.Empty;
-
             try
             {
                 typeArmy = messageArray[2];
@@ -112,8 +106,7 @@ namespace VKGame.Bot.Commands
             catch (IndexOutOfRangeException)
             {
                 return "❌ Вы не указали тип армии. Доступные типы армии: танков";
-            }
-            
+            }        
             if (typeArmy != "танков")
                 return $"❌ Невозможно создать армию типа {messageArray[2]}, возможно, указан неверный тип Доступные типы: Солдат или Танков. Пример: Армия cоздать танков 10";
             int count = 0;
@@ -134,14 +127,11 @@ namespace VKGame.Bot.Commands
             {
                 return $"❌ {messageArray[3]} не является числовым значением.";
             }
-
             int price = Api.PriceTanks(count);
             var boosters = new Bot.Api.Boosters(user.Id);
             if( (resources.Tanks + count) > Buildings.Api.MaxTanks(builds.Hangars))
-                return $"❌ Вы не можете создать больше, чем у Вас вмещается. Ваша вместимость: [{resources.Tanks}/{Buildings.Api.MaxTanks(builds.Hangars)}]";
-            
+                return $"❌ Вы не можете создать больше, чем у Вас вмещается. Ваша вместимость: [{resources.Tanks}/{Buildings.Api.MaxTanks(builds.Hangars)}]";     
             if (!Notifications.RemovePaymentCard(price, user.Id, "создание танков")) return $"❌ На Вашем банковском счету недостаточно средств. Ваш баланс: {resources.MoneyCard}. Необходимо: {price}. Заработайте деньги в казино или возьмите кредит в банке!";
-
             try
             {
                 Common.CountCreateArmyTanks[user.Id] = count;
@@ -151,9 +141,7 @@ namespace VKGame.Bot.Commands
                 Common.CountCreateArmyTanks.Add(user.Id, count);
             }
             var registry = new Bot.Api.Registry(user.Id);
-
             var boost = false;
-
             if (boosters.CreateTanks != 0)
             {
                 if (registry.ShowNotifyBoostArmy)
@@ -176,9 +164,7 @@ namespace VKGame.Bot.Commands
             var messageArray = msg.body.Split(' ');  
             var user = new Bot.Api.User(msg.from_id);
             var resources = new Bot.Api.Resources(msg.from_id);
-
             var typeArmy = String.Empty;
-
             try
             {
                 typeArmy = messageArray[2];
@@ -186,12 +172,10 @@ namespace VKGame.Bot.Commands
             catch (IndexOutOfRangeException)
             {
                 return "❌ Вы не указали тип армии. Доступные типы: солдат";
-            }
-            
+            }          
             if (typeArmy != "солдат") return $"❌ Невозможно обучить армию типа {typeArmy}. Доступные типы армии: Содат или Танков. Пример: Армия cоздать танков 10";
             int count = 0;
             var builds = new Bot.Api.Builds(msg.from_id);
-
             try
             {
                 count = System.Convert.ToInt32(messageArray[3]);
@@ -208,7 +192,6 @@ namespace VKGame.Bot.Commands
                 }
                 count = Convert.ToInt32((Buildings.Api.MaxSoldiery(builds.Apartments) - resources.Soldiery));
             }
-
             int price = Api.PriceSoldiery(count);
             if ((resources.Soldiery + count) > (Buildings.Api.MaxSoldiery(builds.Apartments)))
                 return $"❌ Вы не можете создать больше, чем у Вас вмещается. У Вас вмещается: [{resources.Soldiery}/{Buildings.Api.MaxSoldiery(builds.Apartments)}]";
@@ -221,12 +204,9 @@ namespace VKGame.Bot.Commands
             catch (KeyNotFoundException)
             {
                 Common.CountCreateArmySoldiery.Add(user.Id, count);
-            }
-            
+            }     
             var registry = new Bot.Api.Registry(user.Id);
-
             var boost = false;
-
             if (boosters.CreateSoldiery != 0)
             {
                 if (registry.ShowNotifyBoostArmy)
@@ -235,8 +215,7 @@ namespace VKGame.Bot.Commands
                         "\n❓ Да - Использовать, Нет - не ипользовать, Умолчание - использовать всегда значение по умолчанию." +
                         "\n➡ Чтобы изменить значение по умолчанию - перейдите в раздел Усилители";
                 else boost = Convert.ToBoolean(new ConfigBoosters(user.Id).CreateTanks); 
-            }
-            
+            }       
             if (boost) boosters.CreateSoldiery -= 1; 
             Common.CountCreateArmySoldiery.Remove(user.Id);
             Api.CreateSoldiery(count, user.Id, boost);

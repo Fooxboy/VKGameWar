@@ -11,14 +11,12 @@ namespace VKGame.Bot
     /// Класс обработки данных.
     /// </summary>
     public class Core
-    {
-        
-        
+    {   
         private ICommand Proccesing(string text)
         {
             try 
             {
-                foreach (var command in Commands)
+                foreach (var command in Common.Commands)
                 {
                     if (command.Name.ToLower() == text) return command;
                 }
@@ -51,11 +49,8 @@ namespace VKGame.Bot
                     {
                         lastCommands.Add(msg.from_id, command);
                     }
-
                     var user = new Api.User(msg.from_id);
-
                     object result;
-
                     if((int)user.Access < (int)command.Access)
                     {
                         result = "❌ У Вас нет прав для выполнения команды!";
@@ -91,21 +86,17 @@ namespace VKGame.Bot
                     }
                 }
                 else
-                {
                     NoCommand.Execute(msg);
-                }
             }
             catch (Exception e)
             {
                 Statistics.NewError();
-
                 try
                 {
                     var config = Config.Get();
                     if (config.IsDebug)
                     {
                         Statistics.NewError();
-
                         if (e.InnerException != null)
                         {
                             Api.Message.Send($"🎈 ОШИБКА: {e.InnerException.Message}" +
@@ -131,7 +122,6 @@ namespace VKGame.Bot
                 }catch(Exception e2)
                 {
                     Statistics.NewError();
-
                     Api.Message.Send($"🎈 ОШИБКА: \n{e2.Message}" +
                             $"\n 🎉 Исключение: {e2.GetType().Name}" +
                            $"\n 🎠 StackTrace: {e2.StackTrace}", msg.from_id);
@@ -145,12 +135,13 @@ namespace VKGame.Bot
         /// <param name="Команда"></param>
         public void RegisterCommand(ICommand command)
         {
-            if (Commands != null) Commands.Add(command);
-            else Commands = new List<ICommand>() {command};
+            if (Common.Commands != null) Common.Commands.Add(command);
+            //else Common.Commands = new List<ICommand>() {command};
         }
 
         public static void LeaveInGroup(Models.UserLeave userId)
         {
+            Logger.WriteWaring($"Группу покинул пользователь {userId.user_id}");
             if (Api.User.Check(userId.user_id))
             {
                 var user = new Api.User(userId.user_id);
@@ -163,6 +154,7 @@ namespace VKGame.Bot
 
         private static void JoinInGroupHealder(Models.UserJoin userId)
         {
+            Logger.WriteWaring($"В группу вступил новый участник {userId.user_id}");
             var user = new Api.User(userId.user_id);
             if (Api.User.Check(userId.user_id))
             {
@@ -241,12 +233,11 @@ namespace VKGame.Bot
                                 lastCommands.Add(message.from_id, new Start());
                             }
 
-                            Api.Message.Send((string)Commands[0].Execute(message), message.from_id);
+                            Api.Message.Send((string)Common.Commands[0].Execute(message), message.from_id);
                         }
                         catch (Exception e)
                         {
                             Statistics.NewError();
-
                             Logger.WriteError(e);
                         }
                     }

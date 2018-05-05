@@ -83,23 +83,15 @@ namespace VKGame.Bot.Commands
                 }
                 
             }
-
-            public const long SoldieryHp = 100;
-            
+            public const long SoldieryHp = 100;           
             public const long TanksHp = 200;
-
             public const long OneLvlSoldiery = 50;
-
             public const long OneLevlTanks = 50;
-
             public const long ResourceSoldiery = 5;
-
             public const long ResourceTanks = 5;
-
             public static void EndBattle(long battleId, long winner)
             {
                 var battle = new Api.Battles(battleId);
-
                 if(battle.Type != 3)
                 {
                     foreach (var member in battle.Members)
@@ -116,7 +108,6 @@ namespace VKGame.Bot.Commands
                 }
                 
                 battle.IsActive = false;
-
                 new Task(() =>
                     Api.Message.Send($"💣 ПОБЕДА! Вы победили в этом бою! Вы получаете фонд битвы: {battle.Found} 💳", winner)).Start();
                 Notifications.EnterPaymentCard(Convert.ToInt32(battle.Found), winner, "победа в битве");
@@ -138,7 +129,6 @@ namespace VKGame.Bot.Commands
                 var user = new User(userId);
                 var battleId = user.Id;
                 var battle = new Battles(battleId);
-
                 var choise = new Random().Next(1, 4);
                 if (choise == 1)
                 {
@@ -193,8 +183,7 @@ namespace VKGame.Bot.Commands
                 {
                     new Task(() =>
                   Api.Message.Send($"🤣 Ха-ха-ха!Бот не смог в Вас попасть! Так держать!" +
-                                   $"\n ❗ Скорее отвечайте: бой атака <количество> <тип войска>", userId)).Start();
-                    
+                                   $"\n ❗ Скорее отвечайте: бой атака <количество> <тип войска>", userId)).Start();               
                 }else if(choise == 3)
                 {
                     int count = new Random().Next(5, 16);
@@ -205,7 +194,6 @@ namespace VKGame.Bot.Commands
                     var members = battle.Members;
                     var hp = members[userId] - coutHpArmy;
                     battle.SetHp(userId, hp);
-
                     if(hp <0 || hp == 0)
                     {
                         new Task(() =>
@@ -216,11 +204,8 @@ namespace VKGame.Bot.Commands
                         new Task(() => Api.Message.Send($"💣 ВАМ НАНЕСЁН УДАР! Урон: {coutHpArmy}" +
                                                $"\n ❤ Ваше здоровье: [{hp}/{API.HpUser(userId)}]" +
                                                $"\n ❗ Скорее отвечайте: бой атака <количество> <тип войска>", userId)).Start();
-                    }
-
-                   
+                    }               
                 }
-
             }
 
             public static long ChoiseUser(long user1, long user2)
@@ -228,14 +213,12 @@ namespace VKGame.Bot.Commands
                 var skills1 = new Api.Skills(user1);
                 var skills2 = new Api.Skills(user2);
                 var r = new Random();
-
                 if (skills1.Fortuna == skills2.Fortuna)
                 {
                     int choise = r.Next(1, 3);
                     if (choise == 1) return user1;
                     else if (choise == 2) return user2;
-                }
-                
+                }     
                 if (skills1.Fortuna > skills2.Fortuna)
                 {
                     var choise = r.Next(1, 4);
@@ -264,7 +247,6 @@ namespace VKGame.Bot.Commands
                 price = Int32.Parse(messageArray[2]);
             }catch(FormatException) { return "❌ Сумма должна быть числом!"; }
             catch(IndexOutOfRangeException) { return "❌ Вы не указали сумму. Пример: Бой бот 1234"; }
-
             if (!Notifications.RemovePaymentCard(price, user.Id, "бой с ботом"))
                 return $"❌ Извините, у Вас нет необходиой суммы на банковском счету. Необходимо: {price}";
             var battleId = API.Create(user.Id, $"Bot vs {user.Name}", price);
@@ -273,7 +255,6 @@ namespace VKGame.Bot.Commands
             battle.Type = 3;
             API.JoinToBattle(0, battle.Id);
             battle.UserAttack = user.Id;
-
             return $"🏹 Вы успешно создали новую битву с ботом! Атака происходит так же, как и при обычном бое.";
         }
 
@@ -296,7 +277,6 @@ namespace VKGame.Bot.Commands
             {
                 return "❌ Количество армии должно быть числовым значением.";
             }
-
             try
             {
                 typeArmy = messageArray[3];
@@ -304,12 +284,9 @@ namespace VKGame.Bot.Commands
             catch (IndexOutOfRangeException)
             {
                 return "❌ Вы не указали тип армии. Доступные типы: Танков, Солдат";
-            }
-            
+            }         
             var user = new Api.User(msg.from_id);
-
-            if (user.BattleId == 0) return "❌ Вы не учавствуете ни в какой битве.";
-            
+            if (user.BattleId == 0) return "❌ Вы не учавствуете ни в какой битве.";      
             var battle = new Api.Battles(user.BattleId);
             var skills = new Api.Skills(user.Id);
             var resources = new Api.Resources(msg.from_id);
@@ -317,12 +294,11 @@ namespace VKGame.Bot.Commands
             long countResoures = 0;
             string typeResourses = String.Empty;
             var levels = new Levels(msg.from_id);
-            
             if (typeArmy.ToLower() == "солдат")
             {
                 if (resources.Soldiery < count) return "❌ У Вас нет необходимого количества солдат.";
                 countHpArmy += count * API.SoldieryHp;
-                countHpArmy +=  levels.Soldiery * API.OneLvlSoldiery;
+                countHpArmy += levels.Soldiery * API.OneLvlSoldiery;
                 countResoures += count * API.ResourceSoldiery;
                 typeResourses = "🍕";
                 if (resources.Food < countResoures)
@@ -330,7 +306,8 @@ namespace VKGame.Bot.Commands
                         "❌ У Вас нехватает еды, чтобы прокормить армию. Купите еды или подождите пока она сама пополниться";
                 resources.Food -= countResoures;
 
-            }else if (typeArmy.ToLower() == "танков")
+            }
+            else if (typeArmy.ToLower() == "танков")
             {
                 if (resources.Tanks < count) return "❌ У Вас нет необходимого количества танков.";
                 countHpArmy += count * API.TanksHp;
@@ -343,25 +320,18 @@ namespace VKGame.Bot.Commands
                 resources.Water -= countResoures;
             }
             else return "❌ Вы ввели неизвестный тип армии. Доступные: Солдат, танков";
-
             var members = battle.Members;
-
             if (battle.UserAttack != msg.from_id)
                 return "❌ Сейчас очередь атаки Вашего врага. Подождите его хода.";
-
             if (!battle.IsStart)
                 return "❌ Игра ещё не началась. Вы не можете атаковать, пока игра не начнётся.";
-
             long vrag = 0;
-
             foreach (var member in members)
             {
                 if (member.Key != msg.from_id) vrag = member.Key;
             }
-
             User userVrag = null;
             Api.Skills skillsVrag = null ;
-
             if(battle.Type == 1)
             {
                  userVrag = new Api.User(vrag);
@@ -379,15 +349,10 @@ namespace VKGame.Bot.Commands
                 userVrag = new Api.User(msg.from_id);
                 skillsVrag = new Api.Skills(msg.from_id);
             }
-            
-
             var resourcesStr = $"❗ На атаку вы потратили: {countResoures} {typeResourses}";
-            var myHp = $"❤ Ваше здоровье: [{members[msg.from_id]}/{API.HpUser(msg.from_id)}]";
-            
-            
+            var myHp = $"❤ Ваше здоровье: [{members[msg.from_id]}/{API.HpUser(msg.from_id)}]";          
             var r = new Random();
-            int chaise = r.Next(1, 4);
-            
+            int chaise = r.Next(1, 4);         
             if (skills.Fortuna > skillsVrag.Fortuna)
             {
                 if (chaise == 2)
@@ -434,8 +399,7 @@ namespace VKGame.Bot.Commands
             
             if (chaise == 1)
             {
-                string typeBuilds = String.Empty;
-                
+                string typeBuilds = String.Empty;              
                 var kek = r.Next(1, 4);
                 if (kek == 2)
                 {
@@ -537,9 +501,7 @@ namespace VKGame.Bot.Commands
                                                         "\n❗ Скорее отвечайте: бой атака <количество> <тип войска>", vrag)).Start();
                     }else if(battle.Type == 3)
                     {
-
-                    }
-                    
+                    }                
                     if(battle.Type == 1 || battle.Type == 2)
                     {
                         battle.UserAttack = vrag;
@@ -553,8 +515,7 @@ namespace VKGame.Bot.Commands
                             $"\n {resourcesStr}" +
                             $"\n {myHp}";
                     }               
-                }
-                
+                }               
                 if(kek == 1 || kek ==3)
                 {
                     if(battle.Type ==1 || battle.Type ==2)
@@ -572,13 +533,10 @@ namespace VKGame.Bot.Commands
                                $"\n{resourcesStr}" +
                                $"\n {myHp}";
                     }
-
                 }
             }
-
             if (chaise == 2)
             {
-
                 if(battle.Type == 1 || battle.Type == 2)
                 {
                     new Task(() =>
@@ -596,39 +554,31 @@ namespace VKGame.Bot.Commands
                           $"\n {myHp}";
                 }        
             }
-
             if (chaise == 3)
             {
                 var hpVrag = members[vrag] - countHpArmy;
                 if (hpVrag < 0 || hpVrag == 0)
                 {
-                    //player win
-
                     if (battle.Type == 1)
                     {
                         var registryVrag = new Registry(vrag);
                         registryVrag.CountLoserBattle += 1;
-
                         new Task(() =>
                         Api.Message.Send("😭 Вас разграмили! Вы проиграли! В следующей битве повезёт больше!", vrag)).Start();
                         API.EndBattle(battle.Id, msg.from_id);
                         return resourcesStr;
-
                     }
                     else if (battle.Type == 2)
                     {
                         var registryVrag = new Registry(vrag);
                         registryVrag.CountLoserBattle += 1;
-
                     }
                     else if (battle.Type == 3)
                     {
                         API.EndBattle(battle.Id, msg.from_id);
                     }
                 }
-
                 battle.SetHp(vrag, hpVrag);
-
                 if(battle.Type == 3)
                 {
                     API.BotAttack(user.Id);
@@ -636,11 +586,9 @@ namespace VKGame.Bot.Commands
                        $"\n {resourcesStr}" +
                        $"\n {myHp}";
                 }
-
                 new Task(() => Api.Message.Send($"💣 ВАМ НАНЕСЁН УДАР! Урон: {countHpArmy}" +
                                                 $"\n ❤ Ваше здоровье: [{hpVrag}/{API.HpUser(vrag)}]" +
                                                 $"\n ❗ Скорее отвечайте: бой атака <количество> <тип войска>", vrag)).Start();
-
                 battle.UserAttack = vrag;
                 return $"✨ Прямо  в яблочко! Вы нанесли противнику {countHpArmy} урона!" +
                        $"\n {resourcesStr}" +
@@ -654,9 +602,7 @@ namespace VKGame.Bot.Commands
         {
             var user = new Api.User(msg.from_id);
             if (user.BattleId == 0) return "❌ Вы не учавствуете в какой-либо битве.";
-
             var battle = new Api.Battles(user.BattleId);
-
             if (!battle.IsStart)
             {
                 battle.IsActive = false;
@@ -664,15 +610,12 @@ namespace VKGame.Bot.Commands
                 return "✅ Вы успешно покинули бой.";
             }
             var members = battle.Members;
-            long winner = 0;
-            
+            long winner = 0;    
             foreach (var member in members)
             {
                 if (member.Key != msg.from_id) winner = member.Key;
-            }
-            
-            new Task(()=> Api.Message.Send("😎  Ваш противник покинул бой! Вы получаете весь фонд битвы.", winner)).Start();
-            
+            }      
+            new Task(()=> Api.Message.Send("😎  Ваш противник покинул бой! Вы получаете весь фонд битвы.", winner)).Start();        
             API.EndBattle(user.BattleId, winner);             
             return "😢 Вы успешно покинули бой. Ваш противник получил уведомление об этом.";
         }
@@ -682,9 +625,7 @@ namespace VKGame.Bot.Commands
         {
             var userO = new Api.User(msg.from_id);
             if (userO.BattleId == 0) return "❌ Вы не находитесь ни в какой битве!";
-
-            var battle = new Api.Battles(userO.BattleId);
-            
+            var battle = new Api.Battles(userO.BattleId);         
             var membersString = String.Empty;
             foreach (var member in battle.Members)
             {
@@ -720,7 +661,6 @@ namespace VKGame.Bot.Commands
             {
                 return "❌ Вы указали неверный Id битвы. Id должен быть чилом.";
             }
-
             var user = new Api.User(msg.from_id);
             if (user.BattleId != 0) return "❌ Вы и так учавствуете в другой битве!";
             if (!Api.Battles.Check(battleId))
@@ -728,19 +668,13 @@ namespace VKGame.Bot.Commands
             var battle = new Api.Battles(battleId);
             if (!battle.IsActive) return "❌ Эта битва уже закончилась! Вы не можете вступить в неё. Посмотрите другие битвы, напишите: список";
             if (battle.IsStart) return "❌ Эта битва уже началась! Вы не можете вступить в неё! Посмотрите другие битвы, напишите: список";
-
             if (battle.Creator == msg.from_id) return "❌ Вы не можете вступить в свою же битву!";
-
-
             if (!Notifications.RemovePaymentCard(Convert.ToInt32(battle.Found), msg.from_id, "вступление в битву"))
-                return $"❌ У Вас не хватает монет на балансе. Необходимо: {battle.Found} ";
-            
-            API.JoinToBattle(msg.from_id, battleId);
-            
+                return $"❌ У Вас не хватает монет на балансе. Необходимо: {battle.Found} ";        
+            API.JoinToBattle(msg.from_id, battleId);        
             new Task(()=>Api.Message.Send($"⚔ К Вам в битву вступил противник!" +
                                           $"\n ❤ ВАШЕ ЗДОРОВЬЕ: {API.HpUser(battle.Creator)}" +
-                                          $"\n 🖤 ЗДОРОВЬЕ ПРОТИВНИКА: {API.HpUser(msg.from_id)}", battle.Creator)).Start();
-            
+                                          $"\n 🖤 ЗДОРОВЬЕ ПРОТИВНИКА: {API.HpUser(msg.from_id)}", battle.Creator)).Start();      
             new Task(()=> ChoisidBattleStart(new List<long>() {msg.from_id, battle.Creator}, battle.Id)).Start();
             return $"✅ Вы успешно вступили в битву. Сейчас произойдёт рандомный выбор игрока, который первый атакует." +
                    $"\n ❤ ВАШЕ ЗДОРОВЬЕ: {API.HpUser(msg.from_id)}" +
@@ -781,14 +715,10 @@ namespace VKGame.Bot.Commands
             {
                 nameBattle = "Битва без названия";
             }
-
             if (nameBattle == String.Empty) nameBattle = "Битва без названия";
-
             if (!Notifications.RemovePaymentCard(Convert.ToInt32(price), msg.from_id, "создание битвы"))
                 return $"❌ У Вас на балансе нет необходимой суммы: {price} 💳 ";
-
-            var battleId = API.Create(msg.from_id, nameBattle, price);
-            
+            var battleId = API.Create(msg.from_id, nameBattle, price);          
             return $"✅ Битва успешна создана. Id битвы -- {battleId}";
         }
 
@@ -820,7 +750,6 @@ namespace VKGame.Bot.Commands
                               $"\n ❓ Чтобы вступить в бой, напишите: Бой вступить {battle.Id}" +
                               $"\n";
             }
-
             return $"➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖" +
                    $"\n СПИСОК АКТИВНЫХ БОЁВ" +
                    $"\n" +

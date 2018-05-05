@@ -18,11 +18,17 @@ namespace VKGame.Bot
         {
             string commands = string.Empty;
             foreach (var command in Commands) commands += $"\n 👍 {command}";
-            return $"❓Помощь по разделу {Name}." +
+            return $"❓ Помощь по разделу {Name}." +
                 $"\n ➡ Описание: {Caption}" +
                 $"\n ➡ Аргументы: {Arguments}" +
                 $"\n ➡ Доступные подкоманды: {commands}" +
                 $"\n 👀 Полное описание этого раздела: {HelpUrl}";
+        }
+
+        [Attributes.Trigger("ссылка")]
+        public object Urls(Models.Message msg)
+        {
+            return $"👀 Ссылка на подробное описание: {HelpUrl}";
         }
     }
 

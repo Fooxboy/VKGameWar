@@ -18,7 +18,7 @@ namespace VKGame.Bot
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 var time = DateTime.Now;
-                Console.WriteLine($"[{time}]=> {message}");
+                Console.WriteLine($"({time}) [waring]=> {message}");
                 Console.ResetColor();
             }catch(Exception e)
             {
@@ -33,13 +33,12 @@ namespace VKGame.Bot
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 var time = DateTime.Now;
-                Console.WriteLine($"[{time}]=> {message}");
+                Console.WriteLine($"({time}) [message]=> {message}");
                 Console.ResetColor();
             }catch(Exception e)
             {
                 WriteError(e);
-            }
-           
+            }      
         }
         
         /// <summary>
@@ -52,7 +51,7 @@ namespace VKGame.Bot
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 var time = DateTime.Now;
-                Console.WriteLine($"[{time}]=>" +
+                Console.WriteLine($"({time}) [error]=>" +
                     $"\n >>ИСКЛЮЧЕНИЕ: {e.GetType().Name}" +
                     $"\n >>СООБЩЕНИЕ: {e.Message}" +
                     $"\n >>STACK TRACE: {e.StackTrace}");
@@ -64,7 +63,7 @@ namespace VKGame.Bot
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     var time = DateTime.Now;
-                    Console.WriteLine($"[{time}]=>" +
+                    Console.WriteLine($"({time}) [error]=>" +
                         $"\n >>ИСКЛЮЧЕНИЕ: {e.GetType().Name}" +
                         $"\n >>СООБЩЕНИЕ: {e.Message}" +
                         $"\n >>STACK TRACE: {e.StackTrace}");
@@ -76,7 +75,7 @@ namespace VKGame.Bot
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                         var time = DateTime.Now;
-                        Console.WriteLine($"[{time}]=>" +
+                        Console.WriteLine($"({time}) [error]=>" +
                             $"\n >>ИСКЛЮЧЕНИЕ: {e.GetType().Name}" +
                             $"\n >>СООБЩЕНИЕ: {e.Message}" +
                             $"\n >>STACK TRACE: {e.StackTrace}");
@@ -102,13 +101,12 @@ namespace VKGame.Bot
             {
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
                 var time = DateTime.Now;
-                Console.WriteLine($"[{time}]=> {message}");
+                Console.WriteLine($"({time}) [debug]=> {message}");
                 Console.ResetColor();
             }catch(Exception e)
             {
                 WriteError(e);
-            }
-            
+            }          
         }
     }
 }

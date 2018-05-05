@@ -9,7 +9,6 @@ namespace VKGame.Bot.Helpers
         {
             object obj = Activator.CreateInstance(type);
             var methods = type.GetMethods();
-
             foreach (var method in methods)
             { 
                 var attributesCustom = Attribute.GetCustomAttributes(method);
