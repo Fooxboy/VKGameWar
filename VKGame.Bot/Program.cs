@@ -13,6 +13,9 @@ namespace VKGame.Bot
 {
     class Program
     {
+        //запускается бот в тестовом режиме или в релизе.
+        public static bool TestMode = false;
+
         static void Main(string[] args)
         {
             while(true)
@@ -30,7 +33,13 @@ namespace VKGame.Bot
                     Logger.WriteDebug("Создание потока LongPoll.");
                     Thread threadLongPoll = new Thread(new ParameterizedThreadStart(longpoll.Start));
                     threadLongPoll.Name = "LongPoll";
-                    threadLongPoll.Start(Common.GetToken());
+                    if(TestMode)
+                    {
+                        threadLongPoll.Start(Common.GetTestToken());
+                    }else
+                    {
+                        threadLongPoll.Start(Common.GetToken());
+                    }             
 
                     Thread threadCompetitions = new Thread(BackgroundProcess.Competitions.StartCompetition);
                     threadCompetitions.Name = "threadCompetitions";

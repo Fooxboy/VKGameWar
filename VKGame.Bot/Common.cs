@@ -20,6 +20,11 @@ namespace VKGame.Bot
             return "89d513f60f1f26a711a376720a9dba0149ab2a283941b83fc1753c0a9fd54b2350be6ada97a44ee083de1";
         }
 
+        public static string GetTestToken()
+        {
+            return "a85cd63f0b1a3530214a918cde6f829a3315e475f9b9880cb6192ce75129a6ae9c398eeceb41a1c760d7b";
+        }
+
         //Все доступные команды.
         public static readonly List<ICommand> Commands = new List<ICommand>()
         {
