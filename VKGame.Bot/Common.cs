@@ -60,7 +60,7 @@ namespace VKGame.Bot
         };
 
 
-        public static string GetMyToken => "ff9843ac13585ffc0ee35fd9ccbeae504187bf07e5e9b2a47490f2e9c1fdfd6c0664aeb4b3c2016878cb5";
+        public static string GetMyToken => "";
 
         public static Roulette Roulette = new Roulette(){ Prices =  new List<RoulettePrices>(), Fund = 0};
 
