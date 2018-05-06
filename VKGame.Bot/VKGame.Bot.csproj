@@ -19,11 +19,6 @@
     <None Remove="Users.db-journal" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Files\ReferralsFiles\" />
-    <Folder Include="Files\Registry\" />
-    <Folder Include="Files\Temp\" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Update="Language\Russian.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
