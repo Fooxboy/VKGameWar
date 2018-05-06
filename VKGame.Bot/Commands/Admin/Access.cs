@@ -12,7 +12,7 @@ namespace VKGame.Bot.Commands.Admin
         public override TypeResponse Type => TypeResponse.Text;
 
         public override List<string> Commands =>
-            new List<string>() { "бот", "атака", "вступить", "покинуть", "мой", "создать", "список" };
+            new List<string>() { };
 
         public override string HelpUrl => "недоступно";
         public override Access Access => Access.User;
