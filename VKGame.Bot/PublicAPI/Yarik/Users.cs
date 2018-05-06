@@ -25,6 +25,16 @@ namespace VKGame.Bot.PublicAPI.Yarik
             return true;
         }
 
+        public static object Delete(long user)
+        {
+            if (!Check(user))
+                return new Models.Error() { Code = 2, Message = "Пользователя с армией нет в базе данных." };
+            var db = new Database.Public("Users");
+            db.DeleteFromId(user);
+
+            return true;
+        }
+
         public static object GetArmy(long userId)
         {
             var db = new Database.Public("Users");

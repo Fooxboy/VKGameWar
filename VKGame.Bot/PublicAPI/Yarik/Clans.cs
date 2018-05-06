@@ -22,6 +22,21 @@ namespace VKGame.Bot.PublicAPI.Yarik
             return result;
         }
 
+        public static object Delete(string clan)
+        {
+            if (!Check(clan))
+                return new Error()
+                {
+                    Code = 4,
+                    Message = "Клан с таким ID не зарегестирован."
+                };
+            var db = new Database.Public("Clans");
+
+            db.DeleteFromKey("Id", clan);
+
+            return true;
+        }
+
         public static object EndBattle(string clan)
         {
             if (!Check(clan))
