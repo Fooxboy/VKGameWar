@@ -29,6 +29,85 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
             return Json(model);
         }
 
+
+        public IActionResult delete(long id)
+        {
+            try
+            {
+                if (id == 0)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
+
+                var result = Bot.PublicAPI.Yarik.Users.Delete(id);
+                var model = new RootResponse() { result = true };
+                if (result is IError) model.result = false;
+                model.data = result;
+                return Json(model);
+            }
+            catch (Exception e)
+            {
+                var model = new RootResponse<Models.Error>()
+                {
+                    result = false,
+                    data = new Models.Error()
+                    {
+                        Code = 10,
+                        Message = $"Внутренняя ошибка сервера." +
+                        $"\n {e.ToString()}"
+                    }
+                };
+                return Json(model);
+            }
+        }
+
+        public IActionResult get(long id)
+        {
+            try
+            {
+                if (id == 0)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
+
+                var result = Bot.PublicAPI.Yarik.Users.GetObject(id);
+                var model = new RootResponse() { result = true };
+                if (result is IError) model.result = false;
+                model.data = result;
+                return Json(model);
+            }
+            catch (Exception e)
+            {
+                var model = new RootResponse<Models.Error>()
+                {
+                    result = false,
+                    data = new Models.Error()
+                    {
+                        Code = 10,
+                        Message = $"Внутренняя ошибка сервера." +
+                        $"\n {e.ToString()}"
+                    }
+                };
+                return Json(model);
+            }
+        }
+
         public IActionResult money(long id, int value)
         {
             try

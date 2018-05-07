@@ -30,6 +30,86 @@ namespace VKGame.WebAPI.Areas.publicAPI.Controllers
         }
 
 
+        public IActionResult get(string id)
+        {
+            try
+            {
+
+                if (id is null || id == string.Empty)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
+
+                var result = Bot.PublicAPI.Yarik.Clans.GetObject(id);
+                var model = new RootResponse() { result = true };
+                if (result is IError) model.result = false;
+                model.data = result;
+                return Json(model);
+            }
+            catch (Exception e)
+            {
+                var model = new RootResponse<Models.Error>()
+                {
+                    result = false,
+                    data = new Models.Error()
+                    {
+                        Code = 10,
+                        Message = $"Внутренняя ошибка сервера." +
+                        $"\n {e.ToString()}"
+                    }
+                };
+                return Json(model);
+            }
+        }
+
+        public IActionResult delete(string id)
+        {
+            try
+            {
+
+                if (id is null || id == string.Empty)
+                {
+                    return Json(new RootResponse<IError>()
+                    {
+                        result = false,
+                        data = new Models.Error()
+                        {
+                            Code = 13,
+                            Message = "Не указан обязательный параметр."
+                        }
+                    });
+                }
+
+                var result = Bot.PublicAPI.Yarik.Clans.Delete(id);
+                var model = new RootResponse() { result = true };
+                if (result is IError) model.result = false;
+                model.data = result;
+                return Json(model);
+            }
+            catch (Exception e)
+            {
+                var model = new RootResponse<Models.Error>()
+                {
+                    result = false,
+                    data = new Models.Error()
+                    {
+                        Code = 10,
+                        Message = $"Внутренняя ошибка сервера." +
+                        $"\n {e.ToString()}"
+                    }
+                };
+                return Json(model);
+            }
+        }
+
         public IActionResult endBattle(string id)
         {
             try
