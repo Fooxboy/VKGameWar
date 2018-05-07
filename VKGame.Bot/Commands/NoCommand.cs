@@ -51,7 +51,7 @@ namespace VKGame.Bot.Commands
                 {
                     var word = Common.SimilarWord(messageArray[0], command.Commands);
                     var commandList = new List<string>();
-                    foreach (var commandM in Core.Commands) commandList.Add(commandM.Name.ToLower());
+                    foreach (var commandM in Common.Commands) commandList.Add(commandM.Name.ToLower());
                     var comG = Common.SimilarWord(messageArray[0], commandList);
                     response = $"❌ Неизвестная подкоманда." +
                             $"\n ❓ Возможно, Вы имели в виду - {word}" +
@@ -62,7 +62,7 @@ namespace VKGame.Bot.Commands
             }catch(KeyNotFoundException)
             {
                 var commandList = new List<string>();
-                foreach (var commandM in Core.Commands) commandList.Add(commandM.Name);
+                foreach (var commandM in Common.Commands) commandList.Add(commandM.Name);
                 var comG = Common.SimilarWord(messageArray[0], commandList);
 
                 Api.Message.Send($"❌ Неизвестная команда!" +
