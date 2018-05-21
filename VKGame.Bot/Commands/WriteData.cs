@@ -19,8 +19,6 @@ namespace VKGame.Bot.Commands
         public override Access Access => Access.User;
         public override string HelpUrl => "сслыка недоступна";
 
-
-        [NotNull]
         public override object Execute(Models.Message msg)
         {
             string text = "";
@@ -29,13 +27,16 @@ namespace VKGame.Bot.Commands
             
             try
             {
-                var lastcommand = Common.LastCommand;
-                var command = lastcommand[msg.from_id];
+                var command = Common.LastCommand[msg.from_id];
+
+                //получение бустеров пользователей
                 var boosters = new Api.Boosters(msg.from_id);          
                 
+                //проверка на команду в кэше.
                 if(command  is Start) return Start.SetNick(msg, text);
                 else if (command is Army)
                 {
+                    //Я понятия не имею что тут работает и даже не знаю работает ли....
                     int count = 0;
                     int type = 0;
                     try

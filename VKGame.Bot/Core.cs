@@ -12,10 +12,13 @@ namespace VKGame.Bot
     /// </summary>
     public class Core
     {   
+
+        //метод выполняющий поиск нужной команды.
         private ICommand Proccesing(string text)
         {
             try 
             {
+                //перебор команд
                 foreach (var command in Common.Commands)
                 {
                     if (command.Name.ToLower() == text) return command;
@@ -38,9 +41,11 @@ namespace VKGame.Bot
             var msg = (Models.Message)msgObj;
             try
             {
+                //получение команды после поиска.
                 ICommand command = Proccesing(msg.body.Split(' ')[0].ToLower());
                 if (command != null)
                 {
+                    /*
                     var lastCommands = Common.LastCommand;
                     try
                     {
@@ -48,7 +53,9 @@ namespace VKGame.Bot
                     }catch(KeyNotFoundException)
                     {
                         lastCommands.Add(msg.from_id, command);
-                    }
+                    }*/
+
+                    //создание объектов пользования и проверка его прав.
                     var user = new Api.User(msg.from_id);
                     object result;
                     if((int)user.Access < (int)command.Access)
@@ -58,6 +65,7 @@ namespace VKGame.Bot
 
                     if (command.Type == TypeResponse.Text)
                     {
+                        //отправка сообщений
 
                         Api.Message.Send((string)result, msg.from_id);
                         /* string wait = "🔁 Подождите. Команда выполняется 🔁";
@@ -90,6 +98,7 @@ namespace VKGame.Bot
             }
             catch (Exception e)
             {
+                //Вывод ошибок при отправке или обработке команд или сообщений.
                 Statistics.NewError();
                 try
                 {
@@ -121,6 +130,7 @@ namespace VKGame.Bot
                     }
                 }catch(Exception e2)
                 {
+                    //обработка ошибок, если произошла ошибка.
                     Statistics.NewError();
                     Api.Message.Send($"🎈 ОШИБКА: \n{e2.Message}" +
                             $"\n 🎉 Исключение: {e2.GetType().Name}" +
@@ -135,10 +145,12 @@ namespace VKGame.Bot
         /// <param name="Команда"></param>
         public void RegisterCommand(ICommand command)
         {
+            //НЕРАБОТАЕТ
             if (Common.Commands != null) Common.Commands.Add(command);
             //else Common.Commands = new List<ICommand>() {command};
         }
 
+        //обработчик события "уход из группы"
         public static void LeaveInGroup(Models.UserLeave userId)
         {
             Logger.WriteWaring($"Группу покинул пользователь {userId.user_id}");
@@ -152,6 +164,7 @@ namespace VKGame.Bot
             }
         }
 
+        //Обработчик события "приход в группу"
         private static void JoinInGroupHealder(Models.UserJoin userId)
         {
             Logger.WriteWaring($"В группу вступил новый участник {userId.user_id}");
@@ -173,6 +186,7 @@ namespace VKGame.Bot
             }
         }
 
+        //метод вызывающий обработчик события
         public static void JoinInGroup(Models.UserJoin userId) => new Task(() => JoinInGroupHealder(userId));
 
         private static void BotOfflineHeadler(object sender, EventArgs e)
@@ -183,22 +197,48 @@ namespace VKGame.Bot
         public static void BotOffline(object sender, EventArgs e) => new Task(() => BotOfflineHeadler(sender, e)).Start();
 
 
+        //обработчик прихода нового сообщения.
         private static void NewMessageHalder(Models.Message message)
         {
             try
             {
+                //запись последнего id  
                 Common.LastMessage = message.id;
                         
-                Api.CacheMessages.AddMessage(message.id, DateTime.Now.ToString(), 1, 1, message.from_id, message.body, message.from_id);
+                //добавление в кэш сообщений
+                Api.CacheMessages.AddMessage(message.id, 
+                    DateTime.Now.ToString(), 
+                    1, 1, message.from_id,
+                    message.body, 
+                    message.from_id);
+
+                //получение последних команд пользователя
+                var lastCommands = Common.LastCommand;
+                try
+                {
+                    var buffer = lastCommands[message.from_id];
+                    lastCommands[message.from_id] = new Start();
+                }
+                catch (KeyNotFoundException)
+                {
+                    
+                    lastCommands.Add(message.from_id, new Start());
+                }
+
+                //проверка на существование пользователя в бд.
                 if (Api.User.Check(message.from_id))
                 {
+                    //создание объектов пользователя
                     var user = new Api.User(message.from_id);
                     var registry = new Api.Registry(user.Id);
+                    //указание даты последнего сообщения пользователя
                     if (DateTime.Parse(registry.LastMessage).Day != DateTime.Now.Day)
                     {
                         registry.LastMessage = DateTime.Now.ToString();
                     }
+                    //вывод лога
                     Logger.NewMessage($"({message.from_id}) -> {message.body}");
+                    //запуск потока добавление ресурсов, если он не запущен.
                     if(!registry.StartThread) new Thread(new ParameterizedThreadStart(BackgroundProcess.Buildings.AddingResources)).
                         Start(message.from_id);
                     var core = new Core();
@@ -215,24 +255,14 @@ namespace VKGame.Bot
                 }
                 else
                 {
+                    //если пользователь не зарегестрирован.
                     var command = message.body.Split(' ')[0].ToLower();
+                    //если команда старт........
                     if (command == "старт")
                     {
                         Logger.NewMessage($"({message.from_id}) -> {message.body}");
-                        var core = new Core();
                         try
                         {
-                            var lastCommands = Common.LastCommand;
-                            try
-                            {
-                                var buffer = lastCommands[message.from_id];
-                                lastCommands[message.from_id] = new Start();
-                            }
-                            catch (KeyNotFoundException)
-                            {
-                                lastCommands.Add(message.from_id, new Start());
-                            }
-
                             Api.Message.Send((string)Common.Commands[0].Execute(message), message.from_id);
                         }
                         catch (Exception e)
