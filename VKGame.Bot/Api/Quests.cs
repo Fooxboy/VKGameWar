@@ -4,6 +4,9 @@ using Newtonsoft.Json;
 
 namespace VKGame.Bot.Api
 {
+    /// <summary>
+    /// Квесты
+    /// </summary>
     public class Quests
     {
         private Database.Data DB = null;
@@ -17,6 +20,10 @@ namespace VKGame.Bot.Api
 
         public long Id => id;
 
+
+        /// <summary>
+        /// Пользователи квеста
+        /// </summary>
         public Models.Quests.Users Users
         {
             get
@@ -37,6 +44,10 @@ namespace VKGame.Bot.Api
 
         public long Price => (long) DB.GetFromId(id, "Price");
 
+
+        /// <summary>
+        /// Доступен ли квест
+        /// </summary>
         public bool IsOnline => Convert.ToBoolean((long) DB.GetFromId(id, "isOnline"));
         
         public static bool Check(long id) => Database.Data.CheckFromId(id, "Quests");

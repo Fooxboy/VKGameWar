@@ -4,6 +4,9 @@ using Microsoft.CodeAnalysis;
 
 namespace VKGame.Bot.Api
 {
+    /// <summary>
+    /// Реестр пользователя
+    /// </summary>
     public class Registry
     {
         private Database.Data DB = null;
@@ -54,6 +57,9 @@ namespace VKGame.Bot.Api
             set => DB.EditFromId(id, "LastMessage", value);
         }
 
+        /// <summary>
+        /// Проверка на запущенность потока с добавлением ресурсов
+        /// </summary>
         public bool StartThread
         {
             get => Convert.ToBoolean((long) DB.GetFromId(id, "StartThread"));
@@ -72,6 +78,9 @@ namespace VKGame.Bot.Api
             set => DB.EditFromId(id, "DateReg", value);
         }
 
+        /// <summary>
+        /// Прошёл ли пользователь первоначальную  настройку
+        /// </summary>
         public bool IsSetup
         {
             get => Convert.ToBoolean((long) DB.GetFromId(id, "isSetup"));

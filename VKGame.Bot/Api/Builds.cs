@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace VKGame.Bot.Api
 {
+    /// <summary>
+    /// постройки, здания и называйте как хотите
+    /// </summary>
     public class Builds
     {
         private Database.Data DB = null;
@@ -16,6 +19,10 @@ namespace VKGame.Bot.Api
 
         public long Id => id;
         
+        /// <summary>
+        /// регистрация
+        /// </summary>
+        /// <param name="userId">ид пользователя</param>
         public static void Register(long userId)
         {
             List<string> fields = new List<string>() {"Id"};
@@ -23,7 +30,12 @@ namespace VKGame.Bot.Api
             Database.Data.Add(fields, values, "Builds");
         }
         
-        
+
+        //TODO: дописать комментарии для зданий.
+
+        /// <summary>
+        /// ....
+        /// </summary>
         public long Apartments
         {
             get

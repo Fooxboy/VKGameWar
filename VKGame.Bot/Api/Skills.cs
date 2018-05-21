@@ -2,6 +2,9 @@
 
 namespace VKGame.Bot.Api
 {
+    /// <summary>
+    /// Навыки пользователя
+    /// </summary>
     public class Skills
     {
         private Database.Data DB = null;
@@ -23,6 +26,9 @@ namespace VKGame.Bot.Api
 
         }
 
+        /// <summary>
+        /// Удача
+        /// </summary>
         public long Fortuna
         {
             get => (long) DB.GetFromId(id, "Fortuna");

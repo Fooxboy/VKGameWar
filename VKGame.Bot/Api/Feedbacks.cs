@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace VKGame.Bot.Api
 {
+    /// <summary>
+    /// Отзывы
+    /// </summary>
     public class Feedbacks
     {
         private Database.Stat DB = null;
@@ -22,6 +25,12 @@ namespace VKGame.Bot.Api
 
         public string Text => (string) DB.GetFromId(id, "Text");
 
+        /// <summary>
+        /// Добавить отзыв
+        /// </summary>
+        /// <param name="text">текст</param>
+        /// <param name="userId">ид пользователя</param>
+        /// <returns></returns>
         public static long Add(string text, long userId)
         {
             var fields = new List<string>() {"Id", "User", "Text", "Time"};
@@ -30,6 +39,9 @@ namespace VKGame.Bot.Api
             return text.GetHashCode();
         }
 
+        /// <summary>
+        /// Получние всех отзывов
+        /// </summary>
         public static List<long> Alllist
         {
             get

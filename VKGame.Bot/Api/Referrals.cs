@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace VKGame.Bot.Api
 {
+    /// <summary>
+    /// Рефералы
+    /// </summary>
     public class Referrals
     {
         private Database.Data DB = null;
@@ -23,6 +26,9 @@ namespace VKGame.Bot.Api
             Database.Data.Add(fields, values,"Referrals");
         }
 
+        /// <summary>
+        /// Список рефералов
+        /// </summary>
         public List<long> RefList
         {
             get

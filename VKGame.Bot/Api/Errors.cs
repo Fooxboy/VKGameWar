@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VKGame.Bot.Api
 {
+    /// <summary>
+    /// Отчеты об ошибках
+    /// </summary>
     public class Errors
     {
         private Database.Stat DB = null;
@@ -13,6 +16,10 @@ namespace VKGame.Bot.Api
             DB = new Database.Stat("Errors");
         }
 
+        /// <summary>
+        /// Добавить
+        /// </summary>
+        /// <param name="e">экземпляр экзепшена</param>
         public static void Add(Exception e)
         {
             if(e is System.Net.WebException)

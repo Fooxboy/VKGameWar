@@ -5,6 +5,9 @@ using VKGame.Bot.Models;
 
 namespace VKGame.Bot.Api
 {
+    /// <summary>
+    /// Соревнования
+    /// </summary>
     public class Competitions
     {
         private Database.Data DB = null;
@@ -18,6 +21,9 @@ namespace VKGame.Bot.Api
 
         public long Id => id;
 
+        /// <summary>
+        /// Получить список всех
+        /// </summary>
         public static List<long> AllList
         {
             get
@@ -34,6 +40,9 @@ namespace VKGame.Bot.Api
             }
         }
 
+        /// <summary>
+        /// имя соревнования
+        /// </summary>
         public string Name
         {
             get
@@ -46,6 +55,10 @@ namespace VKGame.Bot.Api
             set => DB.EditFromId(id, "Name", value);
         }
 
+
+        /// <summary>
+        /// Участнкии сороевнования
+        /// </summary>
         public List<Models.CompetitionsList.Member> Members
         {
             get
@@ -81,6 +94,10 @@ namespace VKGame.Bot.Api
             }
         }
 
+
+        /// <summary>
+        /// цена соревнования
+        /// </summary>
         public long Price
         {
             get
@@ -93,6 +110,10 @@ namespace VKGame.Bot.Api
             set => DB.EditFromId(id, "Price", value);
         }
 
+
+        /// <summary>
+        /// время
+        /// </summary>
         public long Time
         {
             get
@@ -105,6 +126,10 @@ namespace VKGame.Bot.Api
             set => DB.EditFromId(id, "Time", value);
         }
 
+
+        /// <summary>
+        /// топ пользователей по килам или хз почем
+        /// </summary>
         public List<Models.CompetitionsList.TopMember> Top
         {
             get
@@ -138,6 +163,9 @@ namespace VKGame.Bot.Api
             }
         }
 
+        /// <summary>
+        /// Проверка на конец
+        /// </summary>
         public bool IsEnd
         {
             get => Convert.ToBoolean((long)DB.GetFromId(id, "IsEnd"));
@@ -152,6 +180,13 @@ namespace VKGame.Bot.Api
 
         public static bool Check(long id) => Database.Data.CheckFromId(id, "Competitions");
         
+        /// <summary>
+        /// Новое соревнование
+        /// </summary>
+        /// <param name="Name">Имя</param>
+        /// <param name="Price">Цена</param>
+        /// <param name="Time">Время</param>
+        /// <returns></returns>
         public static long New(string Name, long Price, long Time)
         {
             var db = new Database.Data("Competitions");

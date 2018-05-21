@@ -3,6 +3,9 @@ using VKGame.Bot.Models;
 
 namespace VKGame.Bot.Api
 {
+    /// <summary>
+    /// Кэширование сообщений в базу данных
+    /// </summary>
     public class CacheMessages : Models.MessageCache
     {
         private Database.Stat DB = null;
@@ -28,9 +31,19 @@ namespace VKGame.Bot.Api
 
         public long PeerId => (long) DB.GetFromId(id, "PeerId");
 
-
+        //сбросить кэш
         public static void ResetCache() => Database.Stat.DeteleAll("CacheMessages");
 
+        /// <summary>
+        /// Добавить новое сообщение
+        /// </summary>
+        /// <param name="id">ид сообщения</param>
+        /// <param name="time">время</param>
+        /// <param name="fromType">от кого тип</param>
+        /// <param name="Type">тип</param>
+        /// <param name="userId">пользоваетль</param>
+        /// <param name="Text">текст</param>
+        /// <param name="peerId">пир иди</param>
         public static void AddMessage(long id, string time, long fromType, long Type, long userId, string Text, long peerId)
         {
             var fields = new List<string>() {"Id", "Time", "FromType", "Type", "FromId", "Body", "PeerId" };

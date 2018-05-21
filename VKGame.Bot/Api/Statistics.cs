@@ -2,6 +2,9 @@
 
 namespace VKGame.Bot.Api
 {
+    /// <summary>
+    /// Статистика
+    /// </summary>
     public class Statistics
     {
         public static void SetValue(string key, long count=1)
@@ -24,6 +27,10 @@ namespace VKGame.Bot.Api
             db.EditFromKey(key, 0);
         }
 
+        /// <summary>
+        /// Получение всей статистики
+        /// </summary>
+        /// <returns> Объект статитстики</returns>
         public static Models.Statistics GetAll()
         {
             var db = new Database.Stat("Statistics");

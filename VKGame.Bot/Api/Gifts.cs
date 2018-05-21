@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VKGame.Bot.Api
 {
+    /// <summary>
+    /// Подарки
+    /// </summary>
     public class Gifts
     {
         private Database.Data DB = null;
@@ -17,6 +20,9 @@ namespace VKGame.Bot.Api
 
         public long Id => id;
 
+        /// <summary>
+        /// Открыт?
+        /// </summary>
         public bool IsOpen
         {
             get => Convert.ToBoolean((long)DB.GetFromId(id, "isOpen"));
@@ -28,18 +34,32 @@ namespace VKGame.Bot.Api
             get => (long)DB.GetFromId(id, "Price");
         }
 
+        /// <summary>
+        /// От кого
+        /// </summary>
         public long From
         {
             get => (long)DB.GetFromId(id, "From");
         }
 
+        /// <summary>
+        /// Кому
+        /// </summary>
         public long To
         {
             get => (long)DB.GetFromId(id, "ToUser");
         }
 
         public static bool Check(long id) => Database.Data.CheckFromId(id, "Gifts");
+        
 
+        /// <summary>
+        /// Новый подарок
+        /// </summary>
+        /// <param name="from">отк кого</param>
+        /// <param name="to">кому</param>
+        /// <param name="price">внутри</param>
+        /// <returns></returns>
         public static long New(long from, long to, long price)
         {
             var db = new Database.Data("Gifts");

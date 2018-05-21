@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace VKGame.Bot.Api
 {
+    //TODO: переписать кланы.
     public class Clans
     {
         private Database.Data DB = null;

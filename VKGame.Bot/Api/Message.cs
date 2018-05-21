@@ -3,8 +3,17 @@ using VkNet.Model.RequestParams;
 
 namespace VKGame.Bot.Api
 {
+    /// <summary>
+    /// Раздел с сообщенияеми
+    /// </summary>
     public static class Message
     {
+        /// <summary>
+        /// Отправка сообщения
+        /// </summary>
+        /// <param name="text">Текст</param>
+        /// <param name="peerId">Пир ид</param>
+        /// <returns></returns>
         public static long Send(string text, long peerId)
         {		
             try
@@ -26,6 +35,13 @@ namespace VKGame.Bot.Api
            
         }
         
+        /// <summary>
+        /// Редактировать сообщение
+        /// </summary>
+        /// <param name="text">Текст</param>
+        /// <param name="messageId">ид сообщения</param>
+        /// <param name="peerId">пир ид</param>
+        /// <returns></returns>
         public static bool Edit(string text, long messageId, long peerId)
         {
             var vk = Common.GetVk();

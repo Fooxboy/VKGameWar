@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace VKGame.Bot.Api
 {
+    /// <summary>
+    /// Пользователь
+    /// </summary>
     public class User
     {
         private Database.Data DB = null;
@@ -15,6 +18,9 @@ namespace VKGame.Bot.Api
             this.id = id;
         }
 
+        /// <summary>
+        /// Список всех пользователей
+        /// </summary>
         public static List<long> AllList
         {
             get
@@ -30,7 +36,10 @@ namespace VKGame.Bot.Api
             }
         }
 
-
+        /// <summary>
+        /// Регистрация пользователя
+        /// </summary>
+        /// <param name="userId">ид</param>
         public static void Registration(long userId)
         {
             string name = String.Empty;
@@ -48,10 +57,18 @@ namespace VKGame.Bot.Api
             Database.Data.Add(fields, values, "Users");
         }
 
+        /// <summary>
+        /// Проверка на существоввание в бд
+        /// </summary>
+        /// <param name="userId"> ид пользователя</param>
+        /// <returns></returns>
         public static bool Check(long userId) => Database.Data.CheckFromId(userId, "Users");
         
         public long Id => id;
 
+        /// <summary>
+        /// Имя
+        /// </summary>
         public string Name
         {
             get
@@ -64,6 +81,9 @@ namespace VKGame.Bot.Api
             set => DB.EditFromId(id, "Name", value);
         }
         
+        /// <summary>
+        /// Уровень
+        /// </summary>
         public long Level
         {
             get
@@ -76,6 +96,9 @@ namespace VKGame.Bot.Api
             set => DB.EditFromId(id, "Level", value);
         }
 
+        /// <summary>
+        /// Подарки
+        /// </summary>
         public List<long> Gifts
         {
             get
@@ -99,6 +122,10 @@ namespace VKGame.Bot.Api
             }
         }
         
+
+        /// <summary>
+        /// Индентификтор битвы в которой учавствует пользователь
+        /// </summary>
         public long BattleId
         {
             get
@@ -111,6 +138,9 @@ namespace VKGame.Bot.Api
             set => DB.EditFromId(id, "BattleId", value);
         }
         
+        /// <summary>
+        /// Опыт пользователя
+        /// </summary>
         public long Experience
         {
             get
@@ -123,6 +153,10 @@ namespace VKGame.Bot.Api
             set => DB.EditFromId(id, "Experience", value);
         }
         
+
+        /// <summary>
+        /// Индентификатор клана
+        /// </summary>
         public long Clan
         {
             get
@@ -135,6 +169,10 @@ namespace VKGame.Bot.Api
             set => DB.EditFromId(id, "Clan", value);
         }
         
+
+        /// <summary>
+        /// Индитификатор соревнования
+        /// </summary>
         public long Competition
         {
             get
@@ -147,6 +185,9 @@ namespace VKGame.Bot.Api
             set => DB.EditFromId(id, "Competition", value);
         }
         
+        /// <summary>
+        /// Права или доступ
+        /// </summary>
         public long Access
         {
             get
@@ -159,6 +200,10 @@ namespace VKGame.Bot.Api
             set => DB.EditFromId(id, "Access", value);
         }
 
+
+        /// <summary>
+        /// Индентификаторы друзей
+        /// </summary>
         public List<long> Friends
         {
             get
@@ -184,6 +229,10 @@ namespace VKGame.Bot.Api
             }
         }
         
+
+        /// <summary>
+        /// Индендификатор квеста
+        /// </summary>
         public long Quest
         {
             get

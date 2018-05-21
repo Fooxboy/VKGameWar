@@ -2,6 +2,9 @@
 
 namespace VKGame.Bot.Api
 {
+    /// <summary>
+    /// Настрорйки бустеров
+    /// </summary>
     public class ConfigBoosters
     {
         private Database.Data DB = null;
@@ -15,7 +18,10 @@ namespace VKGame.Bot.Api
 
         public long Id => id;
 
-
+        /// <summary>
+        /// Регистрация
+        /// </summary>
+        /// <param name="userId">ид пользователя</param>
         public static void Register(long userId)
         {
             List<string> fields = new List<string>() {"Id"};
@@ -23,24 +29,36 @@ namespace VKGame.Bot.Api
             Database.Data.Add(fields, values, "ConfigBoosters");
         }
         
+        /// <summary>
+        /// еда
+        /// </summary>
         public long CreateFood
         {
             get => (long) DB.GetFromId(id, "CreateFood");
             set => DB.EditFromId(id, "CreateFood", value);
         }
 
+        /// <summary>
+        /// вода
+        /// </summary>
         public long CreateWater
         {
             get => (long) DB.GetFromId(id, "CreateWater");
             set => DB.EditFromId(id, "CreateWater", value);
         }
         
+        /// <summary>
+        /// солажды
+        /// </summary>
         public long CreateSoldiery
         {
             get => (long) DB.GetFromId(id, "CreateSoldiery");
             set => DB.EditFromId(id, "CreateSoldiery", value);
         }
         
+        /// <summary>
+        /// танки
+        /// </summary>
         public long CreateTanks
         {
             get => (long) DB.GetFromId(id, "CreateTanks");

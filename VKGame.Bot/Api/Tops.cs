@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VKGame.Bot.Api
 {
+    /// <summary>
+    /// Топ
+    /// </summary>
     class Tops
     {
         private Database.Data DB = null;
@@ -13,6 +16,9 @@ namespace VKGame.Bot.Api
             DB = new Database.Data("Battles");
         }
 
+        /// <summary>
+        /// Топ пользователей
+        /// </summary>
         public List<long> Users
         {
             get
@@ -36,6 +42,9 @@ namespace VKGame.Bot.Api
             }
         }
 
+        /// <summary>
+        /// Топ кланов
+        /// </summary>
         public List<long> Clans
         {
             get
@@ -59,6 +68,9 @@ namespace VKGame.Bot.Api
             }
         }
 
+        /// <summary>
+        /// Время последнего обновления
+        /// </summary>
         public string DateUpdate
         {
             get => (string)DB.GetFromKey("LastUpdate");

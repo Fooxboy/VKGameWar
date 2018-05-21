@@ -4,6 +4,9 @@
  
  namespace VKGame.Bot.Api
  {
+    /// <summary>
+    /// Промокоды
+    /// </summary>
      public class Promocodes
      {
          private Database.Data DB = null;
@@ -17,6 +20,7 @@
  
          public string Promo => promo;
  
+
          public long MoneyCard => (long)DB.GetFromKey("Promo", promo, "MoneyCard");
  
          public long Count
@@ -25,6 +29,10 @@
              set => DB.EditFromKey("Promo", promo, "Count", value);
          }
  
+
+        /// <summary>
+        /// Пользователи данного промокода
+        /// </summary>
          public List<long> Users
          {
              get
@@ -51,6 +59,13 @@
  
          public static bool Check(string Promo) => Database.Data.CheckFromKey("Promo", Promo, "Promocodes");
          
+
+        /// <summary>
+        /// Создание промо
+        /// </summary>
+        /// <param name="Promo">промо</param>
+        /// <param name="Count">кол-во человек</param>
+        /// <param name="money">сумма</param>
          public static void Create(string Promo, string Count, string money)
          {
              var db = new Database.Data("Promocodes");

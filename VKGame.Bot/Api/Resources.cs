@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace VKGame.Bot.Api
 {
+    /// <summary>
+    /// Ресурсы пользователя
+    /// </summary>
     public class Resources
     {
         private Database.Data DB = null;

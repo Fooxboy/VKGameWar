@@ -5,6 +5,9 @@ using System;
 
 namespace VKGame.Bot.Api
 {
+    /// <summary>
+    /// Отчеты по багам и т.п
+    /// </summary>
     public class Bugs
     {
         private Database.Stat DB = null;
@@ -20,6 +23,9 @@ namespace VKGame.Bot.Api
 
         public string Time => (string) DB.GetFromId(id, "Time");
 
+        /// <summary>
+        /// Статус бага
+        /// </summary>
         public long Status
         {
             get => (long) DB.GetFromId(id, "Status");
@@ -30,6 +36,9 @@ namespace VKGame.Bot.Api
 
         public long User => (long) DB.GetFromId(id, "User");
 
+        /// <summary>
+        /// Все баги
+        /// </summary>
         public static List<long> AllList
         {
             get
@@ -45,6 +54,12 @@ namespace VKGame.Bot.Api
             }
         }
 
+
+        /// <summary>
+        /// Баги от определённого пользователя
+        /// </summary>
+        /// <param name="userId">ид пользователя</param>
+        /// <returns></returns>
         public static List<long> BugsFromUser(long userId)
         {
             var list = new List<long>();
@@ -57,6 +72,13 @@ namespace VKGame.Bot.Api
             return list;
         }
 
+
+        /// <summary>
+        /// Добавить баг(лучше бы не добавлялись они, заебался фиксить)
+        /// </summary>
+        /// <param name="text"> тект</param>
+        /// <param name="user"> ид пользователя написавшего баг</param>
+        /// <returns></returns>
         public static long Add(string text, long user)
         {
             var fields = new List<string>(){"Id", "Time", "Status", "Text", "User"};

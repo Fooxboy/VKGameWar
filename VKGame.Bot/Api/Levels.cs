@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace VKGame.Bot.Api
 {
+    /// <summary>
+    /// Уровни
+    /// </summary>
     public class Levels
     {
         private Database.Data DB = null;
@@ -16,6 +19,10 @@ namespace VKGame.Bot.Api
 
         public long Id => id;
 
+        /// <summary>
+        /// Регистрация
+        /// </summary>
+        /// <param name="userId">ид пользователя</param>
         public static void Registration(long userId)
         {
             var fields = new List<string>() {"Id"};
