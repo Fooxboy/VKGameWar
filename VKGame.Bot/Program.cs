@@ -14,6 +14,8 @@ namespace VKGame.Bot
     class Program
     {
         //запускается бот в тестовом режиме или в релизе.
+        //если testmode = true, тогда бот запускается в  группе https://vk.com/waroftheworldtest
+        //для тестирования функционала использовать в значении true
         public static bool TestMode = false;
 
         static void Main(string[] args)
@@ -22,6 +24,7 @@ namespace VKGame.Bot
             {
                 try
                 {
+                    //логгирование и запуск потоков..
                     Logger.WriteDebug("Старт бота...");
                     const string Version = "1.5 beta";
                     Console.Title = $"War of the World  ver. {Version}";
@@ -66,7 +69,9 @@ namespace VKGame.Bot
                     threadDailyBonus.Name = $"threadDailyBonus";
                     threadDailyBonus.Start();
 
+                    //чтение информации с реестра бота...
                     var registryBot = new RegistryBot();
+                    //если бот был запущен после перезагрузки...
                     if(registryBot.RunForReboot)
                     {
                         Logger.WriteDebug("Запуск после перезагрузки...");
@@ -101,10 +106,12 @@ namespace VKGame.Bot
                         registryBot.RunForReboot = false;
                     }
 
+
                     Logger.WriteDebug("Получение всех пользователей...");
                     var listUser = Api.User.AllList;
                     foreach (var user in listUser)
                     {
+                        //Запуск задач для каждого пользователя...
                         var registry = new Api.Registry(user);
                         try
                         {
@@ -139,6 +146,8 @@ namespace VKGame.Bot
                             Logger.WriteError(e);
                         }
                     }
+
+                    //подписка на евенты.
                     longpoll.NewMesageEvent += Core.NewMessage;
                     longpoll.UserJoinEvent += Core.JoinInGroup;
                     Process.GetCurrentProcess().Exited += Core.BotOffline;
@@ -147,6 +156,7 @@ namespace VKGame.Bot
                     var argumentsArg = Console.ReadLine();
                 }catch(Exception e)
                 {
+                    //обработка глобальных ошибок.
                     Statistics.NewError();
                     Logger.WriteError(e);
                 }             
