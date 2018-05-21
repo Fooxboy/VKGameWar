@@ -78,6 +78,8 @@ namespace VKGame.Bot
         public static Dictionary<long, int> CountCreateArmySoldiery = new Dictionary<long, int>();
         public static Dictionary<long, int> CountCreateArmyTanks = new Dictionary<long, int>();
 
+        public static bool IsTestingMode = false;
+
         public static List<long> TopUsers = new List<long>();
        
         public static List<Models.UserTurnCreate> TurnCreateSoildery = new List<Models.UserTurnCreate>();
@@ -160,8 +162,11 @@ namespace VKGame.Bot
         public static VkApi GetVk()
         {
             if(VkG == null)
-            {   
-                var token = GetToken();
+            {
+                var token = string.Empty;
+                if (IsTestingMode)
+                    token = GetTestToken();
+                else token = GetToken();
                 var VkApi = new VkApi();
                 VkApi.Authorize(new ApiAuthParams
                 {

@@ -13,10 +13,12 @@ namespace VKGame.Bot
 {
     class Program
     {
-        //запускается бот в тестовом режиме или в релизе.
-        //если testmode = true, тогда бот запускается в  группе https://vk.com/waroftheworldtest
-        //для тестирования функционала использовать в значении true
-        public static bool TestMode = false;
+        /*---------------------------------------------------------------------------
+        Запускается бот в тестовом режиме или в релизе.
+        Если testmode = true, тогда бот запускается в  группе https://vk.com/waroftheworldtest
+        Для тестирования функционала использовать в значении true
+        ---------------------------------------------------------------------------*/
+        public static bool TestMode = true; 
 
         static void Main(string[] args)
         {
@@ -36,6 +38,7 @@ namespace VKGame.Bot
                     Logger.WriteDebug("Создание потока LongPoll.");
                     Thread threadLongPoll = new Thread(new ParameterizedThreadStart(longpoll.Start));
                     threadLongPoll.Name = "LongPoll";
+                    Common.IsTestingMode = TestMode;
                     if(TestMode)
                     {
                         threadLongPoll.Start(Common.GetTestToken());

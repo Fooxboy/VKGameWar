@@ -29,6 +29,7 @@ namespace VKGame.Bot.BackgroundProcess
             }
         }
 
+        //триггер конца игры и получение деняк
         public static void TriggerEndGameHelper(object ticketObject)
         {
             Models.Tickets.Ticket ticket = (Models.Tickets.Ticket)ticketObject;

@@ -14,6 +14,8 @@ namespace VKGame.Bot
     {
         private string Server = String.Empty;
         private string Key = String.Empty;
+        //161965172
+        private string IdGroup = string.Empty;
         private long Ts = 0;
         private string Token = String.Empty;
         public delegate void NewMessageHeadler(Models.Message message);
@@ -28,6 +30,11 @@ namespace VKGame.Bot
             {
                 try
                 {
+                    if (!Common.IsTestingMode)
+                        IdGroup = "161965172";
+                    else
+                        IdGroup = "166120379";
+
                     if (Token == String.Empty) Token = (string)token;
                     if (Server == String.Empty || Key == String.Empty || Ts == 0)
                     {
@@ -122,7 +129,7 @@ namespace VKGame.Bot
             var json = String.Empty;
             using(var web = new WebClient())
             {
-                json = web.DownloadString($"https://api.vk.com/method/groups.getLongPollServer?group_id=161965172&access_token={Token}&v=5.73");
+                json = web.DownloadString($"https://api.vk.com/method/groups.getLongPollServer?group_id={IdGroup}&access_token={Token}&v=5.73");
             }
             var model = JsonConvert.DeserializeObject<Models.TsAndKey.ResponseModel>(json);
             return model;
