@@ -4,11 +4,15 @@ using System.Linq;
 
 namespace VKGame.Bot.Api
 {
+    /// <summary>
+    /// Созадние объектов битв
+    /// </summary>
     public class Battles
     {
         private Database.Data DB = null;
         private long id;
         
+        //Публичный конструктор
         public Battles(long id)
         {
             DB = new Database.Data("Battles");
@@ -19,24 +23,38 @@ namespace VKGame.Bot.Api
 
         public string Name => (string) DB.GetFromId(id, "Body");
 
+        /// <summary>
+        /// Проверка на активность
+        /// </summary>
         public bool IsActive
         {
             get => Convert.ToBoolean((long) DB.GetFromId(id, "isActive"));
             set => DB.EditFromId(id, "isActive", Convert.ToInt64(value));
         }
         
+        /// <summary>
+        /// Проверка на страт битвы
+        /// </summary>
         public bool IsStart
         {
             get => Convert.ToBoolean((long) DB.GetFromId(id, "isPlay"));
             set => DB.EditFromId(id, "isStart", Convert.ToInt64(value));
         }
         
+        /// <summary>
+        /// Получает фонд 
+        /// </summary>
         public long Found
         {
             get => (long) DB.GetFromId(id, "Found");
             set => DB.EditFromId(id, "Found", value);
         }
 
+        /// <summary>
+        /// Добавление нового участника 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="hp"></param>
         public void AddMember(long userId, long hp)
         {
             string membersStr = (string) DB.GetFromId(id, "Members");
@@ -64,8 +82,21 @@ namespace VKGame.Bot.Api
             set => DB.EditFromId(id, "Type", value);
         }
 
+        /// <summary>
+        /// Проверка на существование
+        /// </summary>
+        /// <param name="id">индентификатор битвы</param>
+        /// <returns></returns>
         public static bool Check(long id) => Database.Data.CheckFromId(id, "Battles");
 
+        /// <summary>
+        /// Создание битвы
+        /// </summary>
+        /// <param name="name">имя битвы</param>
+        /// <param name="user">пользователь, который создал</param>
+        /// <param name="price">цена или ставка</param>
+        /// <param name="hp">хп пользователя</param>
+        /// <returns> индентификатор битвы</returns>
         public static long Create(string name, long user, long price, long hp)
         {
             var fields = new List<string>() { "Id", "Body", "Members", "HpMembers", "Found", "Creator"};
@@ -77,6 +108,9 @@ namespace VKGame.Bot.Api
             return battleId; 
         }
 
+        /// <summary>
+        /// получение активных битв
+        /// </summary>
         public static List<long> GetActivesAll
         {
             get
@@ -98,14 +132,23 @@ namespace VKGame.Bot.Api
             }
         }
 
+        /// <summary>
+        /// Получение создателя
+        /// </summary>
         public long Creator => (long)DB.GetFromId(id, "Creator");
 
+        /// <summary>
+        /// Получение юзер аттак(не помню щто ето)
+        /// </summary>
         public long UserAttack
         {
             get => (long) DB.GetFromId(id, "UserAttack");
             set => DB.EditFromId(id, "UserAttack", value);
         }
 
+        /// <summary>
+        /// ПОлучение участников
+        /// </summary>
         public Dictionary<long, long> Members
         {
             get
@@ -126,6 +169,11 @@ namespace VKGame.Bot.Api
             }
         }
 
+        /// <summary>
+        /// Установка хп пользователю
+        /// </summary>
+        /// <param name="userId"> индентификатор пользолвателя</param>
+        /// <param name="hp">хп</param>
         public void SetHp(long userId, long hp)
         {
             string membersStr = (string) DB.GetFromId(id, "Members");
