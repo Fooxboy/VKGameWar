@@ -7,8 +7,12 @@ using System.Threading;
 
 namespace VKGame.Bot.Helpers
 {
+    /// <summary>
+    /// Получение системной информации
+    /// </summary>
     public class SystemInfo
     {
+        //TODO: Добавить методы получения версии
         public static OperatingSystem OS => Environment.OSVersion;
         public static string NameComputer => Environment.MachineName;
         public static int CountCoreProcessor => Environment.ProcessorCount;

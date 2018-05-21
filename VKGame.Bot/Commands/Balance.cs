@@ -4,6 +4,9 @@ using System.Text;
 
 namespace VKGame.Bot.Commands
 {
+    /// <summary>
+    /// Класс для работы с балансом
+    /// </summary>
     public class Balance:ICommand
     {
         public override string Name => "Баланс";

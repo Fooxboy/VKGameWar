@@ -5,10 +5,19 @@ namespace VKGame.Bot.Helpers
 {
     public static class Command
     {
+        /// <summary>
+        /// Метод перебора подкоманд в команде
+        /// </summary>
+        /// <param name="type">тип</param>
+        /// <param name="command">имя команды</param>
+        /// <param name="message">сообщение</param>
+        /// <returns></returns>
         public static string CheckMethods(Type type, string command, Message message)
         {
+            //создание объекта 
             object obj = Activator.CreateInstance(type);
             var methods = type.GetMethods();
+            //перебор
             foreach (var method in methods)
             { 
                 var attributesCustom = Attribute.GetCustomAttributes(method);
@@ -27,6 +36,7 @@ namespace VKGame.Bot.Helpers
                     }
                 }      
             }
+            //если такой подкоманды не найдено - нулл
             return null;
         }
     }

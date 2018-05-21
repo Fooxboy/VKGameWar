@@ -35,27 +35,39 @@ namespace VKGame.Bot.Commands
                     $"\n ❓ Возможно, Вы имели в виду - {Name} {word}";
         }
 
+        /// <summary>
+        /// Внутренний апи армии
+        /// </summary>
         public static class Api
         {
+            //получение цены солдат по её кол-ву
             public static int PriceSoldiery(int count)
             {
                 return 7 * count;
             }
 
+            //получение цены танков по её кол-ву
             public static int PriceTanks(int count)
             {
                 return 50 * count;
             }
+
+            //создание соладат 
             public static bool CreateSoldiery(int count, long userId, bool boost = false)
             {
                 new Thread(new ParameterizedThreadStart(BackgroundProcess.Army.CreateSoldiery)).Start(new Models.DataCreateSoldiery() { UserId = userId, Count = count, Boost = boost });
                 return true;
             }
 
+            //цена апгрейта солдат
             public static int priceUpgSoldiery => 100;
 
+
+            //цена апгрейта танков
             public static int priceUpgTanks => 500;
 
+
+            //создание танков 
             public static bool CreateTanks(int count, long userId, bool boost = false)
             {
                 new Thread(new ParameterizedThreadStart(BackgroundProcess.Army.CreateTanks)).Start(new Models.DataCreateSoldiery() { UserId = userId, Count = count, Boost = boost });
@@ -63,6 +75,11 @@ namespace VKGame.Bot.Commands
             }
         }
 
+        /// <summary>
+        /// Улучшение армии
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <returns></returns>
         [Attributes.Trigger("улучшить")]
         public string UpgrateLevel(Models.Message msg)
         {
@@ -92,6 +109,11 @@ namespace VKGame.Bot.Commands
             return "✅ Вы успешно провели улучшение армии!";
         }
 
+        /// <summary>
+        /// Создание танков
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <returns></returns>
         [Attributes.Trigger("создать")]
         public string CreateTanks(Models.Message msg) 
         {
@@ -99,6 +121,7 @@ namespace VKGame.Bot.Commands
             var user = new Bot.Api.User(msg.from_id);
             var resources = new Bot.Api.Resources(msg.from_id);
             var typeArmy = String.Empty;
+            //проверка на валидность
             try
             {
                 typeArmy = messageArray[2];
@@ -127,6 +150,7 @@ namespace VKGame.Bot.Commands
             {
                 return $"❌ {messageArray[3]} не является числовым значением.";
             }
+            //высчитование цены и добавление в задачу.
             int price = Api.PriceTanks(count);
             var boosters = new Bot.Api.Boosters(user.Id);
             if( (resources.Tanks + count) > Buildings.Api.MaxTanks(builds.Hangars))
@@ -140,7 +164,10 @@ namespace VKGame.Bot.Commands
             {
                 Common.CountCreateArmyTanks.Add(user.Id, count);
             }
+
             var registry = new Bot.Api.Registry(user.Id);
+
+            //лоигика бустеров
             var boost = false;
             if (boosters.CreateTanks != 0)
             {
@@ -158,6 +185,12 @@ namespace VKGame.Bot.Commands
             return $"✅ Вы успешно создаёте {count} новых танков. По окончанию создания, Вам придёт уведомление.";
         }
         
+
+        /// <summary>
+        /// Обучение солдат
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <returns></returns>
         [Attributes.Trigger("обучить")]
         public string Training(Models.Message msg)
         {
@@ -165,6 +198,7 @@ namespace VKGame.Bot.Commands
             var user = new Bot.Api.User(msg.from_id);
             var resources = new Bot.Api.Resources(msg.from_id);
             var typeArmy = String.Empty;
+            //проверки на разную валидность
             try
             {
                 typeArmy = messageArray[2];
@@ -195,6 +229,7 @@ namespace VKGame.Bot.Commands
             int price = Api.PriceSoldiery(count);
             if ((resources.Soldiery + count) > (Buildings.Api.MaxSoldiery(builds.Apartments)))
                 return $"❌ Вы не можете создать больше, чем у Вас вмещается. У Вас вмещается: [{resources.Soldiery}/{Buildings.Api.MaxSoldiery(builds.Apartments)}]";
+            //логика бустеров
             var boosters = new Bot.Api.Boosters(user.Id);
             if(!Notifications.RemovePaymentCard(price, user.Id, "обучение солдат")) return $"❌ На Вашем банковском счету недостаточно средств. Ваш баланс: {resources.MoneyCard}. Необходимо: {price}. Заработайте деньги в казино или возьмите кредит в банке!";
             try
@@ -218,10 +253,17 @@ namespace VKGame.Bot.Commands
             }       
             if (boost) boosters.CreateSoldiery -= 1; 
             Common.CountCreateArmySoldiery.Remove(user.Id);
+            //создание самих солдат
             Api.CreateSoldiery(count, user.Id, boost);
             return $"✅ Вы успешно обучаете {count} солдат. После окончания обучения, Вам прийдёт уведомление о готовности.";
         }
 
+        /// <summary>
+        /// Получение начального текста
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="notify"></param>
+        /// <returns></returns>
         public string GetArmyText(Models.Message msg, string notify)
         {
             var user = new Bot.Api.User(msg.from_id);
