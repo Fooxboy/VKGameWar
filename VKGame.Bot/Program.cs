@@ -18,7 +18,7 @@ namespace VKGame.Bot
         Если testmode = true, тогда бот запускается в  группе https://vk.com/waroftheworldtest
         Для тестирования функционала использовать в значении true
         ---------------------------------------------------------------------------*/
-        public static bool TestMode = true; 
+        public static bool TestMode = false; 
 
         static void Main(string[] args)
         {
