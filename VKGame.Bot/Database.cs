@@ -291,6 +291,34 @@ namespace VKGame.Bot
                 command.ExecuteNonQuery();
             }
 
+
+            /// <summary>
+            /// Добавить новую запись
+            /// </summary>
+            /// <param name="fields">Поля</param>
+            /// <param name="values">Значения</param>
+            /// <param name="Table">Таблица</param>
+            public static void Add(List<string> fields, List<string> values, string Table)
+            {
+                var fieldsText = string.Empty;
+                var valuesText = string.Empty;
+
+                foreach (var field in fields) fieldsText += $"`{field}`, ";
+                foreach (var value in values) valuesText += $"'{value}', ";
+                fieldsText = fieldsText.Substring(0, fieldsText.Length - 2);
+                valuesText = valuesText.Substring(0, valuesText.Length - 2);
+
+                string sql = $@"INSERT INTO {Table} ({fieldsText}) VALUES ({valuesText});";
+                if (ConnectionPublic == null)
+                {
+                    ConnectionPublic = new SqliteConnection(ConnectionString);
+                    ConnectionPublic.Open();
+                }
+
+                var command = new SqliteCommand(sql, ConnectionPublic);
+                command.ExecuteNonQuery();
+            }
+
         }
 
         /// <summary>
@@ -549,7 +577,35 @@ namespace VKGame.Bot
                 var command = new SqliteCommand(sql, ConnectionStat);
                 command.ExecuteNonQuery();
             }
-            
+
+
+            /// <summary>
+            /// Добавить новую запись в таблицу
+            /// </summary>
+            /// <param name="fields">Поля</param>
+            /// <param name="values">Значения</param>
+            /// <param name="Table">Таблицы</param>
+            public static void Add(List<string> fields, List<string> values, string Table)
+            {
+                var fieldsText = string.Empty;
+                var valuesText = string.Empty;
+
+                foreach (var field in fields) fieldsText += $"`{field}`, ";
+                foreach (var value in values) valuesText += $"'{value}', ";
+                fieldsText = fieldsText.Substring(0, fieldsText.Length - 2);
+                valuesText = valuesText.Substring(0, valuesText.Length - 2);
+
+                string sql = $@"INSERT INTO {Table} ({fieldsText}) VALUES ({valuesText});";
+                if (ConnectionStat == null)
+                {
+                    ConnectionStat = new SqliteConnection(ConnectionString);
+                    ConnectionStat.Open();
+                }
+
+                var command = new SqliteCommand(sql, ConnectionStat);
+                command.ExecuteNonQuery();
+            }
+
         }
         
         /// <summary>
@@ -804,7 +860,34 @@ namespace VKGame.Bot
                 var command = new SqliteCommand(sql, ConnectionData);
                 command.ExecuteNonQuery();
             }
-            
+
+
+            /// <summary>
+            /// Добавить новую запись в ДБ
+            /// </summary>
+            /// <param name="fields">Поля</param>
+            /// <param name="values">Значения</param>
+            /// <param name="Table">Таблица</param>
+            public static void Add(List<string> fields, List<string> values, string Table)
+            {
+                if (ConnectionStat == null)
+                {
+                    ConnectionStat = new SqliteConnection(ConnectionString);
+                    ConnectionStat.Open();
+                }
+                var fieldsText = string.Empty;
+                var valuesText = string.Empty;
+
+                foreach (var field in fields) fieldsText += $"`{field}`, ";
+                foreach (var value in values) valuesText += $"'{value}', ";
+                fieldsText = fieldsText.Substring(0, fieldsText.Length - 2);
+                valuesText = valuesText.Substring(0, valuesText.Length - 2);
+
+                string sql = $@"INSERT INTO {Table} ({fieldsText}) VALUES ({valuesText});";
+                var command = new SqliteCommand(sql, ConnectionData);
+                command.ExecuteNonQuery();
+            }
+
         }
 
 
