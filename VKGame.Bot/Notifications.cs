@@ -4,8 +4,18 @@ using VKGame.Bot;
 
 namespace VKGame.Bot 
 {
+    /// <summary>
+    /// Класс уведомлений пользователей
+    /// </summary>
     public class Notifications 
     {
+        /// <summary>
+        /// Уведомление и пополнение баланса пользователя
+        /// </summary>
+        /// <param name="count">Количество монет</param>
+        /// <param name="id">Индентификатор пользователя</param>
+        /// <param name="name">Имя раздела, который пополнил</param>
+        /// <returns></returns>
         public static bool EnterPaymentCard(int count, long id, string name) 
         {
             var resources = new Api.Resources(id);
@@ -20,12 +30,23 @@ namespace VKGame.Bot
             return true;
         }
 
+        /// <summary>
+        /// Уведомление на домашней странице вверху
+        /// </summary>
+        /// <param name="notify">текст</param>
+        /// <returns></returns>
         public static bool MainNotify(string notify)
         {
             Common.Notification = notify;
             return true;
         }
 
+        /// <summary>
+        /// Отправить сообщение всем пользователям бота
+        /// </summary>
+        /// <param name="text"> Текст</param>
+        /// <param name="count">Количество</param>
+        /// <returns></returns>
         public static bool SendAllMessage(string text, int count)
         {
             var vk = Common.GetVk();
@@ -49,6 +70,13 @@ namespace VKGame.Bot
             return true;
         }
 
+        /// <summary>
+        /// Уведомление и снятие денег с счёта
+        /// </summary>
+        /// <param name="count">Количество монет</param>
+        /// <param name="id"> Индентификатор пользователя</param>
+        /// <param name="name"> Имя раздела, который сънял деньки</param>
+        /// <returns>Результат снятия</returns>
         public static bool RemovePaymentCard(int count, long id, string name) 
         {
             var resources = new Api.Resources(id);
