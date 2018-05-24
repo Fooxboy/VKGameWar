@@ -10,16 +10,34 @@ using VKGame.Bot.Commands;
 
 namespace VKGame.Bot
 {
+    /* =============================================================
+     * Мусорка статитческих данных.
+     * Сейчас ты видешь то, как НЕНУЖНО писать код.
+     * Я не помню даже как получилась эта свалка
+     * Но переписывать её было очень затратно
+     * И она ростёт  и ростёт по сегодняшний день
+     * Надеюсь, я скоро перепишу бота и избавлюсь от неё
+     * А щас есть как есть.
+     * ============================================================= */
+
     /// <summary>
     /// Глобальные методы.
     /// </summary>
     public class Common
     {      
+        /// <summary>
+        /// Токен группы
+        /// </summary>
+        /// <returns></returns>
         public static string GetToken()
         {
             return "89d513f60f1f26a711a376720a9dba0149ab2a283941b83fc1753c0a9fd54b2350be6ada97a44ee083de1";
         }
 
+        /// <summary>
+        /// Токен тест группы
+        /// </summary>
+        /// <returns></returns>
         public static string GetTestToken()
         {
             return "a85cd63f0b1a3530214a918cde6f829a3315e475f9b9880cb6192ce75129a6ae9c398eeceb41a1c760d7b";
@@ -64,31 +82,81 @@ namespace VKGame.Bot
             new Friends()
         };
 
-
+        /// <summary>
+        /// Локальный токен страницы
+        /// </summary>
         public static string GetMyToken => "";
 
+
+        /// <summary>
+        /// Данные рулетки
+        /// </summary>
         public static Roulette Roulette = new Roulette(){ Prices =  new List<RoulettePrices>(), Fund = 0};
 
+
+        /// <summary>
+        /// Публичное уведомление
+        /// </summary>
         public static string Notification = null;
 
+
+        /// <summary>
+        /// Индентификатор команды
+        /// </summary>
         public static long LastMessage = 0;
 
+        /// <summary>
+        /// Последние команды пользователей
+        /// </summary>
         public static Dictionary<long, ICommand> LastCommand = new Dictionary<long, ICommand>();
         
+        /// <summary>
+        /// Создаваемые солдаты
+        /// </summary>
         public static Dictionary<long, int> CountCreateArmySoldiery = new Dictionary<long, int>();
+
+        /// <summary>
+        /// Солдаваемы танки
+        /// </summary>
         public static Dictionary<long, int> CountCreateArmyTanks = new Dictionary<long, int>();
 
+        /// <summary>
+        /// Тест мод
+        /// </summary>
         public static bool IsTestingMode = false;
 
+        /// <summary>
+        /// Топ юзеры
+        /// </summary>
         public static List<long> TopUsers = new List<long>();
        
+        /// <summary>
+        /// Очередб создаваемых солдат
+        /// </summary>
         public static List<Models.UserTurnCreate> TurnCreateSoildery = new List<Models.UserTurnCreate>();
+
+        /// <summary>
+        /// Очередь создаваемых танков
+        /// </summary>
         public static List<Models.UserTurnCreate> TurnCreateTanks = new List<Models.UserTurnCreate>();
 
+        /// <summary>
+        /// че г
+        /// </summary>
         public static VkApi VkG = null;
+
+        /// <summary>
+        /// че м
+        /// </summary>
         public static VkApi VkM = null;
 
 
+        /// <summary>
+        /// Похожие команды
+        /// </summary>
+        /// <param name="word"> Слово</param>
+        /// <param name="commands"> Команды</param>
+        /// <returns></returns>
         public static string SimilarWord(string word, List<string> commands)
         {
             Dictionary<string, int> commandTop = new Dictionary<string, int>();
@@ -119,6 +187,10 @@ namespace VKGame.Bot
             }
             return valueReturn;
         }
+        /// <summary>
+        /// Получение рандомной помощи
+        /// </summary>
+        /// <returns>Рандомная помощь</returns>
         public static string GetRandomHelp() 
         {
             string[] ListHelp =
@@ -141,6 +213,10 @@ namespace VKGame.Bot
             return ListHelp[i];
         }
 
+        /// <summary>
+        /// Получение экземпляра ВК м
+        /// </summary>
+        /// <returns></returns>
         public static VkApi GetMyVk() 
         {
             if(Common.VkM == null)
@@ -159,6 +235,11 @@ namespace VKGame.Bot
             return VkM;
         }
         
+
+        /// <summary>
+        /// Получение экземпляра ВКонтакте для управления от имени группы
+        /// </summary>
+        /// <returns>Эклемпляр ВКонтакте</returns>
         public static VkApi GetVk()
         {
             if(VkG == null)
