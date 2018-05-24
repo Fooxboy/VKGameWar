@@ -10,8 +10,12 @@ using System.Threading;
 
 namespace VKGame.Bot
 {
+    /// <summary>
+    /// Лонг пулл ботов ВКонтакте.
+    /// </summary>
     public class BotsLongPollVK
     {
+        //Основные переменные
         private string Server = String.Empty;
         private string Key = String.Empty;
         //161965172
@@ -24,17 +28,25 @@ namespace VKGame.Bot
         public event UserJoinHeadler UserJoinEvent;
         public delegate void UserLeaveHeadler(Models.UserLeave model);
         public event UserLeaveHeadler UserLeaveEvent;
+
+        /// <summary>
+        /// Метод начала прослушивания новых событий
+        /// </summary>
+        /// <param name="token">Токен сообщества</param>
         public void Start(object token)
         {
             while (true)
             {
                 try
                 {
+                    //Проверка на тест мод
                     if (!Common.IsTestingMode)
                         IdGroup = "161965172";
                     else
                         IdGroup = "166120379";
 
+                    //проверка на наличие данных в переменных.
+                    //Используется для того, чтобы каждый раз не получать новые
                     if (Token == String.Empty) Token = (string)token;
                     if (Server == String.Empty || Key == String.Empty || Ts == 0)
                     {
@@ -44,9 +56,14 @@ namespace VKGame.Bot
                         Ts = response.ts;
                         Server = response.server;
                     }
+
+                    //Получение json результата от сервера ВКонтакте
                     var json = Request();
+
+                    //если json пустой - ничего не делать
                     if(json != null)
                     {
+                        //десериализация json....
                         Models.RootBotsLongPollVK responseLongPoll = null;
                         try
                         {
@@ -76,9 +93,11 @@ namespace VKGame.Bot
                         var updates = responseLongPoll.updates;
                         foreach (var update in updates)
                         {
+                            //проверка типов полученных событй
                             var type = update.type;
                             if (type == "message_new")
                             {
+                                //новое сообщение
                                 var jobj = (JObject)update.@object;
                                 var model = jobj.ToObject<Models.Message>();
                                 model.from_id = model.user_id;
@@ -86,12 +105,14 @@ namespace VKGame.Bot
                             }
                             else if (type == "group_join")
                             {
+                                //вступление в группу
                                 var jobj = (JObject)update.@object;
                                 var model = jobj.ToObject<Models.UserJoin>();
                                 UserJoinEvent?.Invoke(model);
                             }
                             else if (type == "group_leave")
                             {
+                                //уход из группы
                                 var jobj = (JObject)update.@object;
                                 var model = jobj.ToObject<Models.UserLeave>();
                                 UserLeaveEvent?.Invoke(model);
@@ -107,6 +128,10 @@ namespace VKGame.Bot
             }    
         }
 
+        /// <summary>
+        /// Выполняет запрос к серверу лонг пулла ВКонтакте
+        /// </summary>
+        /// <returns> json результат</returns>
         private string Request()
         {
             var url = $"{Server}?act=a_check&key={Key}&ts={Ts}&wait=20";
@@ -124,6 +149,10 @@ namespace VKGame.Bot
             return json;
         }
 
+        /// <summary>
+        /// Метод получения Key и Ts
+        /// </summary>
+        /// <returns> модель TsAndKey </returns>
         private Models.TsAndKey.ResponseModel GetKeyAndTs()
         {
             var json = String.Empty;

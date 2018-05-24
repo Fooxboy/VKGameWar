@@ -13,6 +13,7 @@ namespace VKGame.Bot
      * Moderator(3) - Доступны команды управления ботом
      * Admin(4) - Полностью все комады. 
      =======================================*/
+
     public enum Access
     {
         User =1,
