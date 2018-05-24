@@ -11,7 +11,7 @@ namespace VKGame.Bot
         /// <summary>
         /// Вывод предупреждений на консоль.
         /// </summary>
-        /// <param name="Сообщение"></param>
+        /// <param name="message">Сообщение</param>
         public static void WriteWaring(object message)
         {
             try
@@ -27,6 +27,10 @@ namespace VKGame.Bot
             
         }
 
+        /// <summary>
+        /// Новое сообщение
+        /// </summary>
+        /// <param name="message">Сообщение</param>
         public static void NewMessage(object message)
         {
             try
@@ -40,11 +44,11 @@ namespace VKGame.Bot
                 WriteError(e);
             }      
         }
-        
+
         /// <summary>
         /// Вывод ошибок на консоль.
         /// </summary>
-        /// <param name="Сообщение"></param>
+        /// <param name="e">Объект исключения</param>
         public static void WriteError(Exception e)
         {
             try
@@ -94,7 +98,7 @@ namespace VKGame.Bot
         /// <summary>
         /// Дебаг-собщение
         /// </summary>
-        /// <param name="Сообщение"></param>
+        /// <param name="message">Сообщение</param>
         public static void WriteDebug(object message)
         {
             try
