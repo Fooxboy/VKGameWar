@@ -38,7 +38,7 @@ namespace VKGame.Bot.Api
         public bool IsStart
         {
             get => Convert.ToBoolean((long) DB.GetFromId(id, "isPlay"));
-            set => DB.EditFromId(id, "isStart", Convert.ToInt64(value));
+            set => DB.EditFromId(id, "isPlay", Convert.ToInt64(value));
         }
         
         /// <summary>

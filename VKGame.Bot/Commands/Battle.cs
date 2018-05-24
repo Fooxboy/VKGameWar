@@ -77,7 +77,7 @@ namespace VKGame.Bot.Commands
                 }
                 else if(battle.Type == 3)
                 {
-                    battle.AddMember(0, API.HpUser(userId));
+                    battle.AddMember(0, API.HpUser(battle.Members[0]));
                     battle.Found *= 2;
                     battle.IsStart = true;
                 }
@@ -255,6 +255,7 @@ namespace VKGame.Bot.Commands
             battle.Type = 3;
             API.JoinToBattle(0, battle.Id);
             battle.UserAttack = user.Id;
+            battle.IsStart = true;
             return $"🏹 Вы успешно создали новую битву с ботом! Атака происходит так же, как и при обычном бое.";
         }
 
