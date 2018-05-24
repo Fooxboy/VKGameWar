@@ -124,14 +124,14 @@ namespace VKGame.Bot.Commands
             result += "➡ Чтобы продать здание, напишите: постройки купить название_постройки\n ⚠ Название должно быть в ВИНИТЕЛЬНОМ падеже (вижу что?), например: постройки продать Электростанцию\n";
 
             Dictionary<string,int> UpgratePrices = new Dictionary<string, int>();
-            buildsList.Add("Жилой", 200);
-            buildsList.Add("Электростанцию", 300);
-            buildsList.Add("Водонапорную", 300);
-            buildsList.Add("Закусочную", 300);
-            buildsList.Add("Энергетическиую", 200);
-            buildsList.Add("Бочку", 200);
-            buildsList.Add("Холодильник", 300);
-            buildsList.Add("Ангар", 400);
+            UpgratePrices.Add("Жилой", 200);
+            UpgratePrices.Add("Электростанцию", 300);
+            UpgratePrices.Add("Водонапорную", 300);
+            UpgratePrices.Add("Закусочную", 300);
+            UpgratePrices.Add("Энергетическиую", 200);
+            UpgratePrices.Add("Бочку", 200);
+            UpgratePrices.Add("Холодильник", 300);
+            UpgratePrices.Add("Ангар", 400);
             
             result += "ЦЕНЫ ДЛЯ УЛУЧШЕНИЯ➖➖➖➖➖➖➖➖➖➖➖\n";
             

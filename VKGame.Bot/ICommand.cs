@@ -58,7 +58,7 @@ namespace VKGame.Bot
         public object Help(Models.Message msg)
         {
             string commands = string.Empty;
-            foreach (var command in Commands) commands += $"\n 👍 {command}";
+            foreach (var command in Commands) commands += $"\n 👍 {Name} {command}";
             return $"❓ Помощь по разделу {Name}." +
                 $"\n ➡ Описание: {Caption}" +
                 $"\n ➡ Аргументы: {Arguments}" +
