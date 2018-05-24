@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using Newtonsoft.Json;
 using System.Diagnostics;
@@ -11,7 +9,11 @@ using System.Threading.Tasks;
 
 /*...................................................................................
  * 
- * War of the world - Война миров
+ * War of the world - Война миров.
+ * 
+ * Разработчик почти всего кода: https://vk.com/fooxboy/
+ * 
+ * Разработчик, который фиксит большенство багов: https://vk.com/dim4ikbro/
  *
  * Бот представляет собой рпг онлайн игру  с элементами стратегии.
  *
