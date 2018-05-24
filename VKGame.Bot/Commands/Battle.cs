@@ -77,7 +77,7 @@ namespace VKGame.Bot.Commands
                 }
                 else if(battle.Type == 3)
                 {
-                    battle.AddMember(0, API.HpUser(battle.Members[0]));
+                    battle.AddMember(0, API.HpUser(battle.Creator));
                     battle.Found *= 2;
                     battle.IsStart = true;
                 }

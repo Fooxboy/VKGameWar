@@ -138,7 +138,7 @@ namespace VKGame.Bot.Api
         public long Creator => (long)DB.GetFromId(id, "Creator");
 
         /// <summary>
-        /// Получение юзер аттак(не помню щто ето)
+        /// Получение атакующего пользователя
         /// </summary>
         public long UserAttack
         {
