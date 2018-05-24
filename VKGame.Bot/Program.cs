@@ -9,6 +9,41 @@ using System.Threading;
 using System.Threading.Tasks;
 
 
+/*...................................................................................
+ * 
+ * War of the world - Война миров
+ *
+ * Бот представляет собой рпг онлайн игру  с элементами стратегии.
+ *
+ * Краткое описание основных namespace`ов:
+ *
+ * VKGame.Bot.Api 
+ * Здесь храняться апишки основных модулей, чаще всего это обвёртка над базой данных
+ *
+ * VKGame.Bot.BackgroundProcess
+ * Здесь находятся фоновые процессы, например проверка кредитов и т.п
+ * 
+ * VKGame.Bot.Command
+ * Здесь находяться все доступные команды
+ *  
+ * VKGame.Bot.Helpers
+ * Здесь находятся методы расшерения, которые представляют вспомогательный функционал
+ * 
+ * VKGame.Bot.Language
+ * Здесь находятся файлы локализации
+ * 
+ * VKGame.Bot.Models
+ * Здесь находятся модели разных классов, например модель битвы
+ * 
+ * VKGame.Bot.PublicAPI
+ * Публичный апи бота и друго функционала
+ * 
+ * VKGame.Bot.Server
+ * Неймспейс устарел и не выполняет никогого функционала
+ * Раньше представлял серверные методы
+ *
+ ...................................................................................*/
+
 namespace VKGame.Bot
 {
     class Program
@@ -28,8 +63,8 @@ namespace VKGame.Bot
                 {
                     //логгирование и запуск потоков..
                     Logger.WriteDebug("Старт бота...");
-                    const string Version = "1.5 beta";
-                    Console.Title = $"War of the World  ver. {Version}";
+                    const string VER = "1.5 beta";
+                    Console.Title = $"War of the World  ver. {VER}";
 
                     Logger.WriteDebug("Создание экземпляра лонгпулла.");
                     var longpoll = new BotsLongPollVK();
@@ -39,6 +74,8 @@ namespace VKGame.Bot
                     Thread threadLongPoll = new Thread(new ParameterizedThreadStart(longpoll.Start));
                     threadLongPoll.Name = "LongPoll";
                     Common.IsTestingMode = TestMode;
+
+                    //проверка на запуск в тестовом режиме
                     if(TestMode)
                     {
                         threadLongPoll.Start(Common.GetTestToken());
@@ -150,12 +187,14 @@ namespace VKGame.Bot
                         }
                     }
 
-                    //подписка на евенты.
+                    //подписка на события.
                     longpoll.NewMesageEvent += Core.NewMessage;
                     longpoll.UserJoinEvent += Core.JoinInGroup;
                     Process.GetCurrentProcess().Exited += Core.BotOffline;
 
                     Logger.WriteDebug("Конец инициализации...");
+
+                    //позволяет держать основной поток открытым
                     var argumentsArg = Console.ReadLine();
                 }catch(Exception e)
                 {
