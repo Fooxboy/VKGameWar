@@ -9,17 +9,19 @@ namespace VKGame.Bot
     /// </summary>
     public class Notifications 
     {
+
+
+
         /// <summary>
         /// Уведомление и пополнение баланса пользователя
         /// </summary>
         /// <param name="count">Количество монет</param>
-        /// <param name="id">Индентификатор пользователя</param>
-        /// <param name="name">Имя раздела, который пополнил</param>
+        /// <param name="Индентификатор пользователя"></param>
+        /// <param name="Имя раздела, который пополнил"></param>
         /// <returns></returns>
         public static bool EnterPaymentCard(int count, long id, string name) 
         {
             var resources = new Api.Resources(id);
-
             var balance = resources.MoneyCard;
             balance+=count;
             resources.MoneyCard = balance;
