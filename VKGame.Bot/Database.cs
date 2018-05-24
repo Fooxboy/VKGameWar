@@ -4,17 +4,38 @@ using Microsoft.Data.Sqlite;
 
 namespace VKGame.Bot
 {
+    /*=============================================================
+     * Здесь собраны все методы для работы с каждой БД
+     * Странно, что для каждой БД используется отдельный класс
+     * Причем, в классе этом одинаковые методы
+     * Нужно будет переписать когда-нибудь
+     * Но работает и так
+     * Так шо похуй)0))(0
+     * =============================================================*/
+
     /// <summary>
     /// Класс для работы методов БД.
     /// </summary>
     public class Database
     {
+        /// <summary>
+        /// Соеденение с БД data
+        /// </summary>
         public static SqliteConnection ConnectionData = null;
 
+        /// <summary>
+        /// Соеденение с БД Stat
+        /// </summary>
         public static SqliteConnection ConnectionStat = null;
 
+        /// <summary>
+        /// Соеденение с БД Public
+        /// </summary>
         public static SqliteConnection ConnectionPublic = null;
 
+        /// <summary>
+        /// Класс для работы с базой данных Public
+        /// </summary>
         public class Public
         {
             private const string ConnectionString = @"Filename=Files/Public.db;";
@@ -31,6 +52,10 @@ namespace VKGame.Bot
                 Table = table;
             }
 
+            /// <summary>
+            /// Удалить все
+            /// </summary>
+            /// <param name="Table">Таблица</param>
             public static void DeteleAll(string Table)
             {
                 if (ConnectionPublic == null)
@@ -43,6 +68,10 @@ namespace VKGame.Bot
                 command.ExecuteNonQuery();
             }
 
+            /// <summary>
+            /// Получить все
+            /// </summary>
+            /// <returns>скл ридер</returns>
             public SqliteDataReader GetAll()
             {
                 var sql = $"SELECT * FROM {Table}";
@@ -51,6 +80,12 @@ namespace VKGame.Bot
                 return reader;
             }
 
+            /// <summary>
+            /// Получить по ИД
+            /// </summary>
+            /// <param name="id">Ид</param>
+            /// <param name="field">Поле</param>
+            /// <returns>Результат</returns>
             public object GetFromId(object id, string field)
             {
                 var sql = $"SELECT {field} FROM {Table} WHERE Id='{id}'";
@@ -59,6 +94,13 @@ namespace VKGame.Bot
                 return result;
             }
 
+            /// <summary>
+            /// Получить по ключу
+            /// </summary>
+            /// <param name="key">Название ключа</param>
+            /// <param name="value">Значение ключа</param>
+            /// <param name="field">Поле</param>
+            /// <returns>Результат</returns>
             public object GetFromKey(object key, object value, string field)
             {
                 var sql = $"SELECT {field} FROM {Table} WHERE {key}='{value}'";
@@ -67,6 +109,11 @@ namespace VKGame.Bot
                 return result;
             }
 
+            /// <summary>
+            /// Получить по ключу с именем Key
+            /// </summary>
+            /// <param name="key">Значение ключа</param>
+            /// <returns>Результат</returns>
             public object GetFromKey(string key)
             {
                 var sql = $"SELECT Value FROM {Table} WHERE Key='{key}'";
@@ -75,6 +122,12 @@ namespace VKGame.Bot
                 return result;
             }
 
+            /// <summary>
+            /// Редактировать по ид
+            /// </summary>
+            /// <param name="id">ид</param>
+            /// <param name="field">поле</param>
+            /// <param name="value">новое значение</param>
             public void EditFromId(object id, string field, object value)
             {
                 var sql = $"UPDATE {Table}  SET `{field}`='{value}' WHERE `Id`='{id}';";
@@ -83,6 +136,13 @@ namespace VKGame.Bot
 
             }
 
+            /// <summary>
+            /// Редактировать по ключу
+            /// </summary>
+            /// <param name="key">Имя ключа</param>
+            /// <param name="valueKey">Значение ключа</param>
+            /// <param name="field">Поле</param>
+            /// <param name="value">новое значение</param>
             public void EditFromKey(object key, object valueKey, string field, object value)
             {
                 var sql = $"UPDATE {Table}  SET `{field}`='{value}' WHERE `{key}`='{valueKey}';";
@@ -90,6 +150,11 @@ namespace VKGame.Bot
                 command.ExecuteNonQuery();
             }
 
+            /// <summary>
+            /// Изменить по ключу с именем key
+            /// </summary>
+            /// <param name="key">значение ключа</param>
+            /// <param name="value">новое значение</param>
             public void EditFromKey(string key, object value)
             {
                 var sql = $"UPDATE {Table}  SET `Value`='{value}' WHERE `Key`='{key}';";
@@ -97,6 +162,12 @@ namespace VKGame.Bot
                 command.ExecuteNonQuery();
             }
 
+            /// <summary>
+            /// Проверка на существование записи по ИД
+            /// </summary>
+            /// <param name="id">ИД</param>
+            /// <param name="Table">Таблица</param>
+            /// <returns>Значение</returns>
             public static bool CheckFromId(object id, string Table)
             {
                 string sql = $"SELECT * FROM `{Table}` WHERE Id = '{id}'";
@@ -113,6 +184,13 @@ namespace VKGame.Bot
                 return response;
             }
 
+            /// <summary>
+            /// Проверка на существование записи по ключу
+            /// </summary>
+            /// <param name="key">Имя ключа</param>
+            /// <param name="value">Значение ключа</param>
+            /// <param name="Table">Таблица</param>
+            /// <returns>Значение</returns>
             public static bool CheckFromKey(object key, string value, string Table)
             {
                 string sql = $"SELECT * FROM `{Table}` WHERE {key} = '{value}'";
@@ -129,6 +207,13 @@ namespace VKGame.Bot
                 return response;
             }
 
+
+            /// <summary>
+            /// Проверка на существование записи по ключу с именем key
+            /// </summary>
+            /// <param name="key">Значение ключа</param>
+            /// <param name="Table">Таблица</param>
+            /// <returns>Значение</returns>
             public static bool CheckFromKey(string key, string Table)
             {
                 string sql = $"SELECT * FROM `{Table}` WHERE key = '{key}'";
@@ -145,6 +230,10 @@ namespace VKGame.Bot
                 return response;
             }
 
+            /// <summary>
+            /// Удалить запись по ИД
+            /// </summary>
+            /// <param name="id">ид</param>
             public void DeleteFromId(object id)
             {
                 string sql = $"DELETE FROM {Table} WHERE Id='{id}'";
@@ -152,13 +241,22 @@ namespace VKGame.Bot
                 command.ExecuteNonQuery();
             }
 
-            public void DeleteFromId(string key)
+            /// <summary>
+            /// Удалить по ключу с именем Key
+            /// </summary>
+            /// <param name="key">Значение ключа</param>
+            public void DeleteFromKey(string key)
             {
                 string sql = $"DELETE FROM {Table} WHERE Key='{key}'";
                 var command = new SqliteCommand(sql, ConnectionPublic);
                 command.ExecuteNonQuery();
             }
 
+            /// <summary>
+            /// Удалить по ключу
+            /// </summary>
+            /// <param name="key">Имя ключа</param>
+            /// <param name="value">Значение ключа</param>
             public void DeleteFromKey(object key, string value)
             {
                 string sql = $"DELETE FROM {Table} WHERE {key}='{value}'";
@@ -166,7 +264,13 @@ namespace VKGame.Bot
                 command.ExecuteNonQuery();
             }
 
-            public static void Add(List<string> fields, List<string> values, string Table)
+            /// <summary>
+            /// Добавить новую запись
+            /// </summary>
+            /// <param name="fields">Поля</param>
+            /// <param name="values">Значения</param>
+            /// <param name="Table">Таблица</param>
+            public static void Add(List<string> fields, List<object> values, string Table)
             {
                 var fieldsText = string.Empty;
                 var valuesText = string.Empty;
@@ -189,6 +293,9 @@ namespace VKGame.Bot
 
         }
 
+        /// <summary>
+        /// Класс для работы с БД Stat
+        /// </summary>
         public class Stat
         {
             private const string ConnectionString = @"Filename=Files/Stat.db;";
@@ -205,6 +312,10 @@ namespace VKGame.Bot
                 Table = table;
             }
 
+            /// <summary>
+            /// Удалить Все
+            /// </summary>
+            /// <param name="Table">таблица</param>
             public static void DeteleAll(string Table)
             {
                 if (ConnectionStat == null)
@@ -217,6 +328,10 @@ namespace VKGame.Bot
                 command.ExecuteNonQuery();
             }
 
+            /// <summary>
+            /// Получить все
+            /// </summary>
+            /// <returns>объект дата ридер</returns>
             public SqliteDataReader  GetAll()
             {
                 var sql = $"SELECT * FROM {Table}";
@@ -225,6 +340,12 @@ namespace VKGame.Bot
                 return reader;
             }
 
+            /// <summary>
+            /// Получить по ИД
+            /// </summary>
+            /// <param name="id">Ид</param>
+            /// <param name="field">Поле</param>
+            /// <returns>Результат</returns>
             public object GetFromId(object id, string field)
             {
                 var sql = $"SELECT {field} FROM {Table} WHERE Id='{id}'";
@@ -233,6 +354,13 @@ namespace VKGame.Bot
                 return result;
             }
 
+            /// <summary>
+            /// Получение по ключу
+            /// </summary>
+            /// <param name="key">Имя ключа</param>
+            /// <param name="value">Значение ключа</param>
+            /// <param name="field">Поле</param>
+            /// <returns>Результат</returns>
             public object GetFromKey(object key, object value, string field)
             {
                 var sql = $"SELECT {field} FROM {Table} WHERE {key}='{value}'";
@@ -241,6 +369,11 @@ namespace VKGame.Bot
                 return result;
             }
             
+            /// <summary>
+            /// Получение по ключу с именем key
+            /// </summary>
+            /// <param name="key">Значение ключа</param>
+            /// <returns>Результат</returns>
             public object GetFromKey(string key)
             {
                 var sql = $"SELECT Value FROM {Table} WHERE Key='{key}'";
@@ -249,6 +382,12 @@ namespace VKGame.Bot
                 return result;
             }
 
+            /// <summary>
+            /// Изменить по ИД
+            /// </summary>
+            /// <param name="id">ИД</param>
+            /// <param name="field">Поле</param>
+            /// <param name="value">Значение</param>
             public void EditFromId(object id, string field, object value)
             {
                 var sql = $"UPDATE {Table}  SET `{field}`='{value}' WHERE `Id`='{id}';";
@@ -257,6 +396,13 @@ namespace VKGame.Bot
                 
             }
             
+            /// <summary>
+            /// Изменить по ключу
+            /// </summary>
+            /// <param name="key">Имя ключа</param>
+            /// <param name="valueKey">Значение ключа</param>
+            /// <param name="field">Поле</param>
+            /// <param name="value">Новое значение</param>
             public void EditFromKey(object key, object valueKey, string field, object value)
             {
                 var sql = $"UPDATE {Table}  SET `{field}`='{value}' WHERE `{key}`='{valueKey}';";
@@ -264,6 +410,11 @@ namespace VKGame.Bot
                 command.ExecuteNonQuery();
             }
             
+            /// <summary>
+            /// Изменить по ключу с именем key
+            /// </summary>
+            /// <param name="key">Значение кключа</param>
+            /// <param name="value">Новое значение</param>
             public void EditFromKey(string key, object value)
             {
                 var sql = $"UPDATE {Table}  SET `Value`='{value}' WHERE `Key`='{key}';";
@@ -271,6 +422,12 @@ namespace VKGame.Bot
                 command.ExecuteNonQuery();
             }
 
+            /// <summary>
+            /// Проверка на существование записи в БД по ИД
+            /// </summary>
+            /// <param name="id">ИД</param>
+            /// <param name="Table">Таблица</param>
+            /// <returns>Значение</returns>
             public static bool CheckFromId(object id, string Table)
             {
                 string sql = $"SELECT * FROM `{Table}` WHERE Id = '{id}'";
@@ -287,6 +444,13 @@ namespace VKGame.Bot
                 return response;
             }
 
+            /// <summary>
+            /// Проверка на существование записи в БД по ключу
+            /// </summary>
+            /// <param name="key">Имя ключа</param>
+            /// <param name="value">Значение ключа</param>
+            /// <param name="Table">Таблица</param>
+            /// <returns></returns>
             public static bool CheckFromKey(object key, string value, string Table)
             {
                 string sql = $"SELECT * FROM `{Table}` WHERE {key} = '{value}'";
@@ -302,7 +466,13 @@ namespace VKGame.Bot
                 reader.Close();
                 return response;
             }
-            
+
+            /// <summary>
+            /// Проверка на существование записи в БД по ключу и именем key
+            /// </summary>
+            /// <param name="key">Значение ключа</param>
+            /// <param name="Table">Таблица</param>
+            /// <returns>Значение</returns>
             public static bool CheckFromKey(string key, string Table)
             {
                 string sql = $"SELECT * FROM `{Table}` WHERE key = '{key}'";
@@ -319,6 +489,10 @@ namespace VKGame.Bot
                 return response;
             }
 
+            /// <summary>
+            /// Удалить по ИД
+            /// </summary>
+            /// <param name="id">ИД</param>
             public void DeleteFromId(object id)
             {
                 string sql = $"DELETE FROM {Table} WHERE Id='{id}'";
@@ -326,13 +500,22 @@ namespace VKGame.Bot
                 command.ExecuteNonQuery();
             }
             
-            public void DeleteFromId(string key)
+            /// <summary>
+            /// Удалить по ключу с именем Key
+            /// </summary>
+            /// <param name="key">Значение ключа</param>
+            public void DeleteFromKey(string key)
             {
                 string sql = $"DELETE FROM {Table} WHERE Key='{key}'";
                 var command = new SqliteCommand(sql, ConnectionStat);
                 command.ExecuteNonQuery();
             }
 
+            /// <summary>
+            /// Удалить по ключу
+            /// </summary>
+            /// <param name="key">Имя ключа</param>
+            /// <param name="value">Значение</param>
             public void DeleteFromKey(object key, string value)
             {
                 string sql = $"DELETE FROM {Table} WHERE {key}='{value}'";
@@ -340,7 +523,13 @@ namespace VKGame.Bot
                 command.ExecuteNonQuery();
             }
 
-            public static void Add(List<string> fields, List<string> values, string Table)
+            /// <summary>
+            /// Добавить новую запись в таблицу
+            /// </summary>
+            /// <param name="fields">Поля</param>
+            /// <param name="values">Значения</param>
+            /// <param name="Table">Таблицы</param>
+            public static void Add(List<string> fields, List<object> values, string Table)
             {
                 var fieldsText = string.Empty;
                 var valuesText = string.Empty;
@@ -363,6 +552,9 @@ namespace VKGame.Bot
             
         }
         
+        /// <summary>
+        /// Класс для работы с ДБ Data
+        /// </summary>
         public class Data
         {
             private const string ConnectionString = @"Filename=Files/Data.db;";
@@ -379,6 +571,10 @@ namespace VKGame.Bot
                 //Logger.NewMessage($"ТАБЛИЦА {table}");
             }
 
+            /// <summary>
+            /// Получить все
+            /// </summary>
+            /// <returns>дата ридер</returns>
             public SqliteDataReader  GetAll()
             {
                 var sql = $"SELECT * FROM {Table}";
@@ -387,6 +583,10 @@ namespace VKGame.Bot
                 return reader;
             }
             
+            /// <summary>
+            /// Удалить все
+            /// </summary>
+            /// <param name="Table"></param>
             public static void DeteleAll(string Table)
             {
                 if (ConnectionStat == null)
@@ -399,6 +599,12 @@ namespace VKGame.Bot
                 command.ExecuteNonQuery();
             }
 
+            /// <summary>
+            /// Получить по ИД
+            /// </summary>
+            /// <param name="id">ИД</param>
+            /// <param name="field">Поле</param>
+            /// <returns>результат</returns>
             public object GetFromId(object id, string field)
             {
                 var sql = $"SELECT {field} FROM {Table} WHERE Id='{id}'";
@@ -407,6 +613,13 @@ namespace VKGame.Bot
                 return result;
             }
 
+            /// <summary>
+            /// Получить по ключу
+            /// </summary>
+            /// <param name="key">Имя ключа</param>
+            /// <param name="value">Значение ключа</param>
+            /// <param name="field">Поле</param>
+            /// <returns>резульат</returns>
             public object GetFromKey(object key, object value, string field)
             {
                 var sql = $"SELECT {field} FROM {Table} WHERE {key}='{value}'";
@@ -415,6 +628,11 @@ namespace VKGame.Bot
                 return result;
             }
             
+            /// <summary>
+            /// Получить по  ключу с именем key
+            /// </summary>
+            /// <param name="key">Значение ключа</param>
+            /// <returns>Резуьтат</returns>
             public object GetFromKey(string key)
             {
                 var sql = $"SELECT Value FROM {Table} WHERE Key='{key}'";
@@ -423,6 +641,12 @@ namespace VKGame.Bot
                 return result;
             }
 
+            /// <summary>
+            /// Редактировать по Id
+            /// </summary>
+            /// <param name="id">ИД</param>
+            /// <param name="field">Поле</param>
+            /// <param name="value">Новое значение</param>
             public void EditFromId(object id, string field, object value)
             {
                 var sql = $"UPDATE {Table} SET `{field}`='{value}' WHERE `Id`='{id}';";
@@ -431,6 +655,13 @@ namespace VKGame.Bot
                 command.ExecuteNonQuery();
             }
             
+            /// <summary>
+            /// Редактировать по ключу
+            /// </summary>
+            /// <param name="key">Имя ключа</param>
+            /// <param name="valueKey">Значение кключа</param>
+            /// <param name="field">ПОле</param>
+            /// <param name="value">Новое значение</param>
             public void EditFromKey(object key, object valueKey, string field, object value)
             {
                 var sql = $"UPDATE {Table}  SET `{field}`='{value}' WHERE `{key}`='{valueKey}';";
@@ -438,6 +669,11 @@ namespace VKGame.Bot
                 command.ExecuteNonQuery();
             }
             
+            /// <summary>
+            /// Редактировть по ключу с именем key
+            /// </summary>
+            /// <param name="key">Значение клоюча</param>
+            /// <param name="value">Новое значение</param>
             public void EditFromKey(string key, object value)
             {
                 var sql = $"UPDATE {Table}  SET `Value`='{value}' WHERE `Key`='{key}';";
@@ -445,6 +681,12 @@ namespace VKGame.Bot
                 command.ExecuteNonQuery();
             }
 
+            /// <summary>
+            /// Проверка на существования записи в ДБ по ИД
+            /// </summary>
+            /// <param name="id">Ид</param>
+            /// <param name="Table">Таблица</param>
+            /// <returns>Значение</returns>
             public static bool CheckFromId(object id, string Table)
             {
                 if (ConnectionStat == null)
@@ -460,6 +702,13 @@ namespace VKGame.Bot
                 return response;
             }
 
+            /// <summary>
+            ///  Проверка на существования записи в ДБ по ключу 
+            /// </summary>
+            /// <param name="key">Имя ключа</param>
+            /// <param name="value">Значение ключа</param>
+            /// <param name="Table">Таблица</param>
+            /// <returns>Значение</returns>
             public static bool CheckFromKey(object key, string value, string Table)
             {
                 if (ConnectionStat == null)
@@ -474,7 +723,13 @@ namespace VKGame.Bot
                 reader.Close();
                 return response;
             }
-            
+
+            /// <summary>
+            ///  Проверка на существования записи в ДБ по ключу с именем key
+            /// </summary>
+            /// <param name="key">Значение ключа</param>
+            /// <param name="Table">Табилца</param>
+            /// <returns>Значение</returns>
             public static bool CheckFromKey(string key, string Table)
             {
                 if (ConnectionStat == null)
@@ -490,6 +745,10 @@ namespace VKGame.Bot
                 return response;
             }
 
+            /// <summary>
+            /// Удалить по ИД
+            /// </summary>
+            /// <param name="id">Ид</param>
             public void DeleteFromId(object id)
             {
                 string sql = $"DELETE FROM {Table} WHERE Id='{id}'";
@@ -497,6 +756,10 @@ namespace VKGame.Bot
                 command.ExecuteNonQuery();
             }
             
+            /// <summary>
+            /// Удалить по ключу с именем key
+            /// </summary>
+            /// <param name="key">Значение ключа</param>
             public void DeleteFromKey(string key)
             {
                 string sql = $"DELETE FROM {Table} WHERE Key='{key}'";
@@ -504,6 +767,11 @@ namespace VKGame.Bot
                 command.ExecuteNonQuery();
             }
 
+            /// <summary>
+            /// Удалить по ключу
+            /// </summary>
+            /// <param name="key">Имя ключа</param>
+            /// <param name="value">Значение ключа</param>
             public void DeleteFromKey(object key, string value)
             {
                 string sql = $"DELETE FROM {Table} WHERE {key}='{value}'";
@@ -511,7 +779,13 @@ namespace VKGame.Bot
                 command.ExecuteNonQuery();
             }
 
-            public static void Add(List<string> fields, List<string> values, string Table)
+            /// <summary>
+            /// Добавить новую запись в ДБ
+            /// </summary>
+            /// <param name="fields">Поля</param>
+            /// <param name="values">Значения</param>
+            /// <param name="Table">Таблица</param>
+            public static void Add(List<string> fields, List<object> values, string Table)
             {
                 if (ConnectionStat == null)
                 {
@@ -532,7 +806,16 @@ namespace VKGame.Bot
             }
             
         }
-        
+
+
+        /* ========================================================
+         * Дальше идут старые методы.
+         * Эти методы в новом коде уже не используются.
+         * Но есть старые участки кода, где это используется.
+         * Для сохранения обратной совместимости я оставил их.
+         * НЕ В КОЕМ СЛУЧАЕ НЕ ИСПОЛЬЗОВАТЬ ИХ.
+         * Они не очень производительные и проводят к множеству ошибок.
+         * ========================================================*/
         
         /// <summary>
         /// Список методов.
@@ -640,3 +923,4 @@ namespace VKGame.Bot
         }
     }
 }
+ 
