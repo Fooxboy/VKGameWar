@@ -80,8 +80,11 @@ namespace VKGame.Bot
                                 
                              }
                          }
+                         //Обнуляем данные, чтобы сбощик мусора собрал их
                         command = null;
+                        //Запускаем вручную сборку мусора
                         GC.Collect();
+                        //Останавливаем текщий поток
                         Thread.CurrentThread.Abort();
                     }
                     else if (command.Type == TypeResponse.Photo)
@@ -124,6 +127,7 @@ namespace VKGame.Bot
                              $"\n 🎉  Исключение: {e.GetType().Name}" +
                             $"\n 🎠  StackTrace: {e.StackTrace}", msg.from_id);
                         }
+
                     }
                     else
                     {
@@ -132,26 +136,24 @@ namespace VKGame.Bot
                         Api.Message.Send("😘 Что-то пошло не так. Попробуй-те ещё раз. Если будет опять эта надпись, то, скорее всего это не сейчас работает.", msg.from_id);
                         Logger.WriteError(e.InnerException);
                     }
-                }catch(Exception e2)
+                    //Запускаем вручную сборку мусора
+                    GC.Collect();
+                    //Останавливаем текщий поток
+                    Thread.CurrentThread.Abort();
+                }
+                catch(Exception e2)
                 {
                     //обработка ошибок, если произошла ошибка.
                     Statistics.NewError();
                     Api.Message.Send($"🎈 ОШИБКА: \n{e2.Message}" +
                             $"\n 🎉 Исключение: {e2.GetType().Name}" +
                            $"\n 🎠 StackTrace: {e2.StackTrace}", msg.from_id);
+                    //Запускаем вручную сборку мусора
+                    GC.Collect();
+                    //Останавливаем текщий поток
+                    Thread.CurrentThread.Abort();
                 }          
             }      
-        }
-        
-        /// <summary>
-        /// Регистрация команд.
-        /// </summary>
-        /// <param name="Команда"></param>
-        public void RegisterCommand(ICommand command)
-        {
-            //НЕРАБОТАЕТ
-            if (Common.Commands != null) Common.Commands.Add(command);
-            //else Common.Commands = new List<ICommand>() {command};
         }
 
         //обработчик события "уход из группы"
