@@ -87,8 +87,7 @@ namespace VKGame.Bot
                         command = null;
                         //Запускаем вручную сборку мусора
                         GC.Collect();
-                        //Останавливаем текщий поток
-                        Thread.CurrentThread.Abort();
+                        
                     }
                     else if (command.Type == TypeResponse.Photo)
                     {
@@ -142,8 +141,6 @@ namespace VKGame.Bot
                     e = null;
                     //Запускаем вручную сборку мусора
                     GC.Collect();
-                    //Останавливаем текщий поток
-                    Thread.CurrentThread.Abort();
                 }
                 catch(Exception e2)
                 {
@@ -155,8 +152,6 @@ namespace VKGame.Bot
                     e = null;
                     //Запускаем вручную сборку мусора
                     GC.Collect();
-                    //Останавливаем текщий поток
-                    Thread.CurrentThread.Abort();
                 }          
             }      
         }
