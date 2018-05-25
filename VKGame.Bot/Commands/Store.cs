@@ -107,9 +107,9 @@ namespace VKGame.Bot.Commands
             if (count < 10) return "❌ Минимальное количество: 10";
             if (resources.MoneyCard < count / 10) return $"❌ У Вас недосточно монет для покупки. Ваш баланс: {resources.MoneyCard}. Необходимо: {count / 10}";
             if (count > 100) return "❌ Максимальное доступное количество для покупки: 100";
-            if (resource.ToLower() == "вода") resources.Water = resources.Water + count;
-            else if (resource.ToLower() == "еда") resources.Food = resources.Food + count;
-            else if (resource.ToLower() == "энергия") resources.Energy = resources.Energy + count;
+            if (resource.ToLower() == "вода") resources.Water += count;
+            else if (resource.ToLower() == "еда") resources.Food += count;
+            else if (resource.ToLower() == "энергия") resources.Energy += count;
             else return "❌ Вы указали несуществующий ресурс. Доступные ресурсы: еда, энергия, вода";
             Notifications.RemovePaymentCard(Convert.ToInt32(count / 10), msg.from_id, "покупка ресурсов в магазине");
             return "✅ Вы успешно купили ресурсы! ";

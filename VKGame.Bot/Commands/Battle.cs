@@ -105,14 +105,15 @@ namespace VKGame.Bot.Commands
                             registry.CountWinBattles += 1;
                         }
                     }
+                    new Task(() =>
+                        Api.Message.Send($"💣 ПОБЕДА! Вы победили в этом бою! Вы получаете фонд битвы: {battle.Found} 💳", winner)).Start();
+                    Notifications.EnterPaymentCard(Convert.ToInt32(battle.Found), winner, "победа в битве");
                 }
-                
+
                 battle.IsActive = false;
-                new Task(() =>
-                    Api.Message.Send($"💣 ПОБЕДА! Вы победили в этом бою! Вы получаете фонд битвы: {battle.Found} 💳", winner)).Start();
-                Notifications.EnterPaymentCard(Convert.ToInt32(battle.Found), winner, "победа в битве");
+
             }
-            
+
             public static long Create(long userId, string nameBattle, long price)
             {
                 var user = new User(userId);

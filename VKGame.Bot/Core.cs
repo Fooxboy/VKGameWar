@@ -67,18 +67,18 @@ namespace VKGame.Bot
                     {
                         //отправка сообщений
 
-                        Api.Message.Send((string)result, msg.from_id);
-                        /* string wait = "🔁 Подождите. Команда выполняется 🔁";
-                         var messageId = Api.MessageSend(wait, msg.from_id);
+                        //Api.Message.Send((string)result, msg.from_id);
+                        string wait = "🔁 Подождите. Команда выполняется 🔁";
+                         var messageId = Api.Message.Send(wait, msg.from_id);
                          if(messageId != 0)
                          {
                              string text = (string)result;
-                             var resultEdit = Api.MessageEdit(text, messageId, msg.from_id);
+                             var resultEdit = Api.Message.Edit(text, messageId, msg.from_id);
                              if(!resultEdit)
                              {
-                                Api.MessageSend("❌ Ошибка. Команда не смогла быть выполнена.", msg.from_id);
+                                Api.Message.Send("❌ Ошибка. Команда не смогла быть выполнена.", msg.from_id);
                              }
-                         }*/
+                         }
                     }
                     else if (command.Type == TypeResponse.Photo)
                     {

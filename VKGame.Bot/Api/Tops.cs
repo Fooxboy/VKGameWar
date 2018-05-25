@@ -13,7 +13,7 @@ namespace VKGame.Bot.Api
 
         public Tops()
         {
-            DB = new Database.Data("Battles");
+            DB = new Database.Data("Tops");
         }
 
         /// <summary>
