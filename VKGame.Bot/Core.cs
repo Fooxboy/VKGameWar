@@ -204,10 +204,11 @@ namespace VKGame.Bot
 
 
         //обработчик прихода нового сообщения.
-        private static void NewMessageHalder(Models.Message message)
+        private static void NewMessageHalder(object message1)
         {
             try
             {
+                var message = (Models.Message)message1;
                 //запись последнего id  
                 Common.LastMessage = message.id;
                         
@@ -237,14 +238,17 @@ namespace VKGame.Bot
                     var core = new Core();
                     try
                     {
-                        var thread = new Thread(new ParameterizedThreadStart(core.ExecutorCommand));
-                        thread.Start(message);
+                        core.ExecutorCommand(message);
                     }
                     catch (Exception e)
                     {
                         Statistics.NewError();
                         Logger.WriteError(e);
                     }
+
+                    user = null;
+                    registry = null;
+                    core = null;
                 }
                 else
                 {
@@ -275,6 +279,7 @@ namespace VKGame.Bot
                             Statistics.NewError();
                             Logger.WriteError(e);
                         }
+                        command = null;
                     }
                     else
                     {
@@ -283,6 +288,13 @@ namespace VKGame.Bot
                 }
                 Statistics.SendMessage();
                 Statistics.InMessage();
+
+                //сбрасываем все
+                message1 = null;
+                message = null;
+
+                //Запускаем вручную сборку мусора
+                GC.Collect();
             }
             catch (Exception e)
             {
@@ -295,6 +307,12 @@ namespace VKGame.Bot
         /// Обработка нового сообщения.
         /// </summary>
         /// <param name="message"></param>
-        public static void NewMessage(Models.Message message) => new Task(() => NewMessageHalder(message)).Start();
+        public static void NewMessage(Models.Message message)
+        {
+            var core = new Core();
+            var thread = new Thread(new ParameterizedThreadStart(NewMessageHalder));
+            thread.IsBackground = true;
+            thread.Start(message);
+        }
     }
 }
