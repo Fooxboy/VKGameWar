@@ -192,7 +192,6 @@ namespace VKGame.Bot
                     //подписка на события.
                     longpoll.NewMesageEvent += Core.NewMessage;
                     longpoll.UserJoinEvent += Core.JoinInGroup;
-                    Process.GetCurrentProcess().Exited += Core.BotOffline;
 
                     Logger.WriteDebug("Конец инициализации...");
 
