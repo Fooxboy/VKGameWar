@@ -85,6 +85,7 @@ namespace VKGame.Bot
                          }
                          //Обнуляем данные, чтобы сбощик мусора собрал их
                         command = null;
+                        user = null;
                         //Запускаем вручную сборку мусора
                         GC.Collect();
                         
@@ -245,10 +246,11 @@ namespace VKGame.Bot
                         Statistics.NewError();
                         Logger.WriteError(e);
                     }
-
+                    core = null;
                     user = null;
                     registry = null;
                     core = null;
+                    GC.Collect();
                 }
                 else
                 {
@@ -309,10 +311,7 @@ namespace VKGame.Bot
         /// <param name="message"></param>
         public static void NewMessage(Models.Message message)
         {
-            var core = new Core();
-            var thread = new Thread(new ParameterizedThreadStart(NewMessageHalder));
-            thread.IsBackground = true;
-            thread.Start(message);
+            new Task(() => NewMessageHalder(message)).Start();
         }
     }
 }
