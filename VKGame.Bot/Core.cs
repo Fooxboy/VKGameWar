@@ -45,15 +45,18 @@ namespace VKGame.Bot
                 ICommand command = Proccesing(msg.body.Split(' ')[0].ToLower());
                 if (command != null)
                 {
-                    /*
+
                     var lastCommands = Common.LastCommand;
                     try
                     {
+                        var buffer = lastCommands[msg.from_id];
                         lastCommands[msg.from_id] = command;
-                    }catch(KeyNotFoundException)
+                    }
+                    catch (KeyNotFoundException)
                     {
+
                         lastCommands.Add(msg.from_id, command);
-                    }*/
+                    }
 
                     //создание объектов пользования и проверка его прав.
                     var user = new Api.User(msg.from_id);
@@ -136,6 +139,7 @@ namespace VKGame.Bot
                         Api.Message.Send("😘 Что-то пошло не так. Попробуй-те ещё раз. Если будет опять эта надпись, то, скорее всего это не сейчас работает.", msg.from_id);
                         Logger.WriteError(e.InnerException);
                     }
+                    e = null;
                     //Запускаем вручную сборку мусора
                     GC.Collect();
                     //Останавливаем текщий поток
@@ -148,6 +152,7 @@ namespace VKGame.Bot
                     Api.Message.Send($"🎈 ОШИБКА: \n{e2.Message}" +
                             $"\n 🎉 Исключение: {e2.GetType().Name}" +
                            $"\n 🎠 StackTrace: {e2.StackTrace}", msg.from_id);
+                    e = null;
                     //Запускаем вручную сборку мусора
                     GC.Collect();
                     //Останавливаем текщий поток
@@ -218,19 +223,6 @@ namespace VKGame.Bot
                     message.body, 
                     message.from_id);
 
-                //получение последних команд пользователя
-                var lastCommands = Common.LastCommand;
-                try
-                {
-                    var buffer = lastCommands[message.from_id];
-                    lastCommands[message.from_id] = new Start();
-                }
-                catch (KeyNotFoundException)
-                {
-                    
-                    lastCommands.Add(message.from_id, new Start());
-                }
-
                 //проверка на существование пользователя в бд.
                 if (Api.User.Check(message.from_id))
                 {
@@ -264,8 +256,20 @@ namespace VKGame.Bot
                     //если пользователь не зарегестрирован.
                     var command = message.body.Split(' ')[0].ToLower();
                     //если команда старт........
-                    if (command == "старт")
+                    if (command.ToLower() == "старт")
                     {
+                        var lastCommands = Common.LastCommand;
+                        try
+                        {
+                            var buffer = lastCommands[message.from_id];
+                            lastCommands[message.from_id] = new Start();
+                        }
+                        catch (KeyNotFoundException)
+                        {
+
+                            lastCommands.Add(message.from_id, new Start());
+                        }
+
                         Logger.NewMessage($"({message.from_id}) -> {message.body}");
                         try
                         {
