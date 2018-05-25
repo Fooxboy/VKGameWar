@@ -77,8 +77,12 @@ namespace VKGame.Bot
                              if(!resultEdit)
                              {
                                 Api.Message.Send("❌ Ошибка. Команда не смогла быть выполнена.", msg.from_id);
+                                
                              }
                          }
+                        command = null;
+                        GC.Collect();
+                        Thread.CurrentThread.Abort();
                     }
                     else if (command.Type == TypeResponse.Photo)
                     {
